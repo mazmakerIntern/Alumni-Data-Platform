@@ -1,0 +1,19 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+
+# Vercel
+.vercel
+
+# Dependencies (none used, but just in case)
+node_modules/
+
+# Tooling / temp
+.playwright-mcp/
+*.log
+
+# Verification screenshots (do not commit)
+v-*.jpeg
+verify-*.jpeg

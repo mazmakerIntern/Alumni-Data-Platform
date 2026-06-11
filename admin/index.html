@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Web Portal · Alumni Data Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260612a" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260612a" />
+</head>
+<body>
+
+<!-- ════════════ LOGIN ════════════ -->
+<div id="loginView" class="liff-stage" style="background:radial-gradient(circle at 70% 20%,oklch(0.97 0.02 25),transparent 55%),var(--muted)">
+  <div class="ds-card" style="width:400px;max-width:100%">
+    <div class="ds-card-content" style="padding:2rem">
+      <div class="flex items-center gap-3 mb-4">
+        <div style="width:44px;height:44px;border-radius:var(--radius-lg);background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></div>
+        <div>
+          <div style="font-weight:700">Alumni Data Platform</div>
+          <div class="type-caption">Admin Web Portal</div>
+        </div>
+      </div>
+      <h3 class="type-h4 mb-2">เข้าสู่ระบบผู้ดูแล</h3>
+      <p class="type-body-sm muted mb-4">เข้าสู่ระบบด้วยชื่อผู้ใช้และรหัสผ่านที่ปลอดภัย</p>
+      <form onsubmit="doLogin(event)">
+        <div class="form-group">
+          <label class="ds-label">Username</label>
+          <input class="ds-input" id="loginUser" value="admin" placeholder="ชื่อผู้ใช้" />
+        </div>
+        <div class="form-group">
+          <label class="ds-label">Password</label>
+          <input class="ds-input" id="loginPass" type="password" value="password" placeholder="รหัสผ่าน" />
+        </div>
+        <label class="ds-checkbox-wrap mb-3" onclick="this.querySelector('.ds-checkbox').classList.toggle('checked')">
+          <span class="ds-checkbox checked"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="type-body-sm">จดจำการเข้าสู่ระบบ</span>
+        </label>
+        <button class="btn btn-default btn-lg btn-block" type="submit">เข้าสู่ระบบ</button>
+      </form>
+      <div class="ds-separator"></div>
+      <p class="type-caption text-center">เดโม — กดเข้าสู่ระบบได้ทันที · <a href="../index.html" class="btn-link">กลับหน้าหลัก</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ APP SHELL ════════════ -->
+<div id="appView" class="admin-layout hidden">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="sidebar">
+    <div class="admin-brand">
+      <span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
+      <div><h1>Alumni Platform</h1><span>Admin Web Portal</span></div>
+    </div>
+    <nav class="admin-nav" id="navMenu"></nav>
+    <div class="admin-userbox">
+      <span class="avatar avatar-md">AD</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.82rem;font-weight:600">เจ้าหน้าที่ฝ่ายศิษย์เก่า</div>
+        <div class="type-caption">admin@alumni.ac.th</div>
+      </div>
+      <button class="btn btn-ghost btn-icon" title="ออกจากระบบ" onclick="logout()" id="logoutBtn"></button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <div class="flex items-center gap-3">
+        <button class="btn btn-ghost btn-icon" id="menuBtn" style="display:none" onclick="document.getElementById('sidebar').classList.toggle('open')"></button>
+        <h2 id="pageTitle">Dashboard</h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="btn btn-ghost btn-icon" id="bellBtn" title="การแจ้งเตือน"></button>
+        <span class="badge badge-success">ระบบออนไลน์</span>
+      </div>
+    </header>
+    <main class="admin-content" id="content"></main>
+  </div>
+</div>
+
+<!-- Modal / drawer mount -->
+<div class="ds-overlay" id="overlay" onclick="if(event.target===this)closeOverlay()"></div>
+
+<script src="../assets/app.js?v=20260612a"></script>
+<script>
+/* ───────── Navigation ───────── */
+const NAV = [
+  { group: 'หลัก', items: [
+    { id: 'dashboard', label: 'Dashboard', icon: 'chart' },
+    { id: 'alumni', label: 'จัดการศิษย์เก่า', icon: 'users' },
+    { id: 'cms', label: 'จัดการข่าว/กิจกรรม', icon: 'cal' },
+    { id: 'sitecontent', label: 'เนื้อหาเว็บไซต์', icon: 'grid' },
+    { id: 'broadcast', label: 'Broadcast Message', icon: 'send' },
+  ]},
+  { group: 'ระบบ', items: [
+    { id: 'settings', label: 'ตั้งค่า', icon: 'settings' },
+  ]},
+];
+const TITLES = { dashboard:'Dashboard', alumni:'จัดการศิษย์เก่า', cms:'จัดการข่าว/กิจกรรม', sitecontent:'เนื้อหาเว็บไซต์', broadcast:'Broadcast Message', settings:'ตั้งค่า' };
+let current = 'dashboard';
+
+function renderNav() {
+  const el = document.getElementById('navMenu');
+  el.innerHTML = NAV.map(g => `
+    <div class="admin-nav-label">${g.group}</div>
+    ${g.items.map(it => `<a class="admin-nav-item ${it.id===current?'active':''}" onclick="go('${it.id}')">${icon(it.icon)} ${it.label}</a>`).join('')}
+  `).join('');
+}
+function go(id) { current = id; document.getElementById('pageTitle').textContent = TITLES[id]; renderNav(); VIEWS[id](); document.getElementById('sidebar').classList.remove('open'); window.scrollTo(0,0); }
+
+function doLogin(e){ e.preventDefault(); document.getElementById('loginView').classList.add('hidden'); document.getElementById('appView').classList.remove('hidden'); go('dashboard'); }
+function logout(){ document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); }
+
+function closeOverlay(){ document.getElementById('overlay').classList.remove('open'); document.getElementById('overlay').innerHTML=''; }
+function openModal(html){ const o=document.getElementById('overlay'); o.innerHTML=html; o.classList.add('open'); }
+
+/* ───────── DASHBOARD ───────── */
+const VIEWS = {};
+VIEWS.dashboard = function() {
+  const total = ALUMNI.length;
+  const members = ALUMNI.filter(a=>a.status==='member').length;
+  const teachers = ALUMNI.filter(a=>a.status==='teacher').length;
+  const general = ALUMNI.filter(a=>a.status==='alumni').length;
+  const linked = ALUMNI.filter(a=>a.linked).length;
+  const recent = ALUMNI.filter(a=>a.linked).slice(-5).reverse();
+  const facCounts = FACULTIES.map(f => ({ f, n: ALUMNI.filter(a=>a.faculty===f).length }));
+  const maxFac = Math.max(...facCounts.map(x=>x.n));
+
+  document.getElementById('content').innerHTML = `
+    <div class="page-head"><h3>ภาพรวมระบบ</h3><p>สรุปข้อมูลศิษย์เก่า / ครู และสถิติการใช้งานล่าสุด</p></div>
+
+    <div class="grid-stats mb-4">
+      ${statCard('users','ศิษย์เก่าทั้งหมด', total, '+12 เดือนนี้','up')}
+      ${statCard('link','เชื่อมบัญชี LINE แล้ว', linked, Math.round(linked/total*100)+'% ของทั้งหมด','up')}
+      ${statCard('send','ข้อความที่ส่งเดือนนี้', 8, 'อัตราการเปิด 72%','up')}
+      ${statCard('bell','รออนุมัติสมาชิก', ALUMNI.filter(a=>a.pending).length, 'ต้องตรวจสอบ','down')}
+    </div>
+
+    <div class="grid-2 mb-4">
+      <div class="ds-card">
+        <div class="ds-card-header"><div class="ds-card-title">จำนวนศิษย์เก่าแยกตามคณะ</div><div class="ds-card-desc">กระจายตัวตามคณะที่สำเร็จการศึกษา</div></div>
+        <div class="ds-card-content">
+          <div class="bars">
+            ${facCounts.map((x,i)=>`<div class="bar-col"><div style="font-size:.7rem;color:var(--muted-foreground)">${x.n}</div><div class="bar" data-h="${Math.max(8,x.n/maxFac*100).toFixed(1)}" style="height:0%;background:var(--chart-${(i%5)+1})"></div><div class="bar-x">${x.f.replace('คณะ','').slice(0,6)}</div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="ds-card">
+        <div class="ds-card-header"><div class="ds-card-title">สัดส่วนตามสถานะสมาชิก</div><div class="ds-card-desc">ศิษย์เก่าทั่วไป / สมาชิกสมาคม / ครู</div></div>
+        <div class="ds-card-content">
+          ${donut([
+            {label:'ศิษย์เก่าทั่วไป', v:general, c:'var(--chart-1)'},
+            {label:'สมาชิกสมาคม', v:members, c:'var(--chart-3)'},
+            {label:'ครู (สมาชิก)', v:teachers, c:'var(--chart-4)'},
+          ], total)}
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-card">
+      <div class="ds-card-header flex justify-between items-center">
+        <div><div class="ds-card-title">ศิษย์เก่าล่าสุดที่เชื่อมบัญชี LINE</div><div class="ds-card-desc">5 รายการล่าสุด</div></div>
+        <button class="btn btn-outline btn-sm" onclick="go('alumni')">ดูทั้งหมด</button>
+      </div>
+      <div class="ds-card-content" style="padding-top:.5rem">
+        <div class="ds-table-wrap" style="border:none">
+          <table class="ds-table">
+            <thead><tr><th>ชื่อ - สกุล</th><th>คณะ</th><th>รุ่น (พ.ศ.)</th><th>สถานะ</th><th>เชื่อมเมื่อ</th></tr></thead>
+            <tbody>
+              ${recent.map(a=>`<tr>
+                <td><div class="flex items-center gap-2">${avatarOf(a,'md')}<span>${a.first} ${a.last}</span></div></td>
+                <td>${a.faculty}</td><td>${a.year}</td>
+                <td><span class="badge ${STATUS_BADGE[a.status]}">${STATUS_LABEL[a.status]}</span></td>
+                <td class="muted">${a.joined}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  animateCharts(document.getElementById('content'));
+};
+
+function statCard(ic, label, value, delta, dir){
+  return `<div class="stat-card">
+    <div class="stat-top"><span class="stat-label">${label}</span><span class="stat-icon">${icon(ic)}</span></div>
+    <div class="stat-value" data-count="${value}">0</div>
+    <div class="stat-delta ${dir}">${icon(dir==='up'?'trendUp':'trendDown',13)} ${delta}</div>
+  </div>`;
+}
+function donut(parts, total){
+  let acc=0; const segs = parts.map(p=>{ const start=acc/total*360; acc+=p.v; const end=acc/total*360; return `${p.c} ${start}deg ${end}deg`; }).join(',');
+  return `<div class="flex items-center gap-4 wrap">
+    <div class="donut-anim" style="width:150px;height:150px;border-radius:50%;background:conic-gradient(${segs});position:relative;flex-shrink:0">
+      <div style="position:absolute;inset:26px;background:var(--card);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div style="font-size:1.5rem;font-weight:700" data-count="${total}">0</div><div class="type-caption">คน</div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:140px">
+      ${parts.map(p=>`<div class="legend-row"><span class="legend-dot" style="background:${p.c}"></span><span class="grow">${p.label}</span><strong>${p.v}</strong></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ───────── ALUMNI MANAGEMENT ───────── */
+let alumniFilter = { q:'', faculty:'', status:'', life:'', onlyPending:false };
+let alumniPage = 1, alumniLastSig = '', ALUMNI_PER_PAGE = 8;
+function goAlumniPage(p){ alumniPage = p; renderAlumniTable(); window.scrollTo(0,0); }
+VIEWS.alumni = function(){
+  document.getElementById('content').innerHTML = `
+    <div class="page-head flex justify-between items-center wrap gap-3">
+      <div><h3>จัดการข้อมูลศิษย์เก่า / ครู</h3><p>เพิ่ม นำเข้า แก้ไข ลบ ค้นหา และอนุมัติสมาชิก</p></div>
+      <div class="flex gap-2">
+        <button class="btn btn-outline btn-md" onclick="openImport()">${icon('upload',16)} นำเข้าไฟล์</button>
+        <button class="btn btn-default btn-md" onclick="openAlumniForm()">${icon('plus',16)} เพิ่มศิษย์เก่า</button>
+      </div>
+    </div>
+
+    <div class="ds-card">
+      <div class="ds-card-content">
+        <div class="filter-bar">
+          <div class="search-box">${icon('search',16)}<input class="ds-input" id="fq" placeholder="ค้นหาชื่อ, อีเมล, รหัส..." oninput="alumniFilter.q=this.value;renderAlumniTable()"></div>
+          <select class="ds-select" style="width:auto" onchange="alumniFilter.faculty=this.value;renderAlumniTable()">
+            <option value="">ทุกคณะ</option>${FACULTIES.map(f=>`<option>${f}</option>`).join('')}
+          </select>
+          <select class="ds-select" style="width:auto" onchange="alumniFilter.status=this.value;renderAlumniTable()">
+            <option value="">ทุกสถานะ</option><option value="alumni">ศิษย์เก่าทั่วไป</option><option value="member">สมาชิกสมาคม</option><option value="teacher">ครู (สมาชิก)</option>
+          </select>
+          <select class="ds-select" style="width:auto" onchange="alumniFilter.life=this.value;renderAlumniTable()">
+            <option value="">สถานะการมีชีวิต</option><option value="alive">มีชีวิต</option><option value="deceased">เสียชีวิต</option>
+          </select>
+          <label class="ds-checkbox-wrap" style="white-space:nowrap" onclick="alumniFilter.onlyPending=!alumniFilter.onlyPending;this.querySelector('.ds-checkbox').classList.toggle('checked');renderAlumniTable()">
+            <span class="ds-checkbox"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="type-body-sm">เฉพาะรออนุมัติ</span>
+          </label>
+        </div>
+        <div id="alumniTableWrap"></div>
+      </div>
+    </div>`;
+  renderAlumniTable();
+};
+
+function filteredAlumni(){
+  const f = alumniFilter;
+  return ALUMNI.filter(a=>{
+    if(f.q){ const s=(a.first+a.last+a.email+a.id+a.company).toLowerCase(); if(!s.includes(f.q.toLowerCase())) return false; }
+    if(f.faculty && a.faculty!==f.faculty) return false;
+    if(f.status && a.status!==f.status) return false;
+    if(f.life && a.life!==f.life) return false;
+    if(f.onlyPending && !a.pending) return false;
+    return true;
+  });
+}
+function renderAlumniTable(){
+  const rows = filteredAlumni();
+  const sig = JSON.stringify(alumniFilter);
+  if(sig !== alumniLastSig){ alumniPage = 1; alumniLastSig = sig; }
+  const totalPages = Math.max(1, Math.ceil(rows.length / ALUMNI_PER_PAGE));
+  if(alumniPage > totalPages) alumniPage = totalPages;
+  const start = (alumniPage-1) * ALUMNI_PER_PAGE;
+  const pageRows = rows.slice(start, start + ALUMNI_PER_PAGE);
+  document.getElementById('alumniTableWrap').innerHTML = `
+    <div class="flex justify-between items-center mb-2"><span class="type-body-sm muted">พบ ${rows.length} รายการ${rows.length>ALUMNI_PER_PAGE?` · แสดง ${start+1}–${Math.min(start+ALUMNI_PER_PAGE,rows.length)}`:''}</span></div>
+    <div class="ds-table-wrap">
+      <table class="ds-table">
+        <thead><tr><th>ศิษย์เก่า / ครู</th><th>คณะ / สาขา</th><th>รุ่น</th><th>บริษัท</th><th>สถานะ</th><th>LINE</th><th></th></tr></thead>
+        <tbody>
+          ${rows.length===0 ? `<tr><td colspan="7" class="text-center muted" style="padding:2rem">ไม่พบข้อมูลตามเงื่อนไข</td></tr>` :
+          pageRows.map(a=>`<tr>
+            <td><div class="flex items-center gap-2">
+              ${avatarOf(a,'md')}
+              <div><div style="font-weight:500">${a.first} ${a.last} ${a.pending?'<span class="badge badge-warning">รออนุมัติ</span>':''} ${a.life==='deceased'?'<span class="badge badge-ghost">เสียชีวิต</span>':''}</div><div class="type-caption">${a.id} · ${a.email}</div></div>
+            </div></td>
+            <td>${a.faculty}<div class="type-caption">${a.major}</div></td>
+            <td>${a.year}</td>
+            <td>${a.company}<div class="type-caption">${a.position}</div></td>
+            <td><span class="badge ${STATUS_BADGE[a.status]}">${STATUS_LABEL[a.status]}</span></td>
+            <td>${a.linked?'<span class="badge badge-success">เชื่อมแล้ว</span>':'<span class="badge badge-ghost">ยังไม่เชื่อม</span>'}</td>
+            <td><div class="flex gap-1">
+              <button class="btn btn-ghost btn-icon" title="ดูโปรไฟล์" onclick="openProfile('${a.id}')">${icon('search',15)}</button>
+              <button class="btn btn-ghost btn-icon" title="แก้ไข" onclick="openAlumniForm('${a.id}')">${icon('edit',15)}</button>
+              <button class="btn btn-ghost btn-icon" title="ลบ" onclick="confirmDelete('${a.id}')">${icon('trash',15)}</button>
+            </div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    ${totalPages>1?`<div class="flex items-center justify-between mt-3 wrap gap-2">
+      <span class="type-caption">หน้า ${alumniPage} / ${totalPages}</span>
+      <div class="flex gap-1">
+        <button class="btn btn-outline btn-sm" ${alumniPage<=1?'disabled':''} onclick="goAlumniPage(${alumniPage-1})">${icon('back',14)} ก่อนหน้า</button>
+        ${Array.from({length:totalPages},(_,i)=>i+1).map(p=>`<button class="btn ${p===alumniPage?'btn-default':'btn-outline'} btn-sm" style="min-width:32px" onclick="goAlumniPage(${p})">${p}</button>`).join('')}
+        <button class="btn btn-outline btn-sm" ${alumniPage>=totalPages?'disabled':''} onclick="goAlumniPage(${alumniPage+1})">ถัดไป <span style="display:inline-block;transform:rotate(180deg)">${icon('back',14)}</span></button>
+      </div>
+    </div>`:''}`;
+}
+
+function openProfile(id){
+  const a = ALUMNI.find(x=>x.id===id);
+  openModal(`<div class="ds-modal">
+    <div class="ds-modal-header"><span class="ds-modal-title">โปรไฟล์ศิษย์เก่า</span><button class="btn btn-ghost btn-icon" onclick="closeOverlay()">${icon('x',18)}</button></div>
+    <div class="ds-modal-body">
+      <div class="flex items-center gap-3 mb-4">
+        ${avatarOf(a,'2xl')}
+        <div><div class="type-h4">${a.first} ${a.last}</div>
+        <div class="flex gap-1 mt-1"><span class="badge ${STATUS_BADGE[a.status]}">${STATUS_LABEL[a.status]}</span>${a.linked?'<span class="badge badge-success">เชื่อม LINE</span>':''}<span class="badge badge-ghost">${LIFE_LABEL[a.life]}</span></div></div>
+      </div>
+      <div class="grid-2" style="gap:.75rem 1.5rem">
+        ${kv('รหัส', a.id)}${kv('รุ่น (พ.ศ.)', a.year)}
+        ${kv('คณะ', a.faculty)}${kv('สาขา', a.major)}
+        ${kv('เบอร์โทร', a.phone)}${kv('อีเมล', a.email)}
+        ${kv('บริษัท', a.company)}${kv('ตำแหน่ง', a.position)}
+      </div>
+      ${a.pending?`<div class="ds-alert ds-alert-warning mt-3"><span class="ds-alert-icon">${icon('bell',16)}</span><div><strong>รอการอนุมัติสมาชิก</strong>ผู้ใช้นี้ยื่นคำขอเป็นสมาชิกสมาคม</div></div>`:''}
+    </div>
+    <div class="ds-modal-footer">
+      ${a.pending?`<button class="btn btn-default btn-md" onclick="approve('${a.id}')">${icon('check',16)} อนุมัติสมาชิก</button>`:''}
+      <button class="btn btn-outline btn-md" onclick="openAlumniForm('${a.id}')">${icon('edit',16)} แก้ไขข้อมูล</button>
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ปิด</button>
+    </div>
+  </div>`);
+}
+function kv(k,v){ return `<div><div class="type-caption">${k}</div><div style="font-weight:500">${v}</div></div>`; }
+
+function openAlumniForm(id){
+  const a = id ? ALUMNI.find(x=>x.id===id) : null;
+  const t = a?'แก้ไขข้อมูลศิษย์เก่า':'เพิ่มศิษย์เก่าใหม่';
+  openModal(`<div class="ds-modal">
+    <div class="ds-modal-header"><span class="ds-modal-title">${t}</span><button class="btn btn-ghost btn-icon" onclick="closeOverlay()">${icon('x',18)}</button></div>
+    <div class="ds-modal-body">
+      <div id="afDupWarn"></div>
+      <div class="type-overline muted mb-2">ข้อมูลส่วนตัว</div>
+      <div class="grid-2" style="gap:0 1rem">
+        <div class="form-group"><label class="ds-label">ชื่อ <span class="req">*</span></label><input class="ds-input" id="afFirst" value="${a?a.first:''}" oninput="checkDupLive()"></div>
+        <div class="form-group"><label class="ds-label">นามสกุล <span class="req">*</span></label><input class="ds-input" id="afLast" value="${a?a.last:''}" oninput="checkDupLive()"></div>
+        <div class="form-group"><label class="ds-label">เบอร์โทร</label><input class="ds-input" id="afPhone" value="${a?a.phone:''}" oninput="checkDupLive()"></div>
+        <div class="form-group"><label class="ds-label">อีเมล</label><input class="ds-input" id="afEmail" value="${a?a.email:''}" oninput="checkDupLive()"></div>
+      </div>
+      <div class="type-overline muted mb-2 mt-2">ข้อมูลการศึกษา</div>
+      <div class="grid-2" style="gap:0 1rem">
+        <div class="form-group"><label class="ds-label">คณะ</label><select class="ds-select" id="afFaculty">${FACULTIES.map(f=>`<option ${a&&a.faculty===f?'selected':''}>${f}</option>`).join('')}</select></div>
+        <div class="form-group"><label class="ds-label">รุ่น (พ.ศ.)</label><input class="ds-input" id="afYear" value="${a?a.year:''}" oninput="checkDupLive()"></div>
+      </div>
+      <div class="type-overline muted mb-2 mt-2">ข้อมูลการทำงาน</div>
+      <div class="grid-2" style="gap:0 1rem">
+        <div class="form-group"><label class="ds-label">บริษัท</label><input class="ds-input" id="afCompany" value="${a?a.company:''}"></div>
+        <div class="form-group"><label class="ds-label">ตำแหน่ง</label><input class="ds-input" id="afPosition" value="${a?a.position:''}"></div>
+      </div>
+      <div class="grid-2" style="gap:0 1rem">
+        <div class="form-group"><label class="ds-label">สถานะสมาชิก</label><select class="ds-select" id="afStatus"><option value="alumni" ${a&&a.status==='alumni'?'selected':''}>ศิษย์เก่าทั่วไป</option><option value="member" ${a&&a.status==='member'?'selected':''}>สมาชิกสมาคม</option><option value="teacher" ${a&&a.status==='teacher'?'selected':''}>ครู (สมาชิก)</option></select></div>
+        <div class="form-group"><label class="ds-label">สถานะการมีชีวิต</label><select class="ds-select" id="afLife"><option value="alive" ${a&&a.life==='alive'?'selected':''}>มีชีวิต</option><option value="deceased" ${a&&a.life==='deceased'?'selected':''}>เสียชีวิต</option></select></div>
+      </div>
+    </div>
+    <div class="ds-modal-footer">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-default btn-md" onclick="saveAlumni('${id||''}')">${icon('check',16)} บันทึกข้อมูล</button>
+    </div>
+  </div>`);
+}
+
+/* ── Duplicate detection helpers ── */
+function readAlumniForm(){
+  const g = id => document.getElementById(id)?.value.trim() || '';
+  return { first:g('afFirst'), last:g('afLast'), phone:g('afPhone'), email:g('afEmail'),
+    faculty:g('afFaculty'), year:g('afYear'), company:g('afCompany'), position:g('afPosition'),
+    status:g('afStatus'), life:g('afLife') };
+}
+// คืนรายการที่อาจซ้ำ (ไม่นับตัวเอง selfId) พร้อมเหตุผล
+function findDuplicates(rec, selfId){
+  const norm = s => (s||'').toLowerCase().replace(/[\s-]/g,'');
+  return ALUMNI.filter(a=>a.id!==selfId).map(a=>{
+    const reasons=[];
+    if(rec.email && norm(a.email)===norm(rec.email)) reasons.push('อีเมลตรงกัน');
+    if(rec.phone && norm(a.phone)===norm(rec.phone)) reasons.push('เบอร์โทรตรงกัน');
+    if(rec.first && rec.last && a.first===rec.first && a.last===rec.last && String(a.year)===String(rec.year)) reasons.push('ชื่อ-สกุล & รุ่นตรงกัน');
+    return reasons.length?{a,reasons}:null;
+  }).filter(Boolean);
+}
+function checkDupLive(){
+  const box = document.getElementById('afDupWarn'); if(!box) return;
+  const dups = findDuplicates(readAlumniForm(), window._afEditId||null);
+  box.innerHTML = dups.length ? `<div class="ds-alert ds-alert-warning"><span class="ds-alert-icon">${icon('bell',16)}</span><div><strong>พบข้อมูลที่อาจซ้ำ ${dups.length} รายการ</strong>${dups.slice(0,3).map(d=>`${d.a.first} ${d.a.last} (${d.a.id}) — ${d.reasons.join(', ')}`).join('<br>')}</div></div>` : '';
+}
+function saveAlumni(id){
+  window._afEditId = id || null;
+  const rec = readAlumniForm();
+  if(!rec.first || !rec.last){ toast('กรุณากรอกชื่อ-นามสกุล','error'); return; }
+  if(id){ // แก้ไข
+    const a = ALUMNI.find(x=>x.id===id); Object.assign(a, rec, { year: rec.year });
+    closeOverlay(); renderAlumniTable(); toast('บันทึกการแก้ไขเรียบร้อย','success'); return;
+  }
+  const dups = findDuplicates(rec, null);
+  if(dups.length){ openDupResolve(rec, dups); return; }
+  addAlumniRecord(rec);
+  closeOverlay(); renderAlumniTable(); toast('เพิ่มศิษย์เก่าใหม่เรียบร้อย','success');
+}
+function addAlumniRecord(rec){
+  const n = ALUMNI.length;
+  ALUMNI.push({ id:'A'+String(1000+1000+n), photo:1+((n*13)%70), first:rec.first, last:rec.last,
+    faculty:rec.faculty, major:'-', year:rec.year||'-', company:rec.company||'—', position:rec.position||'—',
+    status:rec.status||'alumni', life:rec.life||'alive', linked:false, phone:rec.phone, email:rec.email,
+    pending:false, joined: todayTH() });
+}
+function openDupResolve(rec, dups){
+  openModal(`<div class="ds-modal" style="max-width:520px">
+    <div class="ds-modal-header"><span class="ds-modal-title">พบข้อมูลที่อาจซ้ำ</span><button class="btn btn-ghost btn-icon" onclick="closeOverlay()">${icon('x',18)}</button></div>
+    <div class="ds-modal-body">
+      <div class="ds-alert ds-alert-warning"><span class="ds-alert-icon">${icon('bell',16)}</span><div>ข้อมูลที่กำลังเพิ่ม (<strong>${rec.first} ${rec.last}</strong>) อาจซ้ำกับรายการเดิม เลือกการดำเนินการเพื่อรักษาฐานข้อมูลให้สอดคล้อง</div></div>
+      ${dups.map(d=>`<div class="ds-card ds-card-sm mb-2"><div class="ds-card-content flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">${avatarOf(d.a,'md')}<div><div style="font-weight:500">${d.a.first} ${d.a.last} <span class="type-caption">(${d.a.id})</span></div><div class="type-caption">${d.a.faculty} · รุ่น ${d.a.year} · ${d.reasons.join(', ')}</div></div></div>
+        <button class="btn btn-outline btn-sm" onclick="mergeInto('${d.a.id}')">${icon('link',14)} รวมข้อมูล</button>
+      </div></div>`).join('')}
+    </div>
+    <div class="ds-modal-footer">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-default btn-md" onclick="createAnyway()">สร้างเป็นรายการใหม่อยู่ดี</button>
+    </div>
+  </div>`);
+  window._afPendingRec = rec;
+}
+function mergeInto(id){
+  const rec = window._afPendingRec; const a = ALUMNI.find(x=>x.id===id);
+  // เติมเฉพาะช่องที่กรอกมา (ไม่ทับด้วยค่าว่าง)
+  ['first','last','phone','email','faculty','year','company','position','status','life'].forEach(k=>{ if(rec[k]) a[k]=rec[k]; });
+  closeOverlay(); renderAlumniTable(); toast('รวมข้อมูลเข้ากับ '+a.id+' เรียบร้อย','success');
+}
+function createAnyway(){
+  addAlumniRecord(window._afPendingRec);
+  closeOverlay(); renderAlumniTable(); toast('สร้างรายการใหม่เรียบร้อย','success');
+}
+
+function openImport(){
+  openModal(`<div class="ds-modal" style="max-width:480px">
+    <div class="ds-modal-header"><span class="ds-modal-title">นำเข้าข้อมูลเดิม</span><button class="btn btn-ghost btn-icon" onclick="closeOverlay()">${icon('x',18)}</button></div>
+    <div class="ds-modal-body">
+      <p class="type-body-sm muted mb-3">นำเข้าข้อมูลศิษย์เก่าจากไฟล์ในรูปแบบที่กำหนด (.csv / .xlsx)</p>
+      <div style="border:2px dashed var(--border);border-radius:var(--radius-lg);padding:2rem;text-align:center" class="mb-3">
+        <div class="stat-icon" style="margin:0 auto 0.5rem">${icon('upload',20)}</div>
+        <div style="font-weight:500">ลากไฟล์มาวาง หรือ คลิกเพื่อเลือก</div>
+        <div class="type-caption">รองรับ .csv, .xlsx (สูงสุด 10MB)</div>
+      </div>
+      <a class="btn-link type-body-sm">${icon('download',14)} ดาวน์โหลดไฟล์ตัวอย่าง (Template)</a>
+      <div class="ds-control-row mt-3" style="display:flex;align-items:center;gap:.6rem"><span class="ds-switch on" id="imDedup" data-toggle></span><span class="type-body-sm">ตรวจและข้ามข้อมูลซ้ำอัตโนมัติ</span></div>
+    </div>
+    <div class="ds-modal-footer">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-default btn-md" onclick="runImport()">เริ่มนำเข้า</button>
+    </div>
+  </div>`);
+  bindToggles(document.getElementById('overlay'));
+}
+function runImport(){
+  const dedup = document.getElementById('imDedup')?.classList.contains('on');
+  const total = 35, dupes = dedup ? 3 : 0, added = total - dupes;
+  openModal(`<div class="ds-modal" style="max-width:460px">
+    <div class="ds-modal-header"><span class="ds-modal-title">ผลการนำเข้า</span><button class="btn btn-ghost btn-icon" onclick="closeOverlay()">${icon('x',18)}</button></div>
+    <div class="ds-modal-body">
+      <div class="ds-alert ds-alert-success"><span class="ds-alert-icon">${icon('check',16)}</span><div><strong>นำเข้าสำเร็จ ${added} รายการ</strong>จากไฟล์ทั้งหมด ${total} รายการ</div></div>
+      ${dedup?`<div class="ds-alert ds-alert-warning"><span class="ds-alert-icon">${icon('bell',16)}</span><div><strong>ข้ามข้อมูลซ้ำ ${dupes} รายการ</strong>ตรวจพบอีเมล/เบอร์โทร/ชื่อ-รุ่นที่มีอยู่แล้วในระบบ จึงไม่สร้างซ้ำเพื่อรักษาความสอดคล้อง</div></div>`:`<div class="ds-alert ds-alert-info"><span class="ds-alert-icon">${icon('bell',16)}</span><div>ไม่ได้เปิดตรวจซ้ำ — โปรดตรวจสอบข้อมูลซ้ำภายหลัง</div></div>`}
+      <div class="type-caption">* เดโม: จำลองผลการนำเข้า ไม่ได้เพิ่มข้อมูลจริงลงในตาราง</div>
+    </div>
+    <div class="ds-modal-footer"><button class="btn btn-default btn-md" onclick="closeOverlay()">เสร็จสิ้น</button></div>
+  </div>`);
+}
+function confirmDelete(id){
+  const a = ALUMNI.find(x=>x.id===id);
+  openModal(`<div class="ds-modal" style="max-width:420px">
+    <div class="ds-modal-body text-center" style="padding-top:2rem">
+      <div class="stat-icon" style="margin:0 auto 1rem;background:oklch(0.577 0.245 27 / 0.12);color:var(--destructive);width:48px;height:48px">${icon('trash',22)}</div>
+      <h3 class="type-h4 mb-2">ยืนยันการลบข้อมูล</h3>
+      <p class="type-body-sm muted">ต้องการลบข้อมูลของ <strong>${a.first} ${a.last}</strong> ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้</p>
+    </div>
+    <div class="ds-modal-footer" style="justify-content:center">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-destructive btn-md" onclick="closeOverlay();toast('ลบข้อมูลเรียบร้อย','error')">ลบข้อมูล</button>
+    </div>
+  </div>`);
+}
+function approve(id){
+  const a = ALUMNI.find(x=>x.id===id);
+  if(a){ a.pending=false; if(a.status==='alumni') a.status='member'; }
+  closeOverlay();
+  toast('อนุมัติสมาชิกสมาคมเรียบร้อย','success');
+  if(current==='alumni') renderAlumniTable();
+  if(current==='dashboard') VIEWS.dashboard();
+}
+
+/* ───────── BROADCAST ───────── */
+let bc = { faculty:'', status:'', year:'', life:'alive' };
+VIEWS.broadcast = function(){
+  document.getElementById('content').innerHTML = `
+    <div class="page-head"><h3>Broadcast Message</h3><p>สร้างและส่งข้อความประชาสัมพันธ์ไปยังกลุ่มศิษย์เก่า / ครู ผ่าน LINE Messaging API</p></div>
+    <div class="grid-2" style="grid-template-columns:1.4fr 1fr">
+      <div class="ds-card">
+        <div class="ds-card-header"><div class="ds-card-title">1 · เลือกกลุ่มเป้าหมาย</div><div class="ds-card-desc">กรองผู้รับตามเงื่อนไข</div></div>
+        <div class="ds-card-content">
+          <div class="grid-2" style="gap:0 1rem">
+            <div class="form-group"><label class="ds-label">คณะ</label><select class="ds-select" onchange="bc.faculty=this.value;updateRecipients()"><option value="">ทุกคณะ</option>${FACULTIES.map(f=>`<option>${f}</option>`).join('')}</select></div>
+            <div class="form-group"><label class="ds-label">ปีที่สำเร็จ (พ.ศ.)</label><select class="ds-select" onchange="bc.year=this.value;updateRecipients()"><option value="">ทุกรุ่น</option>${[...new Set(ALUMNI.map(a=>a.year))].sort().map(y=>`<option>${y}</option>`).join('')}</select></div>
+            <div class="form-group"><label class="ds-label">สถานะสมาชิก</label><select class="ds-select" onchange="bc.status=this.value;updateRecipients()"><option value="">ทุกสถานะ</option><option value="alumni">ศิษย์เก่าทั่วไป</option><option value="member">สมาชิกสมาคม</option><option value="teacher">ครู (สมาชิก)</option></select></div>
+            <div class="form-group"><label class="ds-label">สถานะการมีชีวิต</label><select class="ds-select" onchange="bc.life=this.value;updateRecipients()"><option value="alive">มีชีวิต</option><option value="">ทั้งหมด</option></select></div>
+          </div>
+          <div class="ds-alert ds-alert-info" id="recipientBox"></div>
+
+          <div class="ds-card-title mt-4 mb-2">2 · เขียนข้อความ</div>
+          <div class="form-group"><label class="ds-label">หัวข้อ</label><input class="ds-input" id="bcTitle" placeholder="เช่น เชิญร่วมงานคืนสู่เหย้า 2566"></div>
+          <div class="form-group"><label class="ds-label">เนื้อหาข้อความ</label><textarea class="ds-textarea" id="bcBody" rows="4" placeholder="พิมพ์ข้อความที่จะส่ง..." oninput="updatePreview()"></textarea></div>
+          <div class="form-group"><label class="ds-label">แนบลิงก์ (ถ้ามี)</label><input class="ds-input" id="bcLink" placeholder="https://..." oninput="updatePreview()"></div>
+          <div class="flex items-center justify-between" style="padding:.6rem .8rem;background:var(--muted);border-radius:var(--radius-lg);margin-bottom:.5rem">
+            <div><div style="font-weight:500;font-size:.875rem">บันทึกเป็นข่าวในระบบด้วย</div><div class="type-caption">แสดงบนเว็บไซต์ และฟีด "ข่าวสารที่ได้รับ" ใน LIFF</div></div>
+            <span class="ds-switch on" id="bcSaveNews" data-toggle></span>
+          </div>
+          <div class="flex gap-2 mt-2">
+            <button class="btn btn-default btn-lg" onclick="openSendConfirm()">${icon('send',16)} ส่งข้อความ</button>
+            <button class="btn btn-outline btn-lg" onclick="toast('บันทึกแบบร่างแล้ว')">บันทึกแบบร่าง</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="ds-card mb-4">
+          <div class="ds-card-header"><div class="ds-card-title">ตัวอย่างข้อความบน LINE</div></div>
+          <div class="ds-card-content">
+            <div style="background:#7da9d6;border-radius:var(--radius-xl);padding:1rem;min-height:160px">
+              <div style="background:#fff;border-radius:12px;padding:.75rem 1rem;box-shadow:var(--shadow-sm);max-width:90%">
+                <div id="pvTitle" style="font-weight:700;margin-bottom:.25rem">หัวข้อข้อความ</div>
+                <div id="pvBody" class="type-body-sm" style="white-space:pre-wrap;color:#333">เนื้อหาข้อความจะแสดงที่นี่...</div>
+                <div id="pvLink" class="hidden mt-2"><a class="btn-link type-body-sm">เปิดลิงก์ →</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-header"><div class="ds-card-title">สถิติการส่งล่าสุด</div></div>
+          <div class="ds-card-content">
+            ${[['เชิญงานคืนสู่เหย้า','1,204','78%'],['ทุนการศึกษา 2566','860','71%'],['ขอเชิญประชุมใหญ่','540','69%']].map(r=>`
+              <div class="flex justify-between items-center" style="padding:.5rem 0;border-bottom:1px solid var(--border)">
+                <div><div style="font-weight:500;font-size:.85rem">${r[0]}</div><div class="type-caption">ผู้รับ ${r[1]} คน</div></div>
+                <span class="badge badge-success">เปิด ${r[2]}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  updateRecipients(); updatePreview();
+  bindToggles(document.getElementById('content'));
+};
+function bcRecipients(){
+  return ALUMNI.filter(a=>{
+    if(!a.linked) return false;
+    if(bc.faculty && a.faculty!==bc.faculty) return false;
+    if(bc.status && a.status!==bc.status) return false;
+    if(bc.year && String(a.year)!==String(bc.year)) return false;
+    if(bc.life && a.life!==bc.life) return false;
+    return true;
+  }).length;
+}
+function updateRecipients(){
+  const n = bcRecipients();
+  const box = document.getElementById('recipientBox');
+  if(box) box.innerHTML = `<span class="ds-alert-icon">${icon('users',16)}</span><div><strong>กลุ่มเป้าหมาย ${n} คน</strong>ผู้รับที่เชื่อมบัญชี LINE และตรงตามเงื่อนไขที่เลือก</div>`;
+}
+function updatePreview(){
+  const t=document.getElementById('bcTitle'), b=document.getElementById('bcBody'), l=document.getElementById('bcLink');
+  document.getElementById('pvTitle').textContent = (t&&t.value)||'หัวข้อข้อความ';
+  document.getElementById('pvBody').textContent = (b&&b.value)||'เนื้อหาข้อความจะแสดงที่นี่...';
+  const pl=document.getElementById('pvLink'); if(l&&l.value){pl.classList.remove('hidden');} else {pl.classList.add('hidden');}
+}
+function openSendConfirm(){
+  const n=bcRecipients();
+  const saveNewsOn = document.getElementById('bcSaveNews')?.classList.contains('on');
+  openModal(`<div class="ds-modal" style="max-width:420px">
+    <div class="ds-modal-body text-center" style="padding-top:2rem">
+      <div class="stat-icon" style="margin:0 auto 1rem;width:48px;height:48px">${icon('send',22)}</div>
+      <h3 class="type-h4 mb-2">ยืนยันการส่งข้อความ</h3>
+      <p class="type-body-sm muted">ข้อความนี้จะถูกส่งไปยัง <strong>${n} คน</strong> ผ่าน LINE Messaging API</p>
+      ${saveNewsOn?`<div class="ds-alert ds-alert-info mt-3" style="text-align:left"><span class="ds-alert-icon">${icon('link',16)}</span><div>จะบันทึกเป็นข่าวและแสดงบนเว็บไซต์ + ฟีด LIFF ด้วย</div></div>`:''}
+    </div>
+    <div class="ds-modal-footer" style="justify-content:center">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-default btn-md" onclick="sendBroadcast(${n})">${icon('send',16)} ยืนยันส่ง</button>
+    </div>
+  </div>`);
+}
+function sendBroadcast(n){
+  const title = (document.getElementById('bcTitle')?.value||'').trim();
+  const bodyText = (document.getElementById('bcBody')?.value||'').trim();
+  const saveNewsOn = document.getElementById('bcSaveNews')?.classList.contains('on');
+  if(saveNewsOn && (title || bodyText)){
+    NEWS_ITEMS.unshift({
+      id: 'n'+Date.now(), cat: 'ข่าวสาร', img: 1000 + Math.floor((NEWS_ITEMS.length+3)*13%900),
+      date: todayTH(), dateShort: todayTH().split(' ').slice(0,2),
+      title: title || 'ประกาศจากสมาคม', summary: bodyText.slice(0,90) || title,
+      body: bodyText ? bodyText.split('\n').map(s=>s.trim()).filter(Boolean) : [title],
+      isEvent:false, broadcast:true, place:'—', time:'—', fee:'—',
+      organizer:'สมาคมศิษย์เก่า', agenda:null,
+    });
+    saveNews();
+  }
+  closeOverlay();
+  toast(saveNewsOn?`ส่งถึง ${n} คน & บันทึกเป็นข่าวแล้ว`:`ส่งข้อความถึง ${n} คนเรียบร้อย`,'success');
+}
+
+/* ───────── CMS — จัดการข่าว/กิจกรรม (Single Source สำหรับเว็บ + LIFF) ───────── */
+VIEWS.cms = function(){
+  document.getElementById('content').innerHTML = `
+    <div class="page-head flex justify-between items-center wrap gap-3">
+      <div><h3>จัดการข่าว / กิจกรรม (CMS)</h3><p>เพิ่ม แก้ไข ลบ เนื้อหาที่แสดงบนเว็บไซต์และฟีดใน LINE LIFF จากที่เดียว</p></div>
+      <button class="btn btn-default btn-md" onclick="openNewsForm()">${icon('plus',16)} เพิ่มข่าว/กิจกรรม</button>
+    </div>
+
+    <div class="ds-alert ds-alert-info mb-4"><span class="ds-alert-icon">${icon('link',16)}</span><div><strong>ข้อมูลชุดเดียว (Single Source of Truth)</strong>เนื้อหาที่จัดการที่นี่จะถูกบันทึกและแสดงตรงกันทั้งเว็บไซต์สาธารณะและฟีดข่าวใน LINE LIFF (รีเฟรชหน้าเหล่านั้นเพื่อเห็นผลล่าสุด)</div></div>
+
+    <div class="ds-card">
+      <div class="ds-card-content">
+        <div class="flex justify-between items-center mb-2"><span class="type-body-sm muted">ทั้งหมด ${NEWS_ITEMS.length} รายการ</span>
+          <button class="btn btn-ghost btn-sm" onclick="resetNews();renderNav();VIEWS.cms();toast('คืนค่าข้อมูลตัวอย่างเริ่มต้นแล้ว')">คืนค่าเริ่มต้น</button></div>
+        <div class="ds-table-wrap">
+          <table class="ds-table">
+            <thead><tr><th>หัวข้อ</th><th>หมวด</th><th>วันที่</th><th>ประเภท</th><th>Broadcast</th><th></th></tr></thead>
+            <tbody>
+              ${NEWS_ITEMS.length===0?`<tr><td colspan="6" class="text-center muted" style="padding:2rem">ยังไม่มีเนื้อหา</td></tr>`:
+              NEWS_ITEMS.map((n,i)=>`<tr>
+                <td style="max-width:320px"><div style="font-weight:500">${n.title}</div><div class="type-caption" style="white-space:normal">${n.summary}</div></td>
+                <td><span class="badge ${catBadge(n.cat)}">${n.cat}</span></td>
+                <td class="muted">${n.date}</td>
+                <td>${n.isEvent?'<span class="badge badge-warning">กิจกรรม</span>':'<span class="badge badge-ghost">ข่าว</span>'}</td>
+                <td>${n.broadcast?'<span class="badge badge-success">ส่งแล้ว</span>':'<span class="badge badge-ghost">—</span>'}</td>
+                <td><div class="flex gap-1">
+                  <button class="btn btn-ghost btn-icon" title="แก้ไข" onclick="openNewsForm('${n.id}')">${icon('edit',15)}</button>
+                  <button class="btn btn-ghost btn-icon" title="ลบ" onclick="deleteNewsItem('${n.id}')">${icon('trash',15)}</button>
+                </div></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+};
+
+function openNewsForm(id){
+  const n = id ? NEWS_ITEMS.find(x=>x.id===id) : null;
+  const defImg = n ? n.img : (1000 + Math.floor((NEWS_ITEMS.length+7)*13%900));
+  openModal(`<div class="ds-modal" style="max-width:940px">
+    <div class="ds-modal-header"><span class="ds-modal-title">${n?'แก้ไขข่าว/กิจกรรม':'เพิ่มข่าว/กิจกรรม'}</span><button class="btn btn-ghost btn-icon" onclick="closeOverlay()">${icon('x',18)}</button></div>
+    <div class="ds-modal-body">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.5rem;align-items:start">
+        <div>
+          <div class="form-group">
+            <label class="ds-label">รูปภาพปก</label>
+            <div class="flex gap-3 items-center wrap">
+              <div id="nfImgPreview" style="width:140px;height:90px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--muted) center/cover no-repeat;background-image:url('${IMG(defImg)}')"></div>
+              <div style="flex:1;min-width:160px">
+                <input type="file" accept="image/*" id="nfImgFile" style="display:none" onchange="onNewsImgFile(this)">
+                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('nfImgFile').click()">${icon('upload',14)} อัปโหลดรูป</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="setNewsImg(${typeof defImg==='number'?defImg:1010})" title="ใช้รูปสุ่ม">รูปตัวอย่าง</button>
+                <input class="ds-input ds-input-sm mt-2" id="nfImgUrl" placeholder="หรือวางลิงก์รูป https://..." oninput="if(this.value)setNewsImg(this.value)">
+                <div class="ds-helper mt-1">รองรับไฟล์ภาพ (.jpg .png) ขนาดเล็ก หรือวางลิงก์รูป</div>
+              </div>
+            </div>
+            <input type="hidden" id="nfImg" value="${typeof defImg==='string'?defImg.replace(/"/g,'&quot;'):defImg}">
+          </div>
+          <div class="form-group"><label class="ds-label">หัวข้อ <span class="req">*</span></label><input class="ds-input" id="nfTitle" value="${n?n.title.replace(/"/g,'&quot;'):''}" oninput="updateNewsPreview()"></div>
+          <div class="grid-2" style="gap:0 1rem">
+            <div class="form-group"><label class="ds-label">หมวด</label><select class="ds-select" id="nfCat" onchange="updateNewsPreview()">${['ข่าวสาร','กิจกรรม','โครงการ'].map(c=>`<option ${n&&n.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+            <div class="form-group"><label class="ds-label">วันที่</label><input class="ds-input" id="nfDate" value="${n?n.date:todayTH()}" oninput="updateNewsPreview()"></div>
+          </div>
+          <div class="form-group"><label class="ds-label">สรุปสั้น</label><input class="ds-input" id="nfSummary" value="${n?n.summary.replace(/"/g,'&quot;'):''}" oninput="updateNewsPreview()"></div>
+          <div class="form-group"><label class="ds-label">เนื้อหาเต็ม (เว้นบรรทัดเพื่อแยกย่อหน้า)</label><textarea class="ds-textarea" id="nfBody" rows="4" oninput="updateNewsPreview()">${n?n.body.join('\n'):''}</textarea></div>
+          <div class="flex items-center justify-between mb-3"><div><div style="font-weight:500;font-size:.875rem">ส่งถึงสมาชิกผ่าน LINE (Broadcast)</div><div class="type-caption">แสดงในฟีด "ข่าวสารที่ได้รับ" ของ LIFF</div></div><span class="ds-switch ${n&&n.broadcast?'on':''}" id="nfBroadcast" data-toggle></span></div>
+          <div class="ds-separator"></div>
+          <div class="flex items-center justify-between mb-2"><div><div style="font-weight:500;font-size:.875rem">เป็นกิจกรรม (มีวันเวลา/สถานที่)</div><div class="type-caption">เปิดเพื่อกรอกวันเวลา/สถานที่</div></div><span class="ds-switch ${n&&n.isEvent?'on':''}" id="nfEvent" data-toggle></span></div>
+          <div id="nfEventFields" class="${n&&n.isEvent?'':'hidden'}">
+            <div class="grid-2" style="gap:0 1rem">
+              <div class="form-group"><label class="ds-label">เวลา</label><input class="ds-input" id="nfTime" value="${n&&n.time&&n.time!=='—'?n.time:''}" placeholder="เช่น 17:00 – 21:00 น." oninput="updateNewsPreview()"></div>
+              <div class="form-group"><label class="ds-label">ค่าใช้จ่าย</label><input class="ds-input" id="nfFee" value="${n&&n.fee&&n.fee!=='—'?n.fee:''}" placeholder="เช่น ไม่มีค่าใช้จ่าย"></div>
+            </div>
+            <div class="form-group"><label class="ds-label">สถานที่</label><input class="ds-input" id="nfPlace" value="${n&&n.place&&n.place!=='—'?n.place:''}" oninput="updateNewsPreview()"></div>
+          </div>
+        </div>
+
+        <div style="position:sticky;top:0">
+          <div class="type-overline muted mb-2">ตัวอย่างการแสดงผล</div>
+          <div id="nfPreview"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ds-modal-footer">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-default btn-md" onclick="saveNewsItem('${id||''}')">${icon('check',16)} บันทึก</button>
+    </div>
+  </div>`);
+  const ev = document.getElementById('nfEvent');
+  ev.addEventListener('toggled', e=>{ document.getElementById('nfEventFields').classList.toggle('hidden', !e.detail.on); updateNewsPreview(); });
+  document.getElementById('nfBroadcast').addEventListener('toggled', updateNewsPreview);
+  bindToggles(document.getElementById('overlay'));
+  updateNewsPreview();
+}
+
+/* พรีวิวสด — แสดงการ์ดข่าวอย่างที่จะปรากฏบนเว็บ + จุดที่แสดงผล */
+function updateNewsPreview(){
+  const g = id => document.getElementById(id);
+  if(!g('nfPreview')) return;
+  const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const title = esc(g('nfTitle').value.trim()) || '<span class="muted">หัวข้อข่าว/กิจกรรม</span>';
+  const cat = g('nfCat').value;
+  const date = esc(g('nfDate').value.trim()) || todayTH();
+  const bodyFirst = g('nfBody').value.split('\n').map(s=>s.trim()).filter(Boolean)[0] || '';
+  const summary = esc(g('nfSummary').value.trim() || bodyFirst) || '<span class="muted">สรุปย่อของข่าว/กิจกรรมจะแสดงที่นี่</span>';
+  const img = g('nfImg').value;
+  const isEvent = g('nfEvent').classList.contains('on');
+  const broadcast = g('nfBroadcast').classList.contains('on');
+  const place = esc(g('nfPlace')?.value.trim()||''), time = esc(g('nfTime')?.value.trim()||'');
+  g('nfPreview').innerHTML = `
+    <div class="ds-card ds-card-sm" style="overflow:hidden">
+      <div style="height:140px;background:var(--muted) center/cover no-repeat;background-image:url('${IMG(img)}')"></div>
+      <div class="ds-card-content">
+        <div class="flex justify-between items-center mb-2"><span class="badge ${catBadge(cat)}">${cat}</span><span class="type-caption">${date}</span></div>
+        <div class="type-h5" style="line-height:1.35">${title}</div>
+        <p class="type-body-sm muted mt-1">${summary}</p>
+        ${isEvent&&(place||time)?`<div class="type-caption mt-2">${time?icon('clock',12)+' '+time+'  ':''}${place?icon('pin',12)+' '+place:''}</div>`:''}
+        <div class="mt-2"><span class="btn-link type-body-sm">อ่านต่อ →</span></div>
+      </div>
+    </div>
+    <div class="ds-card ds-card-sm mt-3"><div class="ds-card-content" style="padding:.85rem 1rem">
+      <div class="type-caption mb-2">จะแสดงผลที่</div>
+      <div class="flex items-center gap-2 mb-1" style="color:oklch(0.5 0.18 145)">${icon('check',15)}<span class="type-body-sm" style="color:var(--foreground)">เว็บไซต์สาธารณะ — หน้าข่าว/กิจกรรม</span></div>
+      <div class="flex items-center gap-2" style="${broadcast?'color:oklch(0.5 0.18 145)':'color:var(--muted-foreground)'}">${broadcast?icon('check',15):icon('x',15)}<span class="type-body-sm" style="${broadcast?'color:var(--foreground)':''}">ฟีด "ข่าวสารที่ได้รับ" ใน LINE LIFF${broadcast?'':' (เปิด Broadcast เพื่อแสดง)'}</span></div>
+      ${isEvent?`<div class="flex items-center gap-2 mt-1" style="color:oklch(0.5 0.18 145)">${icon('check',15)}<span class="type-body-sm" style="color:var(--foreground)">แท็บ "กิจกรรม" ใน LIFF</span></div>`:''}
+    </div></div>`;
+}
+
+function saveNewsItem(id){
+  const v = sel => document.getElementById(sel);
+  const title = v('nfTitle').value.trim();
+  if(!title){ toast('กรุณากรอกหัวข้อ','error'); return; }
+  const isEvent = v('nfEvent').classList.contains('on');
+  const broadcast = v('nfBroadcast').classList.contains('on');
+  const body = v('nfBody').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  let img = v('nfImg').value; if(/^\d+$/.test(img)) img = parseInt(img); // เก็บ seed เป็นตัวเลข, URL/dataURL เป็น string
+  const data = {
+    cat: v('nfCat').value, date: v('nfDate').value || todayTH(),
+    title, summary: v('nfSummary').value.trim() || (body[0]||'').slice(0,90),
+    body: body.length?body:[v('nfSummary').value.trim()||title],
+    img, isEvent, broadcast,
+    place: isEvent?(v('nfPlace').value||'—'):'—', time: isEvent?(v('nfTime').value||'—'):'—', fee: isEvent?(v('nfFee').value||'—'):'—',
+    organizer: 'สมาคมศิษย์เก่า',
+    dateShort: (v('nfDate').value||todayTH()).split(' ').slice(0,2),
+    agenda: null,
+  };
+  if(id){ const n = NEWS_ITEMS.find(x=>x.id===id); Object.assign(n, data); }
+  else { data.id = 'n' + (Date.now()); NEWS_ITEMS.unshift(data); }
+  if(!saveNews()){ toast('รูปอาจใหญ่เกินไปสำหรับพื้นที่จัดเก็บ ลองใช้ลิงก์รูปแทน','error'); }
+  closeOverlay();
+  VIEWS.cms();
+  toast(id?'บันทึกการแก้ไขแล้ว · อัปเดตเว็บ & LIFF':'เพิ่มเนื้อหาแล้ว · แสดงบนเว็บ & LIFF','success');
+}
+/* ── อัปโหลด/เลือกรูปข่าว ── */
+function onNewsImgFile(input){
+  const f = input.files && input.files[0]; if(!f) return;
+  if(f.size > 1.5*1024*1024){ toast('ไฟล์ใหญ่เกิน 1.5MB กรุณาเลือกรูปเล็กลง หรือใช้ลิงก์รูป','error'); return; }
+  const r = new FileReader();
+  r.onload = e => setNewsImg(e.target.result);
+  r.readAsDataURL(f);
+}
+function setNewsImg(val){
+  const hid = document.getElementById('nfImg'); if(hid) hid.value = val;
+  const pv = document.getElementById('nfImgPreview'); if(pv) pv.style.backgroundImage = `url('${IMG(val)}')`;
+  updateNewsPreview();
+}
+function deleteNewsItem(id){
+  const n = NEWS_ITEMS.find(x=>x.id===id);
+  openModal(`<div class="ds-modal" style="max-width:420px">
+    <div class="ds-modal-body text-center" style="padding-top:2rem">
+      <div class="stat-icon" style="margin:0 auto 1rem;background:oklch(0.577 0.245 27 / 0.12);color:var(--destructive);width:48px;height:48px">${icon('trash',22)}</div>
+      <h3 class="type-h4 mb-2">ลบเนื้อหานี้?</h3>
+      <p class="type-body-sm muted">“${n.title}” จะถูกนำออกจากเว็บไซต์และฟีด LIFF</p>
+    </div>
+    <div class="ds-modal-footer" style="justify-content:center">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-destructive btn-md" onclick="(function(){const i=NEWS_ITEMS.findIndex(x=>x.id==='${id}');if(i>-1)NEWS_ITEMS.splice(i,1);saveNews();closeOverlay();VIEWS.cms();toast('ลบเนื้อหาแล้ว','error');})()">ลบ</button>
+    </div>
+  </div>`);
+}
+
+/* ───────── เนื้อหาเว็บไซต์ (Hero / สารนายก / แกลเลอรี / วิดีโอ / สิทธิพิเศษ / ศิษย์เก่าดีเด่น) ───────── */
+VIEWS.sitecontent = function(){
+  document.getElementById('content').innerHTML = `
+    <div class="page-head flex justify-between items-center wrap gap-3">
+      <div><h3>จัดการเนื้อหาเว็บไซต์ (CMS)</h3><p>แบนเนอร์ สารนายกสมาคม แกลเลอรีภาพ วิดีโอ สิทธิพิเศษ และศิษย์เก่าดีเด่น — แสดงบนเว็บไซต์ทันที</p></div>
+      <button class="btn btn-ghost btn-sm" onclick="resetSite();VIEWS.sitecontent();toast('คืนค่าเนื้อหาเริ่มต้นแล้ว')">คืนค่าเริ่มต้น</button>
+    </div>
+    <div class="ds-alert ds-alert-info mb-4"><span class="ds-alert-icon">${icon('link',16)}</span><div><strong>Single Source of Truth</strong>แก้ที่นี่แล้วเว็บไซต์สาธารณะอัปเดตตาม (รีเฟรชหน้าเว็บเพื่อเห็นผล)</div></div>
+
+    <div class="grid-2">
+      <div class="ds-card">
+        <div class="ds-card-header"><div class="ds-card-title">แบนเนอร์หน้าแรก (Hero)</div></div>
+        <div class="ds-card-content">
+          <div class="form-group"><label class="ds-label">หัวข้อ (เว้นบรรทัด = ขึ้นบรรทัดใหม่)</label><textarea class="ds-textarea" id="scHeroTitle" rows="2">${SITE.hero.title}</textarea></div>
+          <div class="form-group"><label class="ds-label">คำโปรย</label><textarea class="ds-textarea" id="scHeroSub" rows="2">${SITE.hero.subtitle}</textarea></div>
+          <div class="form-group"><label class="ds-label">รูปแบนเนอร์ (ลิงก์ หรือเลข seed)</label><input class="ds-input" id="scHeroImg" value="${SITE.hero.image}"></div>
+          <button class="btn btn-default btn-md" onclick="saveHero()">${icon('check',16)} บันทึก Hero</button>
+        </div>
+      </div>
+
+      <div class="ds-card">
+        <div class="ds-card-header"><div class="ds-card-title">สารจากนายกสมาคม</div></div>
+        <div class="ds-card-content">
+          <div class="grid-2" style="gap:0 1rem">
+            <div class="form-group"><label class="ds-label">ชื่อ</label><input class="ds-input" id="scPresName" value="${SITE.president.name}"></div>
+            <div class="form-group"><label class="ds-label">ตำแหน่ง</label><input class="ds-input" id="scPresRole" value="${SITE.president.role}"></div>
+          </div>
+          <div class="form-group"><label class="ds-label">รูป (เลข 1–70 หรือลิงก์)</label><input class="ds-input" id="scPresPhoto" value="${SITE.president.photo}"></div>
+          <div class="form-group"><label class="ds-label">ข้อความ</label><textarea class="ds-textarea" id="scPresMsg" rows="4">${SITE.president.message}</textarea></div>
+          <button class="btn btn-default btn-md" onclick="savePresident()">${icon('check',16)} บันทึกสาร</button>
+        </div>
+      </div>
+    </div>
+
+    ${siteListCard('แกลเลอรีภาพ', 'gallery', SITE.gallery, g=>`
+      <div style="width:90px;height:64px;border-radius:var(--radius-md);background:center/cover url('${IMG(g.img)}');position:relative;flex-shrink:0">
+        <button class="btn btn-icon btn-xs" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:#fff" onclick="removeSiteItem('gallery','${g.id}')">${icon('x',12)}</button>
+      </div><div class="type-caption">${g.caption}</div>`,
+      `<input class="ds-input ds-input-sm" id="glImg" placeholder="ลิงก์รูป/seed" style="max-width:160px"><input class="ds-input ds-input-sm" id="glCap" placeholder="คำบรรยาย"><button class="btn btn-outline btn-sm" onclick="addGallery()">${icon('plus',14)} เพิ่มรูป</button>`)}
+
+    ${siteListCard('วิดีโอกิจกรรม', 'videos', SITE.videos, v=>`
+      <div style="width:90px;height:56px;border-radius:var(--radius-md);background:center/cover url('${IMG(v.thumb)}');flex-shrink:0"></div>
+      <div style="flex:1"><div style="font-weight:500;font-size:.85rem">${v.title}</div><div class="type-caption">${v.duration}</div></div>
+      <button class="btn btn-ghost btn-icon" onclick="removeSiteItem('videos','${v.id}')">${icon('trash',15)}</button>`,
+      `<input class="ds-input ds-input-sm" id="vdTitle" placeholder="ชื่อวิดีโอ"><input class="ds-input ds-input-sm" id="vdThumb" placeholder="ลิงก์ปก/seed" style="max-width:140px"><input class="ds-input ds-input-sm" id="vdDur" placeholder="ความยาว" style="max-width:90px"><button class="btn btn-outline btn-sm" onclick="addVideo()">${icon('plus',14)} เพิ่ม</button>`)}
+
+    ${siteListCard('สิทธิพิเศษสมาชิก', 'benefits', SITE.benefits, b=>`
+      <span class="stat-icon">${icon(b.icon,18)}</span>
+      <div style="flex:1"><div style="font-weight:500;font-size:.85rem">${b.title}</div><div class="type-caption">${b.desc}</div></div>
+      <button class="btn btn-ghost btn-icon" onclick="removeSiteItem('benefits','${b.id}')">${icon('trash',15)}</button>`,
+      `<input class="ds-input ds-input-sm" id="bfTitle" placeholder="หัวข้อ"><input class="ds-input ds-input-sm" id="bfDesc" placeholder="รายละเอียด"><button class="btn btn-outline btn-sm" onclick="addBenefit()">${icon('plus',14)} เพิ่ม</button>`)}
+
+    ${siteListCard('ศิษย์เก่าดีเด่น', 'outstanding', SITE.outstanding, o=>`
+      <span class="avatar avatar-lg"><img src="${face(o.photo)}" alt=""></span>
+      <div style="flex:1"><div style="font-weight:500;font-size:.85rem">${o.name} <span class="badge badge-warning">${o.field}</span></div><div class="type-caption">${o.desc}</div></div>
+      <button class="btn btn-ghost btn-icon" onclick="removeSiteItem('outstanding','${o.id}')">${icon('trash',15)}</button>`,
+      `<input class="ds-input ds-input-sm" id="osName" placeholder="ชื่อ"><input class="ds-input ds-input-sm" id="osField" placeholder="ด้าน" style="max-width:130px"><input class="ds-input ds-input-sm" id="osPhoto" placeholder="รูป 1–70" style="max-width:90px"><input class="ds-input ds-input-sm" id="osDesc" placeholder="ผลงาน"><button class="btn btn-outline btn-sm" onclick="addOutstanding()">${icon('plus',14)} เพิ่ม</button>`)}
+  `;
+};
+function siteListCard(title, key, items, rowFn, addControls){
+  return `<div class="ds-card mt-4"><div class="ds-card-header flex justify-between items-center"><div class="ds-card-title">${title} <span class="type-caption">(${items.length})</span></div></div>
+    <div class="ds-card-content">
+      <div style="display:flex;flex-direction:column;gap:.5rem">
+        ${items.map(it=>`<div class="flex items-center gap-3" style="padding:.4rem;border:1px solid var(--border);border-radius:var(--radius-md)">${rowFn(it)}</div>`).join('') || '<div class="type-caption muted">ยังไม่มีรายการ</div>'}
+      </div>
+      <div class="ds-separator"></div>
+      <div class="flex gap-2 wrap items-center">${addControls}</div>
+    </div></div>`;
+}
+function saveHero(){ SITE.hero={ title:document.getElementById('scHeroTitle').value, subtitle:document.getElementById('scHeroSub').value, image:imgVal(document.getElementById('scHeroImg').value) }; saveSite(); toast('บันทึกแบนเนอร์แล้ว · อัปเดตเว็บ','success'); }
+function savePresident(){ SITE.president={ name:document.getElementById('scPresName').value, role:document.getElementById('scPresRole').value, photo:imgVal(document.getElementById('scPresPhoto').value), message:document.getElementById('scPresMsg').value }; saveSite(); toast('บันทึกสารนายกสมาคมแล้ว','success'); }
+function imgVal(v){ return /^\d+$/.test(v)?parseInt(v):v; }
+function removeSiteItem(key,id){ SITE[key]=SITE[key].filter(x=>x.id!==id); saveSite(); VIEWS.sitecontent(); toast('ลบรายการแล้ว','error'); }
+function addGallery(){ const img=document.getElementById('glImg').value.trim()||(210+SITE.gallery.length); SITE.gallery.push({id:'g'+Date.now(),img:imgVal(String(img)),caption:document.getElementById('glCap').value.trim()||'ภาพกิจกรรม'}); saveSite(); VIEWS.sitecontent(); toast('เพิ่มรูปแล้ว','success'); }
+function addVideo(){ const t=document.getElementById('vdTitle').value.trim(); if(!t){toast('กรอกชื่อวิดีโอ','error');return;} SITE.videos.push({id:'v'+Date.now(),title:t,thumb:imgVal(document.getElementById('vdThumb').value.trim()||String(200+SITE.videos.length)),duration:document.getElementById('vdDur').value.trim()||'0:00',url:'#'}); saveSite(); VIEWS.sitecontent(); toast('เพิ่มวิดีโอแล้ว','success'); }
+function addBenefit(){ const t=document.getElementById('bfTitle').value.trim(); if(!t){toast('กรอกหัวข้อ','error');return;} SITE.benefits.push({id:'b'+Date.now(),icon:'star',title:t,desc:document.getElementById('bfDesc').value.trim()||''}); saveSite(); VIEWS.sitecontent(); toast('เพิ่มสิทธิพิเศษแล้ว','success'); }
+function addOutstanding(){ const n=document.getElementById('osName').value.trim(); if(!n){toast('กรอกชื่อ','error');return;} SITE.outstanding.push({id:'o'+Date.now(),name:n,field:document.getElementById('osField').value.trim()||'ศิษย์เก่าดีเด่น',photo:imgVal(document.getElementById('osPhoto').value.trim()||'20'),desc:document.getElementById('osDesc').value.trim()||''}); saveSite(); VIEWS.sitecontent(); toast('เพิ่มศิษย์เก่าดีเด่นแล้ว','success'); }
+
+/* ───────── SETTINGS ───────── */
+VIEWS.settings = function(){
+  document.getElementById('content').innerHTML = `
+    <div class="page-head"><h3>ตั้งค่าระบบ</h3><p>ข้อมูลพื้นฐาน การเชื่อมต่อ LINE API และความปลอดภัย</p></div>
+    <div class="grid-2">
+      <div class="ds-card">
+        <div class="ds-card-header"><div class="ds-card-title">ข้อมูลพื้นฐาน</div><div class="ds-card-desc">ชื่อ โลโก้ และข้อมูลติดต่อสมาคม</div></div>
+        <div class="ds-card-content">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="avatar avatar-2xl" style="border-radius:var(--radius-lg)"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
+            <button class="btn btn-outline btn-sm">${icon('upload',14)} เปลี่ยนโลโก้</button>
+          </div>
+          <div class="form-group"><label class="ds-label">ชื่อสมาคม / มหาวิทยาลัย</label><input class="ds-input" value="สมาคมศิษย์เก่ามหาวิทยาลัยตัวอย่าง"></div>
+          <div class="form-group"><label class="ds-label">อีเมลติดต่อ</label><input class="ds-input" value="contact@alumni.ac.th"></div>
+          <div class="form-group"><label class="ds-label">เบอร์โทรติดต่อ</label><input class="ds-input" value="02-123-4567"></div>
+          <button class="btn btn-default btn-md" onclick="toast('บันทึกข้อมูลพื้นฐานแล้ว','success')">บันทึก</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="ds-card mb-4">
+          <div class="ds-card-header"><div class="ds-card-title">เชื่อมต่อ LINE API</div><div class="ds-card-desc">จัดการ LINE Official Account & Messaging API</div></div>
+          <div class="ds-card-content">
+            <div class="ds-alert ds-alert-success"><span class="ds-alert-icon">${icon('check',16)}</span><div><strong>เชื่อมต่อสำเร็จ</strong>LINE OA: @alumni-demo</div></div>
+            <div class="form-group"><label class="ds-label">Channel Access Token</label><input class="ds-input" type="password" value="x9aP2k7Lm0qWvB3nZ8sT5dF1cJ6hR4eY"></div>
+            <div class="form-group"><label class="ds-label">Channel Secret</label><input class="ds-input" type="password" value="3f8b1c9d2e7a4506"></div>
+            <div class="form-group"><label class="ds-label">LIFF ID</label><input class="ds-input" value="2001234567-abcDEF12"></div>
+            <button class="btn btn-default btn-md" onclick="toast('บันทึกการตั้งค่า LINE API แล้ว','success')">บันทึก & ทดสอบการเชื่อมต่อ</button>
+          </div>
+        </div>
+
+        <div class="ds-card">
+          <div class="ds-card-header"><div class="ds-card-title">ความปลอดภัย</div></div>
+          <div class="ds-card-content">
+            <div class="form-group"><label class="ds-label">รหัสผ่านปัจจุบัน</label><input class="ds-input" type="password" value="********"></div>
+            <div class="form-group"><label class="ds-label">รหัสผ่านใหม่</label><input class="ds-input" type="password" placeholder="อย่างน้อย 8 ตัวอักษร"></div>
+            <div class="flex items-center justify-between mb-3"><div><div style="font-weight:500;font-size:.875rem">ยืนยันตัวตน 2 ขั้นตอน (2FA)</div><div class="type-caption">เพิ่มความปลอดภัยในการเข้าสู่ระบบ</div></div><span class="ds-switch on" data-toggle></span></div>
+            <button class="btn btn-default btn-md" onclick="toast('เปลี่ยนรหัสผ่านเรียบร้อย','success')">เปลี่ยนรหัสผ่าน</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  bindToggles(document.getElementById('content'));
+};
+
+/* ───────── init icons in chrome ───────── */
+document.getElementById('logoutBtn').innerHTML = icon('logout',18);
+document.getElementById('bellBtn').innerHTML = icon('bell',18);
+document.getElementById('menuBtn').innerHTML = icon('menu',18);
+function syncMobile(){ document.getElementById('menuBtn').style.display = window.innerWidth<=900?'inline-flex':'none'; }
+window.addEventListener('resize', syncMobile); syncMobile();
+renderNav();
+</script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>สมาคมศิษย์เก่า · Alumni Data Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260612a" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260612a" />
+</head>
+<body>
+
+<header class="web-nav">
+  <div class="brand"><span class="logo" data-ico="graduation"></span><span>สมาคมศิษย์เก่า</span></div>
+  <nav class="web-menu" id="webMenu">
+    <a onclick="nav('home')" class="active" data-p="home">หน้าแรก</a>
+    <a onclick="nav('about')" data-p="about">เกี่ยวกับเรา</a>
+    <a onclick="nav('news')" data-p="news">ข่าวและกิจกรรม</a>
+    <a onclick="nav('members')" data-p="members">สมาชิกศิษย์เก่า</a>
+    <a onclick="nav('contact')" data-p="contact">ติดต่อเรา</a>
+  </nav>
+  <div class="flex gap-2 items-center">
+    <a href="../liff/index.html" class="btn btn-line btn-md">สมัครสมาชิก</a>
+  </div>
+</header>
+
+<main id="webMain"></main>
+
+<footer class="web-footer">
+  <div class="web-wrap" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem">
+    <div>
+      <div style="color:#fff;font-weight:700;font-size:1.05rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem"><span data-ico="graduation"></span> สมาคมศิษย์เก่า</div>
+      <p>ศูนย์กลางของชุมชนศิษย์เก่า / ครู — สร้างความผูกพันตลอดชีวิตและเครือข่ายทางวิชาชีพ</p>
+    </div>
+    <div>
+      <div style="color:#fff;font-weight:600;margin-bottom:.5rem">เมนู</div>
+      <div style="display:flex;flex-direction:column;gap:.35rem">
+        <a onclick="nav('about')">เกี่ยวกับเรา</a><a onclick="nav('news')">ข่าวและกิจกรรม</a><a onclick="nav('members')">สมาชิกศิษย์เก่า</a><a onclick="nav('contact')">ติดต่อเรา</a>
+      </div>
+    </div>
+    <div>
+      <div style="color:#fff;font-weight:600;margin-bottom:.5rem">ติดต่อ</div>
+      <p>02-123-4567<br>contact@alumni.ac.th<br>LINE: @alumni-demo</p>
+    </div>
+    <div>
+      <div style="color:#fff;font-weight:600;margin-bottom:.5rem">ติดตามเรา</div>
+      <div class="flex gap-2">
+        <a class="btn btn-icon" data-ico="facebook" style="background:oklch(0.3 0 0);color:#fff" title="Facebook"></a>
+        <a class="btn btn-icon" data-ico="linkedin" style="background:oklch(0.3 0 0);color:#fff" title="LinkedIn"></a>
+        <a class="btn btn-icon" data-ico="instagram" style="background:oklch(0.3 0 0);color:#fff" title="Instagram"></a>
+      </div>
+    </div>
+  </div>
+  <div class="web-wrap" style="border-top:1px solid oklch(0.3 0 0);margin-top:1.5rem;padding-top:1rem;font-size:.78rem">© 2566 สมาคมศิษย์เก่ามหาวิทยาลัยตัวอย่าง · <a href="../index.html">กลับหน้าหลักแพลตฟอร์ม</a></div>
+</footer>
+
+<div class="ds-overlay" id="webOverlay" onclick="if(event.target===this)closeWeb()"></div>
+
+<script src="../assets/app.js?v=20260612a"></script>
+<script>
+// ข่าว/กิจกรรม ใช้ชุดข้อมูลกลาง NEWS_ITEMS จาก app.js (ใช้ร่วมกับ LINE LIFF)
+const BOARD = [
+  {n:'ดร. ประสิทธิ์ มั่นคง', r:'นายกสมาคม', photo:13},
+  {n:'คุณวิไลพร เจริญสุข', r:'อุปนายก', photo:45},
+  {n:'คุณสมศักดิ์ ทองคำ', r:'เลขาธิการ', photo:33},
+  {n:'คุณนภัสสร แสงเดือน', r:'เหรัญญิก', photo:48},
+];
+
+const PAGES = {};
+PAGES.home = () => `
+  <section class="web-hero">
+    <div class="web-wrap" style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;align-items:center">
+      <div>
+        <span class="badge" style="background:rgba(255,255,255,.2);color:#fff;border:none">Alumni Community Hub</span>
+        <h1 class="type-display" style="font-size:2.6rem;margin-top:.75rem">${(SITE.hero.title||'').replace(/\n/g,'<br>')}</h1>
+        <p class="type-body-lg" style="opacity:.92;margin-top:.75rem;max-width:480px">${SITE.hero.subtitle||''}</p>
+        <div class="flex gap-2 mt-4 wrap">
+          <a href="../liff/index.html" class="btn btn-lg" style="background:#fff;color:var(--primary)">สมัครสมาชิกผ่าน LINE</a>
+          <a onclick="nav('about')" class="btn btn-lg btn-outline" style="color:#fff;border-color:rgba(255,255,255,.5)">รู้จักเรา</a>
+        </div>
+      </div>
+      <div class="web-card-img" style="border-radius:var(--radius-2xl);height:260px;background-image:url('${IMG(SITE.hero.image)}')"></div>
+    </div>
+  </section>
+
+  <section class="web-section">
+    <div class="web-wrap">
+      <div class="ds-card" style="overflow:hidden">
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:center;padding:1.5rem 1.75rem">
+          <div class="text-center">
+            <span class="avatar avatar-2xl" style="width:110px;height:110px;margin:0 auto"><img src="${face(SITE.president.photo)}" alt="${SITE.president.name}"></span>
+          </div>
+          <div>
+            <div class="type-overline muted mb-2">สารจากนายกสมาคม</div>
+            <p class="type-body-lg" style="font-style:italic;color:var(--foreground)">“${SITE.president.message}”</p>
+            <div class="mt-3"><strong>${SITE.president.name}</strong><div class="type-caption">${SITE.president.role}</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="web-section">
+    <div class="web-wrap">
+      <div class="grid-stats">
+        ${[['12,480','ศิษย์เก่าในระบบ'],['8,200+','เชื่อมบัญชี LINE'],['320','กิจกรรมต่อปี'],['45','รุ่นการศึกษา']].map(s=>{const num=parseInt(s[0].replace(/[^0-9]/g,''))||0;const suf=s[0].replace(/[0-9,]/g,'');return `<div class="stat-card text-center"><div class="stat-value" style="color:var(--primary)" data-count="${num}" data-suffix="${suf}">0</div><div class="stat-label">${s[1]}</div></div>`}).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="web-section" style="padding-top:0">
+    <div class="web-wrap">
+      <div class="flex justify-between items-center mb-4 wrap gap-2">
+        <div><div class="section-title">ข่าวและกิจกรรมล่าสุด</div><div class="section-sub" style="margin:0">อัปเดตความเคลื่อนไหวของสมาคม</div></div>
+        <button class="btn btn-outline btn-md" onclick="nav('news')">ดูทั้งหมด</button>
+      </div>
+      <div class="card-grid">
+        ${NEWS_ITEMS.slice(0,3).map(n=>newsCard(n)).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="web-section" style="background:var(--muted)">
+    <div class="web-wrap text-center">
+      <div class="section-title">พร้อมเป็นส่วนหนึ่งของเราหรือยัง?</div>
+      <p class="section-sub" style="max-width:520px;margin-inline:auto">สมัครสมาชิกและอัปเดตข้อมูลของคุณผ่าน LINE ได้ง่าย ๆ ภายในไม่กี่นาที</p>
+      <a href="../liff/index.html" class="btn btn-line btn-lg">เริ่มต้นใช้งานผ่าน LINE</a>
+    </div>
+  </section>`;
+
+PAGES.about = () => `
+  <section class="web-section">
+    <div class="web-wrap">
+      <div class="section-title">เกี่ยวกับเรา</div>
+      <p class="section-sub">ประวัติความเป็นมา วิสัยทัศน์ และคณะกรรมการบริหาร</p>
+
+      <div class="grid-2 mb-4">
+        <div class="web-card-img" style="border-radius:var(--radius-2xl);height:280px;background-image:url('${IMG(50)}')"></div>
+        <div>
+          <div class="type-overline muted mb-2">ประวัติความเป็นมา</div>
+          <p class="type-body">สมาคมศิษย์เก่าก่อตั้งขึ้นเพื่อเป็นศูนย์กลางในการเชื่อมโยงศิษย์เก่าทุกรุ่นเข้าด้วยกัน ส่งเสริมความสัมพันธ์อันดี และสนับสนุนการพัฒนาสถาบันการศึกษาอย่างต่อเนื่อง</p>
+          <p class="type-body mt-2">ตลอดระยะเวลาที่ผ่านมา สมาคมฯ ได้จัดกิจกรรมเพื่อสร้างเครือข่าย มอบทุนการศึกษา และเป็นสะพานเชื่อมระหว่างรุ่นพี่และรุ่นน้องในทุกสาขาวิชาชีพ</p>
+        </div>
+      </div>
+
+      <div class="grid-stats mb-4">
+        ${[['target','วิสัยทัศน์','ยกระดับจากฐานข้อมูลสู่ศูนย์กลางชุมชนศิษย์เก่าที่มีชีวิตชีวา'],['heart','พันธกิจ','สร้างความผูกพันตลอดชีวิตและส่งเสริมเครือข่ายทางวิชาชีพ'],['star','ค่านิยม','เกื้อหนุนกัน โปร่งใส และพัฒนาอย่างยั่งยืน']].map(v=>`<div class="ds-card"><div class="ds-card-content"><span class="stat-icon">${icon(v[0],20)}</span><div class="type-h5 mt-2">${v[1]}</div><p class="type-body-sm muted mt-1">${v[2]}</p></div></div>`).join('')}
+      </div>
+
+      <div class="type-overline muted mb-3 mt-4">คณะกรรมการบริหาร</div>
+      <div class="card-grid">
+        ${BOARD.map((b,i)=>`<div class="ds-card text-center"><div class="ds-card-content"><span class="avatar avatar-2xl" style="margin:0 auto"><img src="${face(b.photo)}" alt="${b.n}"></span><div class="type-h5 mt-2">${b.n}</div><div class="badge badge-secondary mt-1">${b.r}</div></div></div>`).join('')}
+      </div>
+    </div>
+  </section>`;
+
+PAGES.news = () => `
+  <section class="web-section">
+    <div class="web-wrap">
+      <div class="section-title">ข่าวและกิจกรรม</div>
+      <p class="section-sub">ข่าวประชาสัมพันธ์ กิจกรรมย้อนหลัง และเรื่องราวศิษย์เก่าดีเด่น</p>
+      <div class="ds-tab-list mb-4">
+        <button class="ds-tab active" onclick="filterNews(this,'ทั้งหมด')">ทั้งหมด</button><button class="ds-tab" onclick="filterNews(this,'ข่าวสาร')">ข่าวสาร</button><button class="ds-tab" onclick="filterNews(this,'กิจกรรม')">กิจกรรม</button><button class="ds-tab" onclick="filterNews(this,'โครงการ')">โครงการ</button>
+      </div>
+      <div class="card-grid" id="newsGrid">${NEWS_ITEMS.map(n=>newsCard(n)).join('')}</div>
+    </div>
+  </section>
+
+  <section class="web-section" style="background:var(--muted);padding-top:2.5rem">
+    <div class="web-wrap">
+      <div class="section-title">วิดีโอกิจกรรม</div>
+      <p class="section-sub">รับชมบรรยากาศกิจกรรมและเรื่องราวของสมาคม</p>
+      <div class="card-grid">
+        ${SITE.videos.map(v=>`<div class="ds-card" style="cursor:pointer" onclick="toast('เล่นวิดีโอ (เดโม)')">
+          <div class="web-card-img" style="position:relative;background-image:url('${IMG(v.thumb)}')">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:oklch(0 0 0 / 0.25)">
+              <span style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;color:var(--primary)"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+            </div>
+            <span class="badge" style="position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.7);color:#fff;border:none">${v.duration}</span>
+          </div>
+          <div class="ds-card-content"><div class="type-h5">${v.title}</div></div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="web-section">
+    <div class="web-wrap">
+      <div class="section-title">ภาพกิจกรรม</div>
+      <p class="section-sub">แกลเลอรีภาพบรรยากาศกิจกรรมที่ผ่านมา</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.85rem">
+        ${SITE.gallery.map(g=>`<div style="position:relative;border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;aspect-ratio:4/3;background:center/cover url('${IMG(g.img)}')" onclick="openLightbox('${IMG(g.img)}','${g.caption}')">
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:.5rem .6rem;background:linear-gradient(transparent,oklch(0 0 0 / 0.6));color:#fff;font-size:.72rem">${g.caption}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="web-section" style="background:var(--muted)">
+    <div class="web-wrap">
+      <div class="section-title">เรื่องราวศิษย์เก่าดีเด่น</div>
+      <p class="section-sub">ศิษย์เก่าผู้สร้างชื่อเสียงและคุณประโยชน์ต่อสังคม</p>
+      <div class="card-grid">
+        ${SITE.outstanding.map(o=>`<div class="ds-card"><div class="ds-card-content">
+          <div class="flex items-center gap-3 mb-2"><span class="avatar avatar-xl"><img src="${face(o.photo)}" alt="${o.name}"></span>
+          <div><div style="font-weight:600">${o.name}</div><span class="badge badge-warning mt-1">${o.field}</span></div></div>
+          <p class="type-body-sm muted">${o.desc}</p>
+        </div></div>`).join('')}
+      </div>
+    </div>
+  </section>`;
+
+PAGES.members = () => `
+  <section class="web-section">
+    <div class="web-wrap">
+      <div class="section-title">สมาชิกศิษย์เก่า</div>
+      <p class="section-sub">ค้นหารายชื่อศิษย์เก่าตามรุ่น / สาขา และสมัครเป็นสมาชิก</p>
+
+      <div class="ds-card mb-4" style="background:linear-gradient(135deg,var(--accent),var(--card))">
+        <div class="ds-card-content flex justify-between items-center wrap gap-3">
+          <div><div class="type-h5">ยังไม่ได้เป็นสมาชิก?</div><p class="type-body-sm muted">สมัครและเชื่อมบัญชี LINE เพื่อรับสิทธิพิเศษและข่าวสาร</p></div>
+          <a href="../liff/index.html" class="btn btn-line btn-lg">สมัครสมาชิก</a>
+        </div>
+      </div>
+
+      <div class="filter-bar mb-4">
+        <div class="search-box">${icon('search',16)}<input class="ds-input" id="mq" placeholder="ค้นหาชื่อศิษย์เก่า..." oninput="renderMembers()"></div>
+        <select class="ds-select" id="mFac" style="width:auto" onchange="renderMembers()"><option value="">ทุกคณะ</option>${FACULTIES.map(f=>`<option>${f}</option>`).join('')}</select>
+        <select class="ds-select" id="mYear" style="width:auto" onchange="renderMembers()"><option value="">ทุกรุ่น</option>${[...new Set(ALUMNI.map(a=>a.year))].sort().map(y=>`<option>${y}</option>`).join('')}</select>
+      </div>
+
+      <div id="membersGrid"></div>
+      <p class="type-caption text-center mt-4">* แสดงเฉพาะสมาชิกที่ยินยอมเปิดเผยข้อมูลต่อสาธารณะ</p>
+    </div>
+  </section>
+
+  <section class="web-section" style="background:var(--muted)">
+    <div class="web-wrap">
+      <div class="section-title">สิทธิพิเศษสมาชิก</div>
+      <p class="section-sub">สิทธิประโยชน์ที่สมาชิกสมาคมจะได้รับ</p>
+      <div class="card-grid">
+        ${SITE.benefits.map(b=>`<div class="ds-card"><div class="ds-card-content">
+          <span class="stat-icon">${icon(b.icon,20)}</span>
+          <div class="type-h5 mt-2">${b.title}</div>
+          <p class="type-body-sm muted mt-1">${b.desc}</p>
+        </div></div>`).join('')}
+      </div>
+    </div>
+  </section>`;
+
+PAGES.contact = () => `
+  <section class="web-section">
+    <div class="web-wrap">
+      <div class="section-title">ติดต่อเรา</div>
+      <p class="section-sub">ที่อยู่ แผนที่ และแบบฟอร์มติดต่อสอบถาม</p>
+      <div class="grid-2">
+        <div class="ds-card">
+          <div class="ds-card-header"><div class="ds-card-title">ส่งข้อความถึงเรา</div><div class="ds-card-desc">เราจะตอบกลับโดยเร็วที่สุด</div></div>
+          <div class="ds-card-content">
+            <div class="grid-2" style="gap:0 1rem"><div class="form-group"><label class="ds-label">ชื่อ</label><input class="ds-input"></div><div class="form-group"><label class="ds-label">อีเมล</label><input class="ds-input"></div></div>
+            <div class="form-group"><label class="ds-label">หัวข้อ</label><input class="ds-input"></div>
+            <div class="form-group"><label class="ds-label">ข้อความ</label><textarea class="ds-textarea" rows="4"></textarea></div>
+            <button class="btn btn-default btn-lg" onclick="toast('ส่งข้อความเรียบร้อย ขอบคุณค่ะ','success')">ส่งข้อความ</button>
+          </div>
+        </div>
+        <div>
+          <div class="ds-card mb-4">
+            <div class="ds-card-content">
+              ${[['pin','ที่อยู่','123 ถนนตัวอย่าง แขวงตัวอย่าง เขตเมือง กรุงเทพฯ 10100'],['phone','โทรศัพท์','02-123-4567'],['mail','อีเมล','contact@alumni.ac.th'],['clock','เวลาทำการ','จันทร์–ศุกร์ 09:00–17:00 น.']].map(c=>`
+                <div class="flex gap-3 items-center" style="padding:.6rem 0;border-bottom:1px solid var(--border)"><span class="stat-icon">${icon(c[0],18)}</span><div><div class="type-caption">${c[1]}</div><div style="font-weight:500;font-size:.9rem">${c[2]}</div></div></div>`).join('')}
+              <a href="../liff/index.html" class="btn btn-line btn-md btn-block mt-3">${icon('link',16)} ติดต่อผ่าน LINE Official</a>
+            </div>
+          </div>
+          <div class="ds-card" style="overflow:hidden">
+            <div style="height:220px;background:linear-gradient(135deg,#cbd5e1,#94a3b8);display:flex;align-items:center;justify-content:center;color:#fff">
+              ${icon('pin',32)}<span style="margin-left:.5rem">แผนที่ตั้งสมาคม (Google Maps)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+
+function newsCard(n){
+  return `<div class="ds-card" style="cursor:pointer" onclick="openNews('${n.id}')"><div class="web-card-img" style="background-image:url('${IMG(n.img)}')"></div>
+    <div class="ds-card-content"><div class="flex justify-between items-center mb-2"><span class="badge ${catBadge(n.cat)}">${n.cat}</span><span class="type-caption">${n.date}</span></div>
+    <div class="type-h5">${n.title}</div><p class="type-body-sm muted mt-1">${n.summary}</p>
+    <span class="btn-link type-body-sm mt-2" style="display:inline-block">อ่านต่อ →</span></div></div>`;
+}
+
+/* ---- Web modal system ---- */
+function openWeb(html){ const o=document.getElementById('webOverlay'); o.innerHTML=html; o.classList.add('open'); }
+function closeWeb(){ const o=document.getElementById('webOverlay'); o.classList.remove('open'); o.innerHTML=''; }
+
+function openNews(id){
+  const n = NEWS_ITEMS.find(x=>x.id===id);
+  const info = n.isEvent ? `<div class="ds-card ds-card-sm mb-3"><div class="ds-card-content" style="padding:.85rem 1.1rem;display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1rem">
+      ${webDetail('cal','วันที่',n.date)}${webDetail('clock','เวลา',n.time)}${webDetail('pin','สถานที่',n.place)}${webDetail('users','ค่าใช้จ่าย',n.fee)}
+    </div></div>` : '';
+  const agenda = n.agenda ? `<div class="mt-3"><strong>กำหนดการ</strong>${n.agenda.map(a=>`<div class="flex gap-2 mt-2" style="align-items:flex-start"><span style="color:var(--primary)">•</span><span class="type-body-sm">${a}</span></div>`).join('')}</div>` : '';
+  openWeb(`<div class="ds-modal" style="max-width:620px">
+    <div class="web-card-img" style="height:240px;background-image:url('${IMG(n.img)}');border-radius:var(--radius-2xl) var(--radius-2xl) 0 0"></div>
+    <div class="ds-modal-body">
+      <div class="flex justify-between items-center mb-2"><span class="badge ${catBadge(n.cat)}">${n.cat}</span><span class="type-caption">${n.date} · จัดโดย ${n.organizer}</span></div>
+      <h3 class="type-h3 mb-3">${n.title}</h3>
+      ${info}
+      ${n.body.map(p=>`<p class="type-body mt-2">${p}</p>`).join('')}
+      ${agenda}
+    </div>
+    <div class="ds-modal-footer">
+      <button class="btn btn-secondary btn-md" onclick="closeWeb()">ปิด</button>
+      <a href="../liff/index.html" class="btn btn-line btn-md">${n.isEvent?'ลงทะเบียนเข้าร่วมผ่าน LINE':'สอบถามผ่าน LINE'}</a>
+    </div>
+  </div>`);
+}
+function webDetail(ic,k,v){ return `<div class="flex gap-2 items-center"><span style="color:var(--primary)">${icon(ic,15)}</span><span class="type-caption" style="min-width:56px">${k}</span><span class="type-body-sm" style="font-weight:500">${v}</span></div>`; }
+
+/* ---- Photo gallery lightbox ---- */
+function openLightbox(src, caption){
+  openWeb(`<div class="ds-modal" style="max-width:680px;background:transparent;box-shadow:none">
+    <img src="${src}" alt="${caption}" style="width:100%;border-radius:var(--radius-2xl);display:block">
+    <div class="text-center mt-3" style="color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)">${caption} · <span class="btn-link" style="color:#fff" onclick="closeWeb()">ปิด</span></div>
+  </div>`);
+}
+
+/* ---- Members list: live search/filter ---- */
+function renderMembers(){
+  const grid = document.getElementById('membersGrid'); if(!grid) return;
+  const q = (document.getElementById('mq')?.value||'').trim().toLowerCase();
+  const fac = document.getElementById('mFac')?.value||'';
+  const year = document.getElementById('mYear')?.value||'';
+  const list = ALUMNI.filter(a=> a.status!=='alumni' && a.life==='alive')
+    .filter(a=> !q || (a.first+a.last+a.faculty+a.company).toLowerCase().includes(q))
+    .filter(a=> !fac || a.faculty===fac)
+    .filter(a=> !year || String(a.year)===String(year));
+  grid.innerHTML = list.length ? `<div class="card-grid">${list.slice(0,24).map(a=>`
+      <div class="ds-card" style="cursor:pointer" onclick="openMember('${a.id}')"><div class="ds-card-content flex items-center gap-3">
+        ${avatarOf(a,'xl')}
+        <div style="min-width:0"><div style="font-weight:600">${a.first} ${a.last}</div><div class="type-caption">${a.faculty} · รุ่น ${a.year}</div><span class="badge ${STATUS_BADGE[a.status]} mt-1">${STATUS_LABEL[a.status]}</span></div>
+      </div></div>`).join('')}</div>${list.length>24?`<p class="type-caption text-center mt-3">แสดง 24 จาก ${list.length} รายการ — ปรับตัวกรองเพื่อค้นหาให้แคบลง</p>`:''}`
+    : `<div class="ds-card"><div class="ds-card-content text-center muted" style="padding:2.5rem">${icon('search',24)}<div class="mt-2">ไม่พบสมาชิกตามเงื่อนไขที่ค้นหา</div></div></div>`;
+}
+
+function openMember(id){
+  const a = ALUMNI.find(x=>x.id===id);
+  openWeb(`<div class="ds-modal" style="max-width:460px">
+    <div class="ds-modal-body text-center">
+      <span class="avatar avatar-2xl" style="margin:0 auto"><img src="${face(a.photo)}" alt=""></span>
+      <h3 class="type-h4 mt-2">${a.first} ${a.last}</h3>
+      <div class="flex gap-1 mt-1" style="justify-content:center"><span class="badge ${STATUS_BADGE[a.status]}">${STATUS_LABEL[a.status]}</span></div>
+      <div class="ds-card ds-card-sm mt-3" style="text-align:left"><div class="ds-card-content">
+        ${[['คณะ',a.faculty],['สาขา',a.major],['รุ่น (พ.ศ.)',a.year],['ปัจจุบัน',a.position+' · '+a.company]].map((r,i,arr)=>`<div class="flex justify-between" style="padding:.45rem 0;${i<arr.length-1?'border-bottom:1px solid var(--border)':''}"><span class="type-body-sm muted">${r[0]}</span><span style="font-weight:500;font-size:.85rem">${r[1]}</span></div>`).join('')}
+      </div></div>
+    </div>
+    <div class="ds-modal-footer" style="justify-content:center"><button class="btn btn-secondary btn-md" onclick="closeWeb()">ปิด</button></div>
+  </div>`);
+}
+
+/* ---- News category filter ---- */
+let newsCat = 'ทั้งหมด';
+function filterNews(btn, cat){
+  newsCat = cat;
+  btn.parentElement.querySelectorAll('.ds-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const list = cat==='ทั้งหมด' ? NEWS_ITEMS : NEWS_ITEMS.filter(n=>n.cat===cat);
+  document.getElementById('newsGrid').innerHTML = list.length ? list.map(n=>newsCard(n)).join('') : '<p class="muted">ไม่มีรายการในหมวดนี้</p>';
+}
+
+function nav(p){
+  document.getElementById('webMain').innerHTML = PAGES[p]();
+  document.querySelectorAll('#webMenu a').forEach(a=>a.classList.toggle('active', a.dataset.p===p));
+  fillIcons();
+  animateCharts(document.getElementById('webMain'));
+  if(p==='members') renderMembers();
+  window.scrollTo(0,0);
+}
+function fillIcons(){
+  document.querySelectorAll('[data-ico]').forEach(e=>{ if(!e.innerHTML) e.innerHTML = icon(e.dataset.ico, e.classList.contains('logo')?20:16); });
+}
+nav('home');
+</script>
+</body>
+</html>
