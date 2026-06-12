@@ -4,77 +4,173 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Alumni Data Platform</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/design-system.css?v=20260612a" />
-  <link rel="stylesheet" href="assets/app.css?v=20260612a" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/design-system.css?v=20260612b" />
+  <link rel="stylesheet" href="assets/app.css?v=20260612b" />
+  <style>
+    /* ════════ Hub — Bold hero + gradient mesh ════════ */
+    body { background: var(--background); overflow-x: hidden; }
+    .hub-bg {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background:
+        radial-gradient(55% 45% at 50% -5%, oklch(0.62 0.23 25 / 0.20), transparent 70%),
+        radial-gradient(40% 40% at 88% 8%, oklch(0.70 0.18 38 / 0.14), transparent 70%),
+        radial-gradient(45% 45% at 6% 22%, oklch(0.66 0.20 18 / 0.12), transparent 70%),
+        var(--background);
+    }
+    .hub-bg::after { /* subtle grid texture */
+      content: ''; position: absolute; inset: 0; opacity: .5;
+      background-image: radial-gradient(oklch(0.55 0.1 25 / 0.05) 1px, transparent 1px);
+      background-size: 26px 26px; mask-image: linear-gradient(180deg, #000, transparent 60%);
+    }
+
+    .hub-topbar {
+      position: sticky; top: 0; z-index: 20; backdrop-filter: blur(10px);
+      background: oklch(1 0 0 / 0.6); border-bottom: 1px solid oklch(0.92 0.01 25 / 0.6);
+    }
+    .hub-topbar-in { max-width: 1100px; margin: 0 auto; padding: 0.7rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .hub-topbar .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; }
+    .hub-topbar .brand .logo { width: 34px; height: 34px; border-radius: 10px; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+
+    .hub2 { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+
+    .hub2-hero { text-align: center; padding: 3.25rem 1rem 2.75rem; animation: hubUp .6s ease both; }
+    .hub2-logo {
+      width: 90px; height: 90px; border-radius: 26px; margin: 0 auto 1.4rem;
+      background: linear-gradient(140deg, #ff5d70, var(--brand-700));
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 18px 44px oklch(0.557 0.24 28 / 0.4);
+      position: relative;
+    }
+    .hub2-logo::after { content:''; position:absolute; inset:0; border-radius:26px; background:radial-gradient(circle at 65% 20%, rgba(255,255,255,.35), transparent 55%); }
+    .hub2-hero h1 { font-size: clamp(2.2rem, 5.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+    .hub2-hero p { color: var(--muted-foreground); max-width: 600px; margin: 0.9rem auto 0; font-size: 1.05rem; }
+    .hub2-pills { display: inline-flex; gap: 0.5rem; align-items: center; }
+
+    .hub2-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.5rem; }
+    .hub2-card {
+      display: flex; flex-direction: column; text-decoration: none; color: inherit;
+      background: oklch(1 0 0 / 0.82); backdrop-filter: blur(10px);
+      border: 1px solid oklch(0.92 0.01 25 / 0.9); border-radius: 24px; overflow: hidden;
+      box-shadow: 0 10px 30px oklch(0.5 0.1 25 / 0.08);
+      transition: transform .22s cubic-bezier(.4,0,.2,1), box-shadow .22s; animation: hubUp .6s ease both;
+    }
+    .hub2-card:nth-child(2){ animation-delay: .08s; } .hub2-card:nth-child(3){ animation-delay: .16s; }
+    .hub2-card:hover { transform: translateY(-7px); box-shadow: 0 24px 50px oklch(0.5 0.13 25 / 0.18); }
+    .hub2-card-top { height: 116px; display: flex; align-items: center; justify-content: center; color: #fff; position: relative; }
+    .hub2-card-top::after { content:''; position:absolute; inset:0; background: radial-gradient(circle at 72% 18%, rgba(255,255,255,.22), transparent 58%); }
+    .hub2-card-top svg { position: relative; z-index: 1; }
+    .hub2-card-body { padding: 1.25rem 1.4rem 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .hub2-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.7rem 0 1rem; }
+    .hub2-chip { padding: 0.18rem 0.55rem; border-radius: 999px; background: var(--muted); font-size: 0.7rem; color: var(--muted-foreground); white-space: nowrap; }
+    .hub2-cta { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; height: 40px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; transition: gap .15s; }
+    .hub2-card:hover .hub2-cta { gap: 0.7rem; }
+
+    .hub2-arch { margin-top: 3rem; border: 1px solid oklch(0.92 0.01 25 / 0.9); border-radius: 24px; background: oklch(1 0 0 / 0.7); backdrop-filter: blur(8px); padding: 1.75rem 2rem; animation: hubUp .6s ease .24s both; }
+    .hub2-arch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
+    .hub2-arch-item { display: flex; gap: 0.85rem; align-items: flex-start; }
+    .hub2-arch-ico { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; background: var(--accent); color: var(--primary); display: flex; align-items: center; justify-content: center; }
+
+    .hub2-footer { text-align: center; padding: 2rem 1.5rem; color: var(--muted-foreground); font-size: 0.82rem; border-top: 1px solid oklch(0.92 0.01 25 / 0.6); }
+
+    @keyframes hubUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @media (max-width: 560px){ .hub2-hero { padding-top: 2rem; } }
+  </style>
 </head>
 <body>
-  <div class="hub">
-    <div class="hub-head">
-      <div class="hub-logo"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></div>
-      <div class="flex items-center gap-2" style="justify-content:center;margin-bottom:.5rem">
+  <div class="hub-bg"></div>
+
+  <!-- Top bar -->
+  <header class="hub-topbar">
+    <div class="hub-topbar-in">
+      <div class="brand">
+        <span class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
+        <span>Alumni Data Platform</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="badge badge-secondary">v4.0</span>
+        <span class="badge badge-success">● Live</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="hub2">
+    <!-- Hero -->
+    <section class="hub2-hero">
+      <div class="hub2-logo"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></div>
+      <div class="hub2-pills" style="margin-bottom:1rem">
         <span class="badge badge-default">v4.0</span>
         <span class="badge badge-ghost">Centralized Alumni Data Platform</span>
       </div>
-      <h1 class="type-h1">Alumni Data Platform</h1>
-      <p class="muted mt-2" style="max-width:620px;margin-inline:auto">
-        แพลตฟอร์มข้อมูลศิษย์เก่า / ครู แบบรวมศูนย์ (Single Source of Truth) — เลือกส่วนการทำงานที่ต้องการเข้าใช้งาน
-        ตัวอย่าง UI ครอบคลุมทุกโมดูลและทุก Role ตาม Proposal VER.4
-      </p>
-    </div>
+      <h1>Alumni Data Platform</h1>
+      <p>แพลตฟอร์มข้อมูลศิษย์เก่า / ครู แบบรวมศูนย์ (Single Source of Truth) — เลือกส่วนการทำงานที่ต้องการ ตัวอย่าง UI ครอบคลุมทุกโมดูลและทุก Role ตาม Proposal VER.4</p>
+    </section>
 
-    <div class="hub-cards">
+    <!-- Platform cards -->
+    <section class="hub2-grid">
       <!-- Admin -->
-      <a class="hub-card" href="admin/index.html">
-        <div class="hub-card-top" style="background:linear-gradient(135deg,var(--brand-700),var(--brand-500))">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+      <a class="hub2-card" href="admin/index.html">
+        <div class="hub2-card-top" style="background:linear-gradient(135deg,var(--brand-700),var(--brand-500))">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
         </div>
-        <div class="hub-card-body">
+        <div class="hub2-card-body">
           <span class="badge badge-secondary" style="align-self:flex-start;margin-bottom:.6rem">Role · Administrator</span>
           <h3 class="type-h4">Admin Web Portal</h3>
-          <p class="type-body-sm muted mt-1 grow">เว็บพอร์ทัลสำหรับเจ้าหน้าที่มหาวิทยาลัย — Dashboard, จัดการข้อมูลศิษย์เก่า, Broadcast และตั้งค่าระบบ</p>
-          <div class="btn btn-default btn-md mt-3">เข้าสู่ระบบผู้ดูแล →</div>
+          <p class="type-body-sm muted mt-1">เว็บพอร์ทัลสำหรับเจ้าหน้าที่มหาวิทยาลัย — บริหารจัดการข้อมูลและการสื่อสารทั้งหมด</p>
+          <div class="hub2-chips">
+            <span class="hub2-chip">Dashboard</span><span class="hub2-chip">จัดการศิษย์เก่า</span><span class="hub2-chip">CMS</span><span class="hub2-chip">Broadcast</span><span class="hub2-chip">ตั้งค่า</span>
+          </div>
+          <div class="hub2-cta btn-default" style="background:var(--primary);color:#fff;margin-top:auto">เข้าสู่ระบบผู้ดูแล →</div>
         </div>
       </a>
 
       <!-- LIFF -->
-      <a class="hub-card" href="liff/index.html">
-        <div class="hub-card-top" style="background:linear-gradient(135deg,#04863c,#06c755)">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+      <a class="hub2-card" href="liff/index.html">
+        <div class="hub2-card-top" style="background:linear-gradient(135deg,#04863c,#06c755)">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
         </div>
-        <div class="hub-card-body">
+        <div class="hub2-card-body">
           <span class="badge badge-secondary" style="align-self:flex-start;margin-bottom:.6rem">Role · Alumni / Teacher</span>
           <h3 class="type-h4">LINE LIFF App</h3>
-          <p class="type-body-sm muted mt-1 grow">แอปภายใน LINE สำหรับศิษย์เก่า / ครู — ยินยอม PDPA, เชื่อมบัญชี LINE และลงทะเบียน / อัปเดตข้อมูลส่วนตัว</p>
-          <div class="btn btn-line btn-md mt-3">เปิดผ่าน LINE →</div>
+          <p class="type-body-sm muted mt-1">แอปภายใน LINE สำหรับศิษย์เก่า / ครู — ยินยอม ลงทะเบียน และอัปเดตข้อมูลตนเอง</p>
+          <div class="hub2-chips">
+            <span class="hub2-chip">PDPA Consent</span><span class="hub2-chip">เชื่อมบัญชี LINE</span><span class="hub2-chip">โปรไฟล์</span><span class="hub2-chip">ข่าวสาร</span>
+          </div>
+          <div class="hub2-cta btn-line" style="background:var(--line-green);color:#fff;margin-top:auto">เปิดผ่าน LINE →</div>
         </div>
       </a>
 
-      <!-- Public web -->
-      <a class="hub-card" href="web/index.html">
-        <div class="hub-card-top" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6)">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+      <!-- Web -->
+      <a class="hub2-card" href="web/index.html">
+        <div class="hub2-card-top" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6)">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
         </div>
-        <div class="hub-card-body">
+        <div class="hub2-card-body">
           <span class="badge badge-secondary" style="align-self:flex-start;margin-bottom:.6rem">Public · Web Information</span>
           <h3 class="type-h4">เว็บไซต์สมาคมศิษย์เก่า</h3>
-          <p class="type-body-sm muted mt-1 grow">เว็บประชาสัมพันธ์สาธารณะ — หน้าแรก, เกี่ยวกับเรา, ข่าว/กิจกรรม, สมาชิกศิษย์เก่า และติดต่อเรา</p>
-          <div class="btn btn-outline btn-md mt-3">ชมเว็บไซต์ →</div>
+          <p class="type-body-sm muted mt-1">เว็บประชาสัมพันธ์สาธารณะ — ข่าวสาร กิจกรรม สมาชิก และช่องทางติดต่อ</p>
+          <div class="hub2-chips">
+            <span class="hub2-chip">หน้าแรก</span><span class="hub2-chip">เกี่ยวกับเรา</span><span class="hub2-chip">ข่าว/กิจกรรม</span><span class="hub2-chip">สมาชิก</span><span class="hub2-chip">ติดต่อ</span>
+          </div>
+          <div class="hub2-cta btn-outline" style="border:1px solid var(--border);color:var(--foreground);margin-top:auto">ชมเว็บไซต์ →</div>
         </div>
       </a>
-    </div>
+    </section>
 
-    <div class="ds-card ds-card-sm" style="max-width:1080px;width:100%;margin-top:2.5rem">
-      <div class="ds-card-content">
-        <div class="type-overline muted mb-2">ภาพรวมสถาปัตยกรรม</div>
-        <div class="grid-2" style="gap:1rem">
-          <div><strong>3 แพลตฟอร์ม</strong><p class="type-body-sm muted">Web Application (Admin), LINE LIFF (ผู้ใช้), Web Information (สาธารณะ)</p></div>
-          <div><strong>2 Roles</strong><p class="type-body-sm muted">Administrator · Alumni / Teacher</p></div>
-          <div><strong>Core Functions</strong><p class="type-body-sm muted">Register, Profile, Dashboard, Alumni Management, Broadcast Notification</p></div>
-          <div><strong>Integrations</strong><p class="type-body-sm muted">LINE Login, LIFF, Messaging API · PDPA Consent</p></div>
-        </div>
+    <!-- Architecture overview -->
+    <section class="hub2-arch">
+      <div class="type-overline muted mb-3">ภาพรวมสถาปัตยกรรม</div>
+      <div class="hub2-arch-grid">
+        <div class="hub2-arch-item"><span class="hub2-arch-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span><div><strong>3 แพลตฟอร์ม</strong><p class="type-body-sm muted">Web Application (Admin), LINE LIFF, Web Information</p></div></div>
+        <div class="hub2-arch-item"><span class="hub2-arch-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><div><strong>2 Roles</strong><p class="type-body-sm muted">Administrator · Alumni / Teacher</p></div></div>
+        <div class="hub2-arch-item"><span class="hub2-arch-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span><div><strong>Core Functions</strong><p class="type-body-sm muted">Register, Profile, Dashboard, Alumni Mgmt, Broadcast</p></div></div>
+        <div class="hub2-arch-item"><span class="hub2-arch-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><div><strong>Integrations</strong><p class="type-body-sm muted">LINE Login, LIFF, Messaging API · PDPA Consent</p></div></div>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
+
+  <footer class="hub2-footer">
+    © 2569 Alumni Data Platform — ตัวอย่าง UI ตาม Proposal VER.4 · Single Source of Truth
+  </footer>
 </body>
 </html>
