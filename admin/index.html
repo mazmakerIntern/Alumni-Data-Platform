@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Web Portal · Alumni Data Platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/design-system.css?v=20260615e" />
-  <link rel="stylesheet" href="../assets/app.css?v=20260615e" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260615f" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260615f" />
 </head>
 <body>
 
@@ -82,7 +82,7 @@
 <!-- Modal / drawer mount -->
 <div class="ds-overlay" id="overlay" onclick="if(event.target===this)closeOverlay()"></div>
 
-<script src="../assets/app.js?v=20260615e"></script>
+<script src="../assets/app.js?v=20260615f"></script>
 <script>
 /* ───────── Navigation ───────── */
 const NAV = [
@@ -1382,7 +1382,7 @@ function openEventForm(id){
           <div class="form-group"><label class="ds-label">รายละเอียดงาน</label><textarea class="ds-textarea" id="evfDesc" rows="2" oninput="updateEventPreview()">${e?(e.desc||''):''}</textarea></div>
           <div class="form-group"><label class="ds-label">สถานะ</label><select class="ds-select" id="evfStatus" onchange="updateEventPreview()"><option value="open" ${!e||e.status==='open'?'selected':''}>เปิดรับสมัคร</option><option value="closed" ${e&&e.status!=='open'?'selected':''}>ปิดรับสมัคร</option></select></div>
           <div class="type-overline muted mb-2">ประเภทบัตร & ราคา 2 ระดับ</div>
-          <div class="grid-2 mb-1" style="gap:0 .5rem;grid-template-columns:1.7fr 1fr 1fr .9fr auto"><span class="type-caption">ชื่อบัตร</span><span class="type-caption">ราคาทั่วไป (฿)</span><span class="type-caption">ราคาสมาชิก (฿)</span><span class="type-caption">โควตา</span><span></span></div>
+          <div class="grid-2 mb-1 evf-thead" style="gap:0 .5rem;grid-template-columns:1.7fr 1fr 1fr .9fr auto"><span class="type-caption">ชื่อบัตร</span><span class="type-caption">ราคาทั่วไป (฿)</span><span class="type-caption">ราคาสมาชิก (฿)</span><span class="type-caption">โควตา</span><span></span></div>
           <div id="evfTickets">${tickets.map(t=>ticketRow(t)).join('')}</div>
           <button class="btn btn-ghost btn-sm" onclick="addTicketRow()">${icon('plus',14)} เพิ่มประเภทบัตร</button>
           <div class="ds-helper mt-1">เว้นช่อง “ราคาสมาชิก” ว่างไว้ = ใช้ราคาเดียวกับราคาทั่วไป · สมาชิกสมาคมจะเห็นราคาพิเศษอัตโนมัติใน LIFF</div>

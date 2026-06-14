@@ -163,6 +163,19 @@
 
 @media (max-width: 900px) {
   .admin-sidebar { transform: translateX(-100%); transition: transform .2s; }
-  .admin-sidebar.open { transform: none; }
+  .admin-sidebar.open { transform: none; box-shadow: var(--shadow-lg); }
   .admin-main { margin-left: 0; }
+}
+
+/* ─── Phone (≤640px): stack forced 2-col grids, tighten chrome, bigger taps ─── */
+@media (max-width: 640px) {
+  .grid-2 { grid-template-columns: 1fr !important; }
+  .admin-content { padding: 1rem; }
+  .admin-topbar { padding: 0 1rem; }
+  .btn-icon { width: 36px; height: 36px; }
+  /* event ticket editor: hide header labels (placeholders cover them), lay each row in 2 columns */
+  .evf-thead { display: none; }
+  .evf-ticket { grid-template-columns: 1fr 1fr !important; align-items: end; }
+  .evf-ticket > .form-group:first-child,
+  .evf-ticket > button { grid-column: 1 / -1; }
 }

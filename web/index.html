@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>สมาคมศิษย์เก่า · Alumni Data Platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/design-system.css?v=20260615e" />
-  <link rel="stylesheet" href="../assets/app.css?v=20260615e" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260615f" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260615f" />
   <style>
     /* ════════ WordPress-style theme (Web Information) ════════ */
     /* Top utility bar */
@@ -54,7 +54,29 @@
     .wp-footbottom { background: oklch(0.12 0 0); color: oklch(0.7 0 0); font-size: .8rem; }
     .wp-footbottom-in { max-width: 1140px; margin: 0 auto; padding: .9rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 
-    @media (max-width: 860px){ .wp-menu { display: none; } .wp-blog { grid-template-columns: 1fr; } }
+    /* Mobile nav (hamburger) */
+    .wp-burger { display: none; width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); align-items: center; justify-content: center; cursor: pointer; color: var(--foreground); }
+    .wp-mobilemenu { display: none; flex-direction: column; background: var(--card); border-bottom: 1px solid var(--border); padding: .5rem .75rem; }
+    .wp-mobilemenu.open { display: flex; }
+    .wp-mobilemenu a { padding: .8rem .85rem; border-radius: 8px; font-size: .95rem; font-weight: 500; color: var(--foreground); text-decoration: none; cursor: pointer; }
+    .wp-mobilemenu a:hover, .wp-mobilemenu a.active { background: var(--muted); color: var(--primary); }
+
+    @media (max-width: 860px){
+      .wp-menu { display: none; }
+      .wp-blog { grid-template-columns: 1fr; }
+      .wp-burger { display: inline-flex; }
+    }
+    @media (max-width: 700px){
+      .wp-hero-grid { grid-template-columns: 1fr !important; }
+      .wp-hero-grid h1 { font-size: 2rem !important; }
+      .wp-pres-grid { grid-template-columns: 1fr !important; text-align: center; }
+    }
+    @media (max-width: 560px){
+      .wp-header-in .btn-line { display: none; }
+      .wp-brand { font-size: 1rem; }
+      .wp-brand small { display: none; }
+      .wp-evdetail-grid { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -88,9 +110,20 @@
     <div class="flex gap-2 items-center">
       <button class="wp-search-btn" onclick="nav('news')" title="ค้นหา" data-ico="search"></button>
       <a href="../liff/index.html" class="btn btn-line btn-md">สมัครสมาชิก</a>
+      <button class="wp-burger" onclick="toggleWebMenu()" aria-label="เมนู"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     </div>
   </div>
 </header>
+
+<!-- Mobile dropdown menu (shown via hamburger ≤860px) -->
+<nav class="wp-mobilemenu" id="webMobileMenu">
+  <a onclick="nav('home')" data-p="home">หน้าแรก</a>
+  <a onclick="nav('about')" data-p="about">เกี่ยวกับเรา</a>
+  <a onclick="nav('news')" data-p="news">ข่าวและกิจกรรม</a>
+  <a onclick="nav('members')" data-p="members">สมาชิกศิษย์เก่า</a>
+  <a onclick="nav('contact')" data-p="contact">ติดต่อเรา</a>
+  <a href="../liff/index.html" style="color:var(--line-green);font-weight:700">สมัครสมาชิกผ่าน LINE</a>
+</nav>
 
 <main id="webMain"></main>
 
@@ -135,7 +168,7 @@
 
 <div class="ds-overlay" id="webOverlay" onclick="if(event.target===this)closeWeb()"></div>
 
-<script src="../assets/app.js?v=20260615e"></script>
+<script src="../assets/app.js?v=20260615f"></script>
 <script>
 // ข่าว/กิจกรรม ใช้ชุดข้อมูลกลาง NEWS_ITEMS จาก app.js (ใช้ร่วมกับ LINE LIFF)
 const BOARD = [
@@ -148,7 +181,7 @@ const BOARD = [
 const PAGES = {};
 PAGES.home = () => `
   <section class="web-hero">
-    <div class="web-wrap" style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;align-items:center">
+    <div class="web-wrap wp-hero-grid" style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;align-items:center">
       <div>
         <span class="badge" style="background:rgba(255,255,255,.2);color:#fff;border:none">Alumni Community Hub</span>
         <h1 class="type-display" style="font-size:2.6rem;margin-top:.75rem">${(SITE.hero.title||'').replace(/\n/g,'<br>')}</h1>
@@ -165,7 +198,7 @@ PAGES.home = () => `
   <section class="web-section">
     <div class="web-wrap">
       <div class="ds-card" style="overflow:hidden">
-        <div style="display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:center;padding:1.5rem 1.75rem">
+        <div class="wp-pres-grid" style="display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:center;padding:1.5rem 1.75rem">
           <div class="text-center">
             <span class="avatar avatar-2xl" style="width:110px;height:110px;margin:0 auto"><img src="${face(SITE.president.photo)}" alt="${SITE.president.name}"></span>
           </div>
@@ -417,7 +450,7 @@ function closeWeb(){ const o=document.getElementById('webOverlay'); o.classList.
 
 function openNews(id){
   const n = NEWS_ITEMS.find(x=>x.id===id);
-  const info = n.isEvent ? `<div class="ds-card ds-card-sm mb-3"><div class="ds-card-content" style="padding:.85rem 1.1rem;display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1rem">
+  const info = n.isEvent ? `<div class="ds-card ds-card-sm mb-3"><div class="ds-card-content wp-evdetail-grid" style="padding:.85rem 1.1rem;display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1rem">
       ${webDetail('cal','วันที่',n.date)}${webDetail('clock','เวลา',n.time)}${webDetail('pin','สถานที่',n.place)}${webDetail('users','ค่าใช้จ่าย',n.fee)}
     </div></div>` : '';
   const agenda = n.agenda ? `<div class="mt-3"><strong>กำหนดการ</strong>${n.agenda.map(a=>`<div class="flex gap-2 mt-2" style="align-items:flex-start"><span style="color:var(--primary)">•</span><span class="type-body-sm">${a}</span></div>`).join('')}</div>` : '';
@@ -492,12 +525,14 @@ const CRUMB = { about:'เกี่ยวกับเรา', news:'ข่าว
 function nav(p){
   const crumb = p!=='home' ? `<div class="wp-crumb"><div class="wp-crumb-in"><a onclick="nav('home')">หน้าแรก</a><span>›</span><span style="color:var(--foreground)">${CRUMB[p]||''}</span></div></div>` : '';
   document.getElementById('webMain').innerHTML = crumb + PAGES[p]();
-  document.querySelectorAll('#webMenu a').forEach(a=>a.classList.toggle('active', a.dataset.p===p));
+  document.querySelectorAll('#webMenu a, #webMobileMenu a').forEach(a=>a.classList.toggle('active', a.dataset.p===p));
+  document.getElementById('webMobileMenu').classList.remove('open');
   fillIcons();
   animateCharts(document.getElementById('webMain'));
   if(p==='members') renderMembers();
   window.scrollTo(0,0);
 }
+function toggleWebMenu(){ document.getElementById('webMobileMenu').classList.toggle('open'); }
 function fillIcons(){
   document.querySelectorAll('[data-ico]').forEach(e=>{ if(!e.innerHTML) e.innerHTML = icon(e.dataset.ico, e.classList.contains('logo')?20:16); });
 }
