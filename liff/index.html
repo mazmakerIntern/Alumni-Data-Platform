@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LINE LIFF · Alumni Data Platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/design-system.css?v=20260612a" />
-  <link rel="stylesheet" href="../assets/app.css?v=20260612a" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260615e" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260615e" />
 </head>
 <body>
 <div class="liff-stage">
@@ -51,6 +51,7 @@
             <button class="btn btn-ghost btn-md btn-block" onclick="alert('ออกจากระบบ (เดโม)')">ไม่ยินยอม</button>
             <div class="ds-separator"></div>
             <p class="type-caption text-center">เป็นสมาชิกอยู่แล้ว? <a class="btn-link" onclick="enterMember()">เข้าสู่พื้นที่สมาชิก</a></p>
+            <p class="type-caption text-center mt-1">ได้รับลิงก์เชิญร่วมงาน? <a class="btn-link" onclick="window.open('../register/','_blank')">เปิดหน้าลงทะเบียนผู้รับลิงก์</a></p>
           </div>
         </div>
 
@@ -64,19 +65,38 @@
             <div class="progress-wrap"><div class="progress-label"><span>ความสมบูรณ์ของโปรไฟล์</span><span id="pct">40%</span></div><div class="progress-track"><div class="progress-bar" id="pbar" style="width:40%"></div></div></div>
 
             <div class="type-overline muted mb-2 mt-3">ข้อมูลส่วนตัว</div>
-            <div class="form-group"><label class="ds-label">ชื่อ <span class="req">*</span></label><input class="ds-input" placeholder="ชื่อจริง" value="สมชาย" oninput="recalc()"></div>
-            <div class="form-group"><label class="ds-label">นามสกุล <span class="req">*</span></label><input class="ds-input" placeholder="นามสกุล" value="ใจดี" oninput="recalc()"></div>
-            <div class="form-group"><label class="ds-label">เบอร์โทรศัพท์ <span class="req">*</span></label><input class="ds-input" placeholder="08X-XXX-XXXX" oninput="recalc()"></div>
-            <div class="form-group"><label class="ds-label">อีเมล</label><input class="ds-input" placeholder="you@email.com" oninput="recalc()"></div>
+            <div class="form-group"><label class="ds-label">ชื่อ <span class="req">*</span></label><input class="ds-input" id="profFirst" placeholder="ชื่อจริง" value="สมชาย" oninput="recalc()"></div>
+            <div class="form-group"><label class="ds-label">นามสกุล <span class="req">*</span></label><input class="ds-input" id="profLast" placeholder="นามสกุล" value="ใจดี" oninput="recalc()"></div>
+            <div class="form-group"><label class="ds-label">เบอร์โทรศัพท์ <span class="req">*</span></label>
+              <input class="ds-input" id="profPhone" placeholder="08X-XXX-XXXX" oninput="recalc();checkPhoneLink()">
+              <div id="phoneLinkBox"></div>
+              <div class="type-caption mt-1">ระบบจะตรวจว่าเบอร์นี้มีในฐานข้อมูลศิษย์เก่าหรือไม่ · <a class="btn-link" onclick="fillDemoPhone()">ลองเบอร์ตัวอย่างที่มีในระบบ</a></div>
+            </div>
+            <div class="form-group"><label class="ds-label">อีเมล</label><input class="ds-input" id="profEmail" placeholder="you@email.com" oninput="recalc()"></div>
 
             <div class="type-overline muted mb-2 mt-3">ข้อมูลการศึกษา</div>
-            <div class="form-group"><label class="ds-label">คณะ <span class="req">*</span></label><select class="ds-select" onchange="recalc()"><option value="">เลือกคณะ</option><option>คณะวิศวกรรมศาสตร์</option><option>คณะบริหารธุรกิจ</option><option>คณะวิทยาศาสตร์</option><option>คณะนิเทศศาสตร์</option><option>คณะครุศาสตร์</option><option>คณะนิติศาสตร์</option></select></div>
-            <div class="form-group"><label class="ds-label">สาขา</label><input class="ds-input" placeholder="เช่น วิศวกรรมคอมพิวเตอร์" oninput="recalc()"></div>
-            <div class="form-group"><label class="ds-label">ปีที่สำเร็จการศึกษา (พ.ศ.) <span class="req">*</span></label><input class="ds-input" placeholder="เช่น 2560" oninput="recalc()"></div>
+            <div class="form-group"><label class="ds-label">คณะ <span class="req">*</span></label><select class="ds-select" id="profFaculty" onchange="recalc()"><option value="">เลือกคณะ</option><option>คณะวิศวกรรมศาสตร์</option><option>คณะบริหารธุรกิจ</option><option>คณะวิทยาศาสตร์</option><option>คณะนิเทศศาสตร์</option><option>คณะครุศาสตร์</option><option>คณะนิติศาสตร์</option></select></div>
+            <div class="form-group"><label class="ds-label">สาขา</label><input class="ds-input" id="profMajor" placeholder="เช่น วิศวกรรมคอมพิวเตอร์" oninput="recalc()"></div>
+            <div class="form-group"><label class="ds-label">ปีที่สำเร็จการศึกษา (พ.ศ.) <span class="req">*</span></label><input class="ds-input" id="profYear" placeholder="เช่น 2560" oninput="recalc()"></div>
 
             <div class="type-overline muted mb-2 mt-3">ข้อมูลการทำงาน</div>
-            <div class="form-group"><label class="ds-label">บริษัท / องค์กร</label><input class="ds-input" placeholder="ชื่อบริษัท" oninput="recalc()"></div>
-            <div class="form-group"><label class="ds-label">ตำแหน่ง</label><input class="ds-input" placeholder="ตำแหน่งงาน" oninput="recalc()"></div>
+            <div class="form-group"><label class="ds-label">บริษัท / องค์กร</label><input class="ds-input" id="profCompany" placeholder="ชื่อบริษัท" oninput="recalc()"></div>
+            <div class="form-group"><label class="ds-label">ตำแหน่ง</label><input class="ds-input" id="profPosition" placeholder="ตำแหน่งงาน" oninput="recalc()"></div>
+
+            <div id="memberQ">
+              <div class="ds-separator"></div>
+              <div class="type-overline muted mb-2">สมาชิกสมาคม (ไม่บังคับ)</div>
+              <div class="ds-card ds-card-sm mb-2"><div class="ds-card-content" style="padding:.85rem 1rem">
+                <div style="font-weight:600;font-size:.9rem">ต้องการสมัครสมาชิกสมาคมด้วยไหม?</div>
+                <p class="type-caption mt-1 mb-2">สมาชิกได้สิทธิ์พิเศษ — ราคาบัตรกิจกรรมพิเศษ, เข้าถึงทำเนียบศิษย์เก่า, บัตรสมาชิกดิจิทัล (ค่าสมาชิก 300฿)</p>
+                <label class="flex items-start gap-2 mb-2" style="cursor:pointer"><input type="radio" name="joinMember" value="yes" style="margin-top:3px"><span class="type-body-sm"><strong>สมัครสมาชิกเลย</strong> — ไปขั้นตอนแนบสลิปต่อ</span></label>
+                <label class="flex items-start gap-2" style="cursor:pointer"><input type="radio" name="joinMember" value="no" checked style="margin-top:3px"><span class="type-body-sm"><strong>ยังก่อน</strong> — เป็นศิษย์เก่าทั่วไป (สมัครภายหลังได้ทุกเมื่อ)</span></label>
+              </div></div>
+            </div>
+            <div id="memberAlready" class="hidden">
+              <div class="ds-separator"></div>
+              <div class="ds-alert ds-alert-success mb-2"><span class="ds-alert-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><strong>คุณเป็นสมาชิกสมาคมอยู่แล้ว</strong> — ไม่ต้องสมัครซ้ำ ระบบจะให้สิทธิ์สมาชิกทันที</div></div>
+            </div>
 
             <button class="btn btn-line btn-lg btn-block mt-2" onclick="saveProfile()">บันทึกข้อมูล</button>
             <p class="type-caption text-center mt-2">คุณสามารถกลับมาแก้ไขข้อมูลได้ทุกเมื่อผ่าน LINE</p>
@@ -109,6 +129,7 @@
           <div class="liff-tabbar">
             <button class="liff-tab active" data-mt="home" onclick="memberTab('home')"></button>
             <button class="liff-tab" data-mt="events" onclick="memberTab('events')"></button>
+            <button class="liff-tab" data-mt="tickets" onclick="memberTab('tickets')"></button>
             <button class="liff-tab" data-mt="profile" onclick="memberTab('profile')"></button>
           </div>
         </div>
@@ -122,7 +143,7 @@
   </div>
 </div>
 
-<script src="../assets/app.js?v=20260612a"></script>
+<script src="../assets/app.js?v=20260615e"></script>
 <script>
 let consented = false;
 function show(id){ document.querySelectorAll('.liff-screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector('.phone-body').scrollTop=0; }
@@ -139,20 +160,71 @@ function recalc(){
   document.getElementById('pct').textContent = pct+'%';
   document.getElementById('pbar').style.width = pct+'%';
 }
-function saveProfile(){ toast('บันทึกข้อมูลเรียบร้อย','success'); show('s-done'); }
+/* Phone Auto-link — ตรวจเบอร์กับฐานข้อมูลศิษย์เก่า ถ้าพบ = เชื่อมกับ record เดิม (ไม่สร้างซ้ำ) */
+let phoneLinked = null;
+function setMemberQuestion(show){
+  const q = document.getElementById('memberQ'), a = document.getElementById('memberAlready');
+  if(q) q.classList.toggle('hidden', !show);
+  if(a) a.classList.toggle('hidden', show);
+}
+function checkPhoneLink(){
+  const box = document.getElementById('phoneLinkBox'); if(!box) return;
+  const val = (document.getElementById('profPhone').value||'');
+  const found = (typeof findAlumniByPhone==='function') ? findAlumniByPhone(val) : null;
+  phoneLinked = found;
+  if(found){
+    const isMem = found.status==='member' || found.status==='teacher';
+    // เติมข้อมูลจาก record เดิมอัตโนมัติ
+    const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!=null) el.value=v; };
+    set('profFirst',found.first); set('profLast',found.last); set('profFaculty',found.faculty);
+    set('profMajor',found.major&&found.major!=='-'?found.major:''); set('profYear',found.year);
+    set('profEmail',found.email); set('profCompany',found.company&&found.company!=='—'?found.company:''); set('profPosition',found.position&&found.position!=='—'?found.position:'');
+    recalc();
+    box.innerHTML = `<div class="ds-alert ds-alert-success mt-2"><span class="ds-alert-icon">${icon('check',16)}</span><div><strong>พบบัญชีในระบบ — เชื่อมโยงอัตโนมัติ</strong>${escHtml(found.first)} ${escHtml(found.last)} · ${escHtml(found.faculty)} · รุ่น ${escHtml(String(found.year))} (${found.id})${isMem?'<br><strong>เป็นสมาชิกสมาคมอยู่แล้ว</strong> — รับสิทธิ์สมาชิกทันที':''}<br>ดึงข้อมูลเดิมมากรอกให้แล้ว ไม่ต้องกรอกซ้ำ</div></div>`;
+    // เป็นสมาชิกอยู่แล้ว → ซ่อนคำถามสมัครสมาชิก · ถ้าเจอข้อมูลแต่ยังไม่เป็นสมาชิก → คงคำถามไว้
+    setMemberQuestion(!isMem);
+  } else if(val.replace(/\D/g,'').length>=9){
+    box.innerHTML = `<div class="ds-alert ds-alert-info mt-2"><span class="ds-alert-icon">${icon('bell',16)}</span><div>ไม่พบเบอร์นี้ในระบบ — จะสร้างเป็นโปรไฟล์ใหม่</div></div>`;
+    setMemberQuestion(true);
+  } else { box.innerHTML=''; setMemberQuestion(true); }
+}
+function fillDemoPhone(){
+  const p = (typeof ALUMNI!=='undefined' && ALUMNI[0]) ? ALUMNI[0].phone : '';
+  const el = document.getElementById('profPhone'); if(el){ el.value = p; recalc(); checkPhoneLink(); }
+}
+function saveProfile(){
+  const join = document.querySelector('input[name="joinMember"]:checked');
+  // Auto-link: ถ้าเบอร์ตรงกับสมาชิก/ครูที่มีอยู่ → รับสิทธิ์สมาชิกทันที
+  if(phoneLinked && (phoneLinked.status==='member' || phoneLinked.status==='teacher')){
+    ME.memberStatus='approved';
+    if(!ME.memberNo) ME.memberNo = (typeof genMemberNo==='function'?genMemberNo():'M-2569-0043');
+  }
+  toast('บันทึกข้อมูลเรียบร้อย','success');
+  if(join && join.value==='yes' && ME.memberStatus!=='approved'){ enterMember(); openPayment(); }
+  else { show('s-done'); }
+}
 
 /* ───────── Member area (post-registration) ───────── */
-const ME = { first:'สมชาย', last:'ใจดี', id:'A1042', faculty:'คณะวิศวกรรมศาสตร์', major:'วิศวกรรมคอมพิวเตอร์', year:2560, company:'LINE Thailand', position:'Software Engineer', status:'member', photo:12 };
-let approved = false; // จำลองสถานะอนุมัติ
+const ME = { first:'สมชาย', last:'ใจดี', id:'A9001', faculty:'คณะวิศวกรรมศาสตร์', major:'วิศวกรรมคอมพิวเตอร์', year:2560, company:'LINE Thailand', position:'Software Engineer', status:'member', photo:12,
+  memberStatus:'none', memberNo:null, tickets:[] };
 
 function enterMember(){ show('s-member'); memberTab('home'); }
+/* ตั้งมุมมองตามสิทธิ์ (สำหรับตรวจสอบทีละ Role) */
+function setRoleView(role){
+  if(role==='member'){ ME.status='member'; ME.memberStatus='approved'; ME.memberNo = ME.memberNo || (typeof genMemberNo==='function'?genMemberNo():'M-2569-0043'); }
+  else if(role==='teacher'){ ME.status='teacher'; ME.first='วิชัย'; ME.last='สอนดี'; ME.position='อาจารย์'; ME.memberStatus='approved'; ME.memberNo = ME.memberNo || (typeof genMemberNo==='function'?genMemberNo():'M-2569-0044'); }
+  else { ME.status='alumni'; ME.memberStatus='none'; ME.memberNo=null; } // ศิษย์เก่าทั่วไป
+}
 
-// label the bottom tabbar with icons
+// QR placeholder (checkered)
+function qrBox(size){ const c=Math.max(6,Math.round(size/8)); return `<div style="width:${size}px;height:${size}px;border-radius:10px;border:3px solid #fff;box-shadow:0 0 0 1px var(--border);background:repeating-conic-gradient(#111 0 25%, #fff 0 50%) 0 0/${c}px ${c}px,#fff"></div>`; }
+
 function buildTabbar(){
-  const tabs = [['home','หน้าหลัก'],['events','กิจกรรม'],['profile','โปรไฟล์']];
+  const tabs = [['home','หน้าหลัก'],['events','กิจกรรม'],['tickets','บัตร'],['profile','โปรไฟล์']];
   document.querySelectorAll('.liff-tab').forEach(btn=>{
     const k = btn.dataset.mt, t = tabs.find(x=>x[0]===k);
-    btn.innerHTML = icon(k==='profile'?'users':k==='events'?'cal':'home',20) + `<span>${t[1]}</span>`;
+    const ic = k==='profile'?'users':k==='events'?'cal':k==='tickets'?'ticket':'home';
+    btn.innerHTML = icon(ic,20) + `<span>${t[1]}</span>`;
   });
 }
 let lastTab = 'home';
@@ -163,22 +235,40 @@ function memberTab(t){
   document.querySelector('.phone-body').scrollTop = 0;
 }
 
-// แสดงรายละเอียดข่าว/กิจกรรมแบบเต็มหน้า
+/* สถานะสมาชิกบนบัตร */
+function memberBadgeHTML(){
+  const base='background:rgba(255,255,255,.25);color:#fff;border:none';
+  if(ME.memberStatus==='approved') return `<span class="badge" style="${base}">${icon('check',13)} สมาชิกสมาคม · ${ME.memberNo}</span>`;
+  if(ME.memberStatus==='pending') return `<span class="badge" style="${base}">${icon('clock',13)} รออนุมัติการชำระเงิน</span>`;
+  return `<span class="badge" style="${base}">ยังไม่เป็นสมาชิกสมาคม</span>`;
+}
+
+/* แสดงรายละเอียดข่าว (จากฟีด) */
+/* จับคู่ข่าว(กิจกรรม)กับ Event ที่เปิดลงทะเบียน — เทียบจากชื่อ */
+function eventForNews(n){
+  if(!n) return null;
+  const norm = s => (s||'').replace(/\s+/g,'').toLowerCase();
+  const nt = norm(n.title);
+  return EVENTS.find(e=>{ const et=norm(e.title); return et===nt || et.includes(nt) || nt.includes(et); }) || null;
+}
 function openFeed(id){
-  const n = NEWS_ITEMS.find(x=>x.id===id);
+  const n = NEWS_ITEMS.find(x=>x.id===id); if(!n) return;
+  const ev = eventForNews(n);
+  const canRegister = ev && ev.status==='open';
   document.getElementById('memberContent').innerHTML = `
     <div>
       <div class="web-card-img" style="height:170px;background-image:url('${IMG(n.img)}')"></div>
       <div class="liff-pad">
         <button class="btn btn-ghost btn-sm" style="padding-left:0" onclick="memberTab(lastTab)">${icon('back',16)} ย้อนกลับ</button>
-        <div class="flex justify-between items-center mt-1 mb-2"><span class="badge ${catBadge(n.cat)}">${n.cat}</span><span class="type-caption">${n.date}</span></div>
-        <h2 class="type-h5" style="line-height:1.4">${n.title}</h2>
-        ${n.isEvent ? `<div class="ds-card ds-card-sm mt-3"><div class="ds-card-content" style="padding:.85rem 1rem">
-          ${detailRow('cal','วันที่', n.date)}${detailRow('clock','เวลา', n.time)}${detailRow('pin','สถานที่', n.place)}${detailRow('users','ค่าใช้จ่าย', n.fee)}
-        </div></div>` : ''}
-        <div class="mt-3">${n.body.map(p=>`<p class="type-body-sm mt-2">${p}</p>`).join('')}</div>
-        ${n.agenda ? `<div class="mt-3"><strong class="type-body-sm">กำหนดการ</strong>${n.agenda.map(a=>`<div class="flex gap-2 mt-2" style="align-items:flex-start"><span style="color:var(--primary)">•</span><span class="type-body-sm">${a}</span></div>`).join('')}</div>` : ''}
-        <div class="ds-alert ds-alert-info mt-4"><span class="ds-alert-icon">${icon('bell',16)}</span><div>${n.isEvent?'สนใจเข้าร่วม / สอบถามรายละเอียดเพิ่มเติมได้ที่ LINE Official ของสมาคม':'สอบถามเพิ่มเติมได้ที่ LINE Official ของสมาคม'}</div></div>
+        <div class="flex justify-between items-center mt-1 mb-2"><span class="badge ${catBadge(n.cat)}">${escHtml(n.cat)}</span><span class="type-caption">${escHtml(n.date)}</span></div>
+        <h2 class="type-h5" style="line-height:1.4">${escHtml(n.title)}</h2>
+        <div class="mt-3">${n.body.map(p=>`<p class="type-body-sm mt-2">${escHtml(p)}</p>`).join('')}</div>
+        ${n.agenda ? `<div class="mt-3"><strong class="type-body-sm">กำหนดการ</strong>${n.agenda.map(a=>`<div class="flex gap-2 mt-2" style="align-items:flex-start"><span style="color:var(--primary)">•</span><span class="type-body-sm">${escHtml(a)}</span></div>`).join('')}</div>` : ''}
+        ${canRegister
+          ? `<button class="btn btn-line btn-lg btn-block mt-4" onclick="openEvent('${ev.id}')">${icon('ticket',16)} ลงทะเบียนเข้าร่วมกิจกรรม</button>
+             <p class="type-caption text-center mt-2">หรือสอบถามเพิ่มเติมที่ LINE Official ของสมาคม</p>`
+          : `${n.isEvent?`<div class="ds-alert ds-alert-warning mt-4"><span class="ds-alert-icon">${icon('bell',16)}</span><div>กิจกรรมนี้ปิดรับลงทะเบียนแล้ว · สอบถามเพิ่มเติมที่ LINE Official ของสมาคม</div></div>`
+              :`<div class="ds-alert ds-alert-info mt-4"><span class="ds-alert-icon">${icon('bell',16)}</span><div>สอบถามเพิ่มเติมได้ที่ LINE Official ของสมาคม</div></div>`}`}
       </div>
     </div>`;
   document.querySelector('.phone-body').scrollTop = 0;
@@ -195,7 +285,7 @@ const MEMBER_VIEWS = {
         <div><div style="font-weight:600">สวัสดี, คุณ${ME.first}</div><div class="type-caption">ยินดีต้อนรับสู่พื้นที่สมาชิก</div></div>
       </div>
 
-      <div class="member-card mb-4">
+      <div class="member-card mb-3">
         <div class="flex justify-between" style="align-items:flex-start">
           <div>
             <div style="font-size:.7rem;opacity:.85">สมาคมศิษย์เก่า · บัตรสมาชิกดิจิทัล</div>
@@ -207,8 +297,14 @@ const MEMBER_VIEWS = {
             <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
           </div>
         </div>
-        <div class="mt-3"><span class="badge" id="memberStatusBadge" style="background:rgba(255,255,255,.25);color:#fff;border:none">${approved?icon('check',13)+' สมาชิกสมาคม (อนุมัติแล้ว)':icon('clock',13)+' รออนุมัติสมาชิก'}</span></div>
+        <div class="mt-3">${memberBadgeHTML()}</div>
       </div>
+
+      ${ME.memberStatus==='none' ? `<div class="ds-card ds-card-sm mb-4" style="background:var(--accent)"><div class="ds-card-content flex items-center justify-between gap-2">
+        <div><div style="font-weight:600;font-size:.9rem">สมัครเป็นสมาชิกสมาคม</div><div class="type-caption">ชำระค่าสมาชิกและรับสิทธิพิเศษ</div></div>
+        <button class="btn btn-line btn-sm" onclick="openPayment()">สมัคร</button></div></div>`
+      : ME.memberStatus==='pending' ? `<div class="ds-alert ds-alert-warning mb-4"><span class="ds-alert-icon">${icon('clock',16)}</span><div><strong>รออนุมัติการชำระเงิน</strong>เจ้าหน้าที่กำลังตรวจสอบสลิปของคุณ</div></div>`
+      : `<div class="ds-alert ds-alert-success mb-4"><span class="ds-alert-icon">${icon('check',16)}</span><div><strong>เป็นสมาชิกสมาคมแล้ว</strong>เลขสมาชิก ${ME.memberNo}</div></div>`}
 
       <div class="flex justify-between items-center mb-2"><strong>ข่าวสารที่ได้รับ</strong><span class="badge badge-ghost">${feed.length} รายการ</span></div>
       ${feed.map(f=>`
@@ -222,23 +318,25 @@ const MEMBER_VIEWS = {
     </div>`;
   },
 
-  events: () => {
-    const events = NEWS_ITEMS.filter(n=>n.isEvent);
-    return `
+  events: () => `
     <div class="liff-pad">
-      <h3 class="type-h5 mb-1">กิจกรรมที่กำลังจะมาถึง</h3>
-      <p class="type-caption mb-3">แตะเพื่อดูรายละเอียดกิจกรรม</p>
-      ${events.map(e=>`
-        <div class="event-item" style="cursor:pointer" onclick="openFeed('${e.id}')">
+      <h3 class="type-h5 mb-1">กิจกรรม & ลงทะเบียน</h3>
+      <p class="type-caption mb-3">แตะเพื่อดูรายละเอียดและลงทะเบียนรับ E-Ticket</p>
+      ${EVENTS.map(e=>{ const sold=ticketsSold(e), quota=ticketsQuota(e); const isMember=ME.memberStatus==='approved'; const startPrice=ticketPrice(e.tickets[0],isMember); return `
+        <div class="event-item" style="cursor:pointer" onclick="openEvent('${e.id}')">
           <div class="event-date">${e.dateShort[0]}<br>${e.dateShort[1]}</div>
           <div style="flex:1;min-width:0">
-            <div style="font-weight:600;font-size:.88rem">${e.title}</div>
-            <div class="type-caption">${icon('pin',12)} ${e.place}</div>
-            ${e.time&&e.time!=='—'?`<div class="type-caption">${icon('clock',12)} ${e.time}</div>`:''}
+            <div style="font-weight:600;font-size:.88rem">${escHtml(e.title)}</div>
+            <div class="type-caption">${icon('pin',12)} ${escHtml(e.place)}</div>
+            <div class="type-caption">${icon('users',12)} ${sold}/${quota} · เริ่ม ${startPrice>0?startPrice.toLocaleString()+'฿':'ฟรี'}${isMember&&e.tickets.some(t=>ticketHasMemberPrice(t))?' (ราคาสมาชิก)':''}</div>
           </div>
           <span style="color:var(--muted-foreground);transform:rotate(180deg)">${icon('back',16)}</span>
-        </div>`).join('')}
-    </div>`;
+        </div>`; }).join('')}
+    </div>`,
+
+  tickets: () => {
+    if(!ME.tickets.length) return `<div class="liff-pad text-center" style="padding-top:3rem"><div style="color:var(--muted-foreground)">${icon('ticket',48)}</div><h3 class="type-h5 mt-2">ยังไม่มีบัตร</h3><p class="type-body-sm muted mt-1">ลงทะเบียนกิจกรรมเพื่อรับ E-Ticket</p><button class="btn btn-line btn-md mt-3" onclick="memberTab('events')">ดูกิจกรรม</button></div>`;
+    return `<div class="liff-pad"><h3 class="type-h5 mb-1">บัตรของฉัน (E-Ticket)</h3><p class="type-caption mb-3">แสดง QR Code นี้ที่หน้างานเพื่อเช็คอิน</p>${ME.tickets.map(renderTicket).join('')}</div>`;
   },
 
   profile: () => `
@@ -246,18 +344,244 @@ const MEMBER_VIEWS = {
       <div class="text-center mb-3">
         <span class="avatar avatar-2xl" style="margin:0 auto"><img src="${face(ME.photo)}" alt=""></span>
         <div class="type-h5 mt-2">${ME.first} ${ME.last}</div>
-        <div class="flex gap-1 mt-1" style="justify-content:center"><span class="badge badge-success">เชื่อม LINE แล้ว</span><span class="badge ${approved?'badge-success':'badge-warning'}" id="profStatus">${approved?'สมาชิกสมาคม':'รออนุมัติ'}</span></div>
+        <div class="flex gap-1 mt-1" style="justify-content:center"><span class="badge badge-success">เชื่อม LINE แล้ว</span>${ME.memberStatus==='approved'?'<span class="badge badge-success">สมาชิกสมาคม</span>':ME.memberStatus==='pending'?'<span class="badge badge-warning">รออนุมัติ</span>':'<span class="badge badge-ghost">ยังไม่เป็นสมาชิก</span>'}</div>
       </div>
       <div class="ds-card ds-card-sm"><div class="ds-card-content">
-        ${[['รหัสสมาชิก',ME.id],['คณะ',ME.faculty],['สาขา',ME.major],['รุ่น (พ.ศ.)',ME.year],['บริษัท',ME.company],['ตำแหน่ง',ME.position]].map((r,i,arr)=>`
+        ${[['รหัส',ME.id],['เลขสมาชิก',ME.memberNo||'—'],['คณะ',ME.faculty],['สาขา',ME.major],['รุ่น (พ.ศ.)',ME.year],['บริษัท',ME.company],['ตำแหน่ง',ME.position]].map((r,i,arr)=>`
           <div class="flex justify-between" style="padding:.5rem 0;${i<arr.length-1?'border-bottom:1px solid var(--border)':''}"><span class="type-body-sm muted">${r[0]}</span><span style="font-weight:500;font-size:.85rem">${r[1]}</span></div>`).join('')}
       </div></div>
-      <button class="btn btn-line btn-md btn-block mt-3" onclick="show('s-form')">${icon('edit',16)} แก้ไขข้อมูลของฉัน</button>
+      ${ME.memberStatus==='none'?`<button class="btn btn-line btn-md btn-block mt-3" onclick="openPayment()">${icon('card',16)} สมัครสมาชิกสมาคม</button>`:''}
+      <button class="btn btn-outline btn-md btn-block mt-2" onclick="show('s-form')">${icon('edit',16)} แก้ไขข้อมูลของฉัน</button>
       <button class="btn btn-ghost btn-md btn-block mt-2" onclick="show('s-welcome')">${icon('logout',16)} ออกจากระบบ</button>
+      <div class="ds-separator"></div>
+      <button class="btn btn-ghost btn-sm btn-block" style="opacity:.8" onclick="toggleDemoMember()">${icon('star',14)} เดโม: ${ME.memberStatus==='approved'?'จำลองเป็นศิษย์เก่าทั่วไป':'จำลองเป็นสมาชิกสมาคม'} (เพื่อดูราคาบัตร 2 ระดับ)</button>
     </div>`,
 };
+function toggleDemoMember(){
+  if(ME.memberStatus==='approved'){ ME.memberStatus='none'; ME.memberNo=null; toast('จำลองเป็นศิษย์เก่าทั่วไปแล้ว','success'); }
+  else { ME.memberStatus='approved'; ME.memberNo = (typeof genMemberNo==='function'?genMemberNo():'M-2569-0043'); toast('จำลองเป็นสมาชิกสมาคมแล้ว · เห็นราคาสมาชิก','success'); }
+  memberTab('profile');
+}
+
+/* ── E-Ticket card ── */
+function renderTicket(t){
+  return `<div class="ds-card" style="overflow:hidden;margin-bottom:1rem">
+    <div style="background:linear-gradient(135deg,var(--brand-700),var(--brand-500));color:#fff;padding:1rem 1.1rem">
+      <div style="font-weight:700">${escHtml(t.eventTitle)}</div>
+      <div class="type-body-sm" style="opacity:.9">${icon('cal',12)} ${t.date} · ${icon('pin',12)} ${escHtml(t.place)}</div>
+    </div>
+    <div class="ds-card-content text-center">
+      ${qrBox(150)===''?'':'<div style="display:flex;justify-content:center">'+qrBox(150)+'</div>'}
+      <div class="type-caption mt-2">รหัสบัตร</div>
+      <div style="font-family:monospace;font-weight:700;letter-spacing:2px">${escHtml(t.code)}</div>
+      <div class="ds-separator"></div>
+      <div class="flex justify-between"><span class="type-body-sm muted">ผู้ถือบัตร</span><span class="type-body-sm" style="font-weight:500">${escHtml(t.holder)}</span></div>
+      <div class="flex justify-between mt-1"><span class="type-body-sm muted">ประเภทบัตร</span><span class="type-body-sm" style="font-weight:500">${escHtml(t.ticketName)}${t.qty>1?' ×'+t.qty:''}</span></div>
+      ${t.amount>0?`<div class="flex justify-between mt-1"><span class="type-body-sm muted">ชำระแล้ว</span><span class="type-body-sm" style="font-weight:500">${t.amount.toLocaleString()} ฿${t.tier==='member'?' · ราคาสมาชิก':''}</span></div>`:'<div class="flex justify-between mt-1"><span class="type-body-sm muted">ค่าเข้าร่วม</span><span class="type-body-sm" style="font-weight:500">ฟรี</span></div>'}
+    </div>
+  </div>`;
+}
+
+/* ── Event detail + registration ── */
+let evSel = {};
+function openEvent(id){
+  const e = EVENTS.find(x=>x.id===id); if(!e) return;
+  evSel = { eventId:id, ticketId:e.tickets[0].id };
+  renderEventDetail();
+}
+function renderEventDetail(){
+  const e = EVENTS.find(x=>x.id===evSel.eventId);
+  const isMember = ME.memberStatus==='approved';
+  const anyDiscount = e.tickets.some(t=>ticketHasMemberPrice(t));
+  document.getElementById('memberContent').innerHTML = `
+    <div>
+      <div class="web-card-img" style="height:170px;background-image:url('${IMG(e.img)}')"></div>
+      <div class="liff-pad">
+        <button class="btn btn-ghost btn-sm" style="padding-left:0" onclick="memberTab('events')">${icon('back',16)} ย้อนกลับ</button>
+        <span class="badge badge-warning mt-1">กิจกรรม</span>
+        <h2 class="type-h5 mt-1" style="line-height:1.4">${escHtml(e.title)}</h2>
+        <div class="ds-card ds-card-sm mt-2"><div class="ds-card-content" style="padding:.85rem 1rem">
+          ${detailRow('cal','วันที่', e.date)}${detailRow('clock','เวลา', e.time)}${detailRow('pin','สถานที่', escHtml(e.place))}
+        </div></div>
+        ${/^https?:\/\//i.test(e.mapUrl||'')?`<a class="btn btn-outline btn-sm btn-block mt-2" href="${(e.mapUrl||'').replace(/"/g,'&quot;')}" target="_blank" rel="noopener">${icon('pin',14)} ดูแผนที่ / เส้นทาง (Google Maps)</a>`:''}
+        <p class="type-body-sm mt-3">${escHtml(e.desc)}</p>
+        ${anyDiscount?(isMember
+          ? `<div class="ds-alert ds-alert-success mt-3"><span class="ds-alert-icon">${icon('check',16)}</span><div>คุณเป็น<strong>สมาชิกสมาคม</strong> — แสดง<strong>ราคาสมาชิก (พิเศษ)</strong>ให้อัตโนมัติ</div></div>`
+          : `<div class="ds-alert ds-alert-info mt-3"><span class="ds-alert-icon">${icon('star',16)}</span><div>คุณเป็น<strong>ศิษย์เก่าทั่วไป</strong> — แสดงราคาปกติ · <a class="btn-link" onclick="openPayment()">สมัครสมาชิก</a>เพื่อรับราคาพิเศษ</div></div>`):''}
+        <div class="type-overline muted mt-3 mb-2">เลือกประเภทบัตร</div>
+        ${e.tickets.map(t=>{ const left=t.quota-t.sold; const full=left<=0; const pay=ticketPrice(t,isMember); const hasM=ticketHasMemberPrice(t); return `
+          <label class="ds-card ds-card-sm" style="display:block;margin-bottom:.5rem;cursor:${full?'not-allowed':'pointer'};opacity:${full?'.55':'1'};border-color:${evSel.ticketId===t.id?'var(--primary)':'var(--border)'}" onclick="${full?'':`evSel.ticketId='${t.id}';renderEventDetail()`}">
+            <div class="ds-card-content flex items-center justify-between" style="padding:.7rem .9rem">
+              <div><div style="font-weight:500;font-size:.88rem">${escHtml(t.name)}</div><div class="type-caption">${full?'เต็มแล้ว':'เหลือ '+left+' ที่นั่ง'}</div></div>
+              <div class="flex items-center gap-2" style="text-align:right">
+                <div>
+                  <strong>${pay>0?pay.toLocaleString()+' ฿':'ฟรี'}</strong>
+                  ${hasM?(isMember
+                    ? `<div class="type-caption"><s>${(t.price||0).toLocaleString()} ฿</s> · ราคาสมาชิก</div>`
+                    : `<div class="type-caption">สมาชิก ${(t.priceMember||0)>0?(t.priceMember).toLocaleString()+' ฿':'ฟรี'}</div>`):''}
+                </div>
+                ${evSel.ticketId===t.id?'<span style="color:var(--primary)">'+icon('check',18)+'</span>':''}
+              </div>
+            </div>
+          </label>`; }).join('')}
+        <button class="btn btn-line btn-lg btn-block mt-3" onclick="registerEvent(1)">${icon('ticket',16)} ลงทะเบียนเดี่ยว · รับ E-Ticket</button>
+        <button class="btn btn-outline btn-md btn-block mt-2" onclick="openGroupBooking()">${icon('users',16)} ลงทะเบียนแบบกลุ่ม (Group)</button>
+      </div>
+    </div>`;
+  document.querySelector('.phone-body').scrollTop = 0;
+}
+function openGroupBooking(){
+  const e = EVENTS.find(x=>x.id===evSel.eventId);
+  document.getElementById('memberContent').innerHTML = `
+    <div class="liff-pad">
+      <button class="btn btn-ghost btn-sm" style="padding-left:0" onclick="renderEventDetail()">${icon('back',16)} ย้อนกลับ</button>
+      <h2 class="type-h5 mt-1">ลงทะเบียนแบบกลุ่ม</h2>
+      <p class="type-caption mb-3">${escHtml(e.title)}</p>
+      <div class="form-group"><label class="ds-label">จำนวนผู้เข้าร่วม</label><input class="ds-input" id="grpQty" type="number" min="2" value="3"></div>
+      <div class="form-group"><label class="ds-label">ระบุรุ่น (สำหรับจัดที่นั่ง)</label><input class="ds-input" id="grpYear" value="${ME.year}"></div>
+      <div class="ds-alert ds-alert-info"><span class="ds-alert-icon">${icon('bell',16)}</span><div>ระบบจะออก E-Ticket รวมสำหรับกลุ่ม และสร้างลิงก์ให้สมาชิกในกลุ่มกรอกข้อมูลเพิ่มเติม</div></div>
+      <button class="btn btn-line btn-lg btn-block mt-2" onclick="registerEvent(parseInt(document.getElementById('grpQty').value)||2, true)">${icon('ticket',16)} ยืนยันลงทะเบียนกลุ่ม</button>
+    </div>`;
+  document.querySelector('.phone-body').scrollTop = 0;
+}
+let groupLink = '';
+let evSlipAttached = false;
+function registerEvent(qty, group){
+  const e = EVENTS.find(x=>x.id===evSel.eventId);
+  const t = e.tickets.find(x=>x.id===evSel.ticketId);
+  const isMember = ME.memberStatus==='approved';
+  const unit = ticketPrice(t, isMember);
+  if(unit>0){ openEventPay(qty, group); return; }      // มีค่าใช้จ่าย → ไปหน้าชำระเงินก่อน
+  issueTicket(qty, group, 0, isMember?'member':'general'); // ฟรี → ออก E-Ticket ทันที
+}
+function issueTicket(qty, group, paidAmount, tier){
+  const e = EVENTS.find(x=>x.id===evSel.eventId);
+  const t = e.tickets.find(x=>x.id===evSel.ticketId);
+  t.sold += qty;
+  if(typeof saveEvents==='function') saveEvents(); // ยอดลงทะเบียนสะท้อนกลับไปแอดมิน (SSOT)
+  const code = 'TK' + e.id.slice(2) + '-' + String(1000 + Math.floor(Math.random()*9000)); // รหัสบัตรไม่ซ้ำ
+  ME.tickets.push({ id:'tk'+Date.now(), eventTitle:e.title, date:e.date, place:e.place, ticketName:t.name+(group?` · กลุ่ม ${qty} คน`:''), qty, holder:ME.first+' '+ME.last, code, amount:paidAmount, tier });
+  if(group){ showGroupResult(e, qty); }
+  else { toast(paidAmount>0?'ชำระเงินสำเร็จ · รับ E-Ticket แล้ว':'ลงทะเบียนสำเร็จ · รับ E-Ticket แล้ว','success'); memberTab('tickets'); }
+}
+/* ชำระค่าเข้าร่วมกิจกรรม — ใช้ราคาตามสถานะสมาชิก (สมาชิก/ทั่วไป) */
+function openEventPay(qty, group){
+  const e = EVENTS.find(x=>x.id===evSel.eventId);
+  const t = e.tickets.find(x=>x.id===evSel.ticketId);
+  const isMember = ME.memberStatus==='approved';
+  const unit = ticketPrice(t, isMember);
+  const total = unit*qty;
+  const tierLabel = isMember ? 'ราคาสมาชิก' : 'ราคาทั่วไป';
+  evSlipAttached = false;
+  document.getElementById('memberContent').innerHTML = `
+    <div class="liff-pad">
+      <button class="btn btn-ghost btn-sm" style="padding-left:0" onclick="renderEventDetail()">${icon('back',16)} ย้อนกลับ</button>
+      <h2 class="type-h5 mt-1">ชำระค่าเข้าร่วมกิจกรรม</h2>
+      <p class="type-caption mb-3">${escHtml(e.title)}${group?` · กลุ่ม ${qty} คน`:''}</p>
+      <div class="ds-card ds-card-sm mb-3"><div class="ds-card-content">
+        <div class="flex justify-between"><span class="type-body-sm muted">บัตร</span><span style="font-weight:500">${escHtml(t.name)}</span></div>
+        <div class="flex justify-between mt-1"><span class="type-body-sm muted">สถานะของคุณ</span><span><span class="badge ${isMember?'badge-success':'badge-ghost'}">${isMember?'สมาชิกสมาคม':'ศิษย์เก่าทั่วไป'}</span></span></div>
+        <div class="flex justify-between mt-1"><span class="type-body-sm muted">${tierLabel}/ใบ</span><span>${unit.toLocaleString()} ฿${qty>1?(' × '+qty+' คน'):''}</span></div>
+        <div class="ds-separator"></div>
+        <div class="flex justify-between"><span class="type-body-sm">ยอดชำระรวม</span><strong style="font-size:1.05rem">${total.toLocaleString()} ฿</strong></div>
+        ${!isMember && ticketHasMemberPrice(t)?`<div class="ds-alert ds-alert-info mt-2" style="padding:.5rem .7rem"><span class="ds-alert-icon">${icon('star',14)}</span><div class="type-caption">สมาชิกสมาคมจ่ายเพียง ${ticketPrice(t,true).toLocaleString()} ฿/ใบ · <a class="btn-link" onclick="openPayment()">สมัครสมาชิก</a></div></div>`:''}
+      </div></div>
+      <div class="ds-card ds-card-sm mb-3"><div class="ds-card-content">
+        <div class="type-caption">โอนเข้าบัญชี</div>
+        <div style="font-weight:500">ธ.กสิกรไทย 042-8-31507-6</div>
+        <div class="type-body-sm">สมาคมศิษย์เก่ามหาวิทยาลัยรัตนบุรี</div>
+      </div></div>
+      <div class="form-group"><label class="ds-label">แนบสลิปโอนเงิน <span class="req">*</span></label>
+        <div id="evSlipDrop" style="border:2px dashed var(--border);border-radius:14px;padding:1.5rem;text-align:center;background:#fff">
+          <div class="stat-icon" style="margin:0 auto .4rem">${icon('upload',20)}</div>
+          <div class="type-body-sm" style="font-weight:500">แตะเพื่อเลือกสลิป</div>
+          <div class="type-caption">.jpg .png</div>
+        </div>
+      </div>
+      <button class="btn btn-line btn-lg btn-block" onclick="submitEventPay(${qty}, ${group?1:0})">${icon('check',16)} ส่งสลิป & รับ E-Ticket</button>
+      <p class="type-caption text-center mt-2">เดโม: แนบสลิปแล้วกดส่ง = อนุมัติอัตโนมัติและออก E-Ticket (จริง ๆ จะเข้า Event Payment Queue ให้แอดมินตรวจ)</p>
+    </div>`;
+  document.querySelector('.phone-body').scrollTop = 0;
+  document.getElementById('evSlipDrop').onclick = ()=>{ evSlipAttached = true; document.getElementById('evSlipDrop').innerHTML = `<div style="color:oklch(0.5 0.18 145)">${icon('check',24)}</div><div class="type-body-sm mt-1" style="font-weight:500">แนบสลิปแล้ว: slip_${e.id}.jpg</div>`; };
+}
+function submitEventPay(qty, group){
+  if(!evSlipAttached){ toast('กรุณาแนบสลิปก่อน','warning'); return; }
+  const e = EVENTS.find(x=>x.id===evSel.eventId);
+  const t = e.tickets.find(x=>x.id===evSel.ticketId);
+  const isMember = ME.memberStatus==='approved';
+  const total = ticketPrice(t, isMember)*qty;
+  issueTicket(qty, group, total, isMember?'member':'general');
+}
+/* หน้าผลการจองกลุ่ม + ลิงก์ให้สมาชิกกรอกข้อมูล (Group Registration Link) */
+function showGroupResult(e, qty){
+  groupLink = 'https://liff.line.me/2001234567-grp/' + e.id.toLowerCase() + '-' + (e.id+String(ME.tickets.length)).toLowerCase().slice(-5);
+  document.getElementById('memberContent').innerHTML = `
+    <div class="liff-pad">
+      <div class="text-center" style="padding-top:.5rem">
+        <div style="color:oklch(0.5 0.18 145)">${icon('check',40)}</div>
+        <h3 class="type-h5 mt-2">จองกลุ่มสำเร็จ (${qty} คน)</h3>
+        <p class="type-body-sm muted" style="max-width:280px;margin:0 auto">คุณคือผู้จองหลัก · ส่งลิงก์ด้านล่างให้สมาชิกในกลุ่มกรอกข้อมูลของตนเอง</p>
+      </div>
+      <div class="ds-card ds-card-sm mt-3"><div class="ds-card-content">
+        <div class="type-overline muted mb-2">ลิงก์ลงทะเบียนสำหรับสมาชิกในกลุ่ม</div>
+        <div class="flex gap-2"><input class="ds-input ds-input-sm" value="${groupLink}" readonly style="font-size:.7rem"><button class="btn btn-default btn-sm" onclick="toast('คัดลอกลิงก์แล้ว','success')">คัดลอก</button></div>
+        <div style="display:flex;justify-content:center;margin-top:.9rem">${qrBox(120)}</div>
+        <div class="type-caption text-center mt-1">หรือให้สมาชิกสแกน QR เพื่อเปิดลิงก์</div>
+        <div class="ds-alert ds-alert-info mt-3"><span class="ds-alert-icon">${icon('users',16)}</span><div>ส่งให้สมาชิกอีก <strong>${qty-1} คน</strong> — แต่ละคนเปิดลิงก์เพื่อกรอกชื่อ-เบอร์ และรับ E-Ticket ของตนเอง ระบบจัดให้อยู่กลุ่ม/รุ่นเดียวกันอัตโนมัติ</div></div>
+      </div></div>
+      <button class="btn btn-outline btn-md btn-block mt-3" onclick="window.open('../register/?ev=${e.id}','_blank')">${icon('search',16)} ดูตัวอย่างหน้าที่สมาชิกกรอก (เปิดหน้าแยก)</button>
+      <button class="btn btn-line btn-md btn-block mt-2" onclick="memberTab('tickets')">ดู E-Ticket ของฉัน</button>
+    </div>`;
+  document.querySelector('.phone-body').scrollTop = 0;
+}
+
+/* ── Payment / Membership ── */
+function openPayment(){
+  document.getElementById('memberContent').innerHTML = `
+    <div class="liff-pad">
+      <button class="btn btn-ghost btn-sm" style="padding-left:0" onclick="memberTab('home')">${icon('back',16)} ย้อนกลับ</button>
+      <h2 class="type-h5 mt-1">สมัครสมาชิกสมาคม</h2>
+      <p class="type-caption mb-3">ชำระค่าสมาชิกและแนบสลิปเพื่อยืนยัน</p>
+      <div class="ds-card ds-card-sm mb-3"><div class="ds-card-content">
+        <div class="flex justify-between"><span class="type-body-sm muted">ค่าสมาชิก</span><strong>300 ฿</strong></div>
+        <div class="ds-separator"></div>
+        <div class="type-caption">โอนเข้าบัญชี</div>
+        <div style="font-weight:500">ธ.กสิกรไทย 042-8-31507-6</div>
+        <div class="type-body-sm">สมาคมศิษย์เก่ามหาวิทยาลัยรัตนบุรี</div>
+      </div></div>
+      <div class="form-group"><label class="ds-label">แนบสลิปโอนเงิน <span class="req">*</span></label>
+        <div id="slipDrop" style="border:2px dashed var(--border);border-radius:14px;padding:1.5rem;text-align:center;background:#fff">
+          <div class="stat-icon" style="margin:0 auto .4rem">${icon('upload',20)}</div>
+          <div class="type-body-sm" style="font-weight:500">แตะเพื่อเลือกสลิป</div>
+          <div class="type-caption">.jpg .png</div>
+        </div>
+      </div>
+      <button class="btn btn-line btn-lg btn-block" onclick="submitPayment()">${icon('check',16)} ส่งสลิป & สมัครสมาชิก</button>
+      <p class="type-caption text-center mt-2">เดโม: เมื่อแนบสลิปและกดส่ง ระบบจะ<strong>อนุมัติอัตโนมัติทันที</strong> เพื่อให้เห็นความแตกต่างก่อน/หลังเป็นสมาชิก</p>
+    </div>`;
+  document.querySelector('.phone-body').scrollTop = 0;
+  slipAttached = false;
+  document.getElementById('slipDrop').onclick = ()=>{ slipAttached = true; document.getElementById('slipDrop').innerHTML = `<div style="color:oklch(0.5 0.18 145)">${icon('check',24)}</div><div class="type-body-sm mt-1" style="font-weight:500">แนบสลิปแล้ว: slip_${ME.id}.jpg</div>`; };
+}
+let slipAttached = false;
+function submitPayment(){
+  if(!slipAttached){ toast('กรุณาแนบสลิปก่อน','warning'); return; }
+  // เดโม: อนุมัติอัตโนมัติทันที (จริง ๆ จะรอเจ้าหน้าที่ตรวจที่ Payment Queue)
+  ME.memberStatus = 'approved';
+  ME.memberNo = (typeof genMemberNo==='function' ? genMemberNo() : 'M-2569-0043');
+  toast('อนุมัติอัตโนมัติ (เดโม) · เป็นสมาชิกสมาคมแล้ว เลข '+ME.memberNo,'success');
+  memberTab('home');
+}
+
+/* หมายเหตุ: หน้าที่ผู้รับลิงก์กรอกข้อมูล ถูกแยกออกไปเป็นหน้าเดี่ยวที่ ../register/?ev=<id>
+   (ไม่อยู่ในแอป LIFF สมาชิก) — เรียกผ่าน window.open จากหน้าผลจองกลุ่มและหน้า Welcome */
 
 buildTabbar();
+/* เปิดด้วย ?role=member|teacher|alumni เพื่อตรวจสอบมุมมองของแต่ละสิทธิ์ทันที */
+(function initRoleView(){
+  const role = new URLSearchParams(location.search).get('role');
+  if(role && ['member','teacher','alumni'].includes(role)){ setRoleView(role); enterMember(); }
+})();
 </script>
 </body>
 </html>

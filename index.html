@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Alumni Data Platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/design-system.css?v=20260612b" />
-  <link rel="stylesheet" href="assets/app.css?v=20260612b" />
+  <link rel="stylesheet" href="assets/design-system.css?v=20260615e" />
+  <link rel="stylesheet" href="assets/app.css?v=20260615e" />
   <style>
     /* ════════ Hub — Bold hero + gradient mesh ════════ */
     body { background: var(--background); overflow-x: hidden; }
@@ -106,49 +106,65 @@
       <p>แพลตฟอร์มข้อมูลศิษย์เก่า / ครู แบบรวมศูนย์ (Single Source of Truth) — เลือกส่วนการทำงานที่ต้องการ ตัวอย่าง UI ครอบคลุมทุกโมดูลและทุก Role ตาม Proposal VER.4</p>
     </section>
 
-    <!-- Platform cards -->
+    <!-- 4 ทางเข้าแยกตามผู้ใช้งาน -->
     <section class="hub2-grid">
-      <!-- Admin -->
+      <!-- 1) เว็บแอดมิน -->
       <a class="hub2-card" href="admin/index.html">
         <div class="hub2-card-top" style="background:linear-gradient(135deg,#ff9eae,#f4738a)">
           <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
         </div>
         <div class="hub2-card-body">
-          <span class="badge badge-secondary" style="align-self:flex-start;margin-bottom:.6rem">Role · Administrator</span>
-          <h3 class="type-h4">Admin Web Portal</h3>
-          <p class="type-body-sm muted mt-1">เว็บพอร์ทัลสำหรับเจ้าหน้าที่มหาวิทยาลัย — บริหารจัดการข้อมูลและการสื่อสารทั้งหมด</p>
+          <span class="badge badge-destructive" style="align-self:flex-start;margin-bottom:.6rem">ผู้ดูแลระบบ</span>
+          <h3 class="type-h4">เว็บแอดมิน</h3>
+          <p class="type-body-sm muted mt-1">เว็บพอร์ทัลสำหรับเจ้าหน้าที่ — จัดการข้อมูล อนุมัติสลิป กิจกรรม และสื่อสารทั้งหมด</p>
           <div class="hub2-chips">
-            <span class="hub2-chip">Dashboard</span><span class="hub2-chip">จัดการศิษย์เก่า</span><span class="hub2-chip">CMS</span><span class="hub2-chip">Broadcast</span><span class="hub2-chip">ตั้งค่า</span>
+            <span class="hub2-chip">Dashboard</span><span class="hub2-chip">จัดการศิษย์เก่า</span><span class="hub2-chip">Payment Queue</span><span class="hub2-chip">Event</span><span class="hub2-chip">สิทธิ์ผู้ใช้</span>
           </div>
           <div class="hub2-cta btn-default" style="background:var(--primary);color:#fff;margin-top:auto">เข้าสู่ระบบผู้ดูแล →</div>
         </div>
       </a>
 
-      <!-- LIFF -->
-      <a class="hub2-card" href="liff/index.html">
-        <div class="hub2-card-top" style="background:linear-gradient(135deg,#7bd79b,#3ac083)">
-          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+      <!-- 2) LINE LIFF — สมาชิกสมาคม -->
+      <a class="hub2-card" href="liff/index.html?role=member">
+        <div class="hub2-card-top" style="background:linear-gradient(135deg,#3ac083,#2a9d6f)">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
         </div>
         <div class="hub2-card-body">
-          <span class="badge badge-secondary" style="align-self:flex-start;margin-bottom:.6rem">Role · Alumni / Teacher</span>
-          <h3 class="type-h4">LINE LIFF App</h3>
-          <p class="type-body-sm muted mt-1">แอปภายใน LINE สำหรับศิษย์เก่า / ครู — ยินยอม ลงทะเบียน และอัปเดตข้อมูลตนเอง</p>
+          <span class="badge badge-success" style="align-self:flex-start;margin-bottom:.6rem">LINE LIFF · สมาชิกสมาคม</span>
+          <h3 class="type-h4">LIFF — สมาชิก</h3>
+          <p class="type-body-sm muted mt-1">มุมมองสมาชิกที่ชำระค่าสมาชิกแล้ว — เห็นสิทธิ์พิเศษทั้งหมด</p>
           <div class="hub2-chips">
-            <span class="hub2-chip">PDPA Consent</span><span class="hub2-chip">เชื่อมบัญชี LINE</span><span class="hub2-chip">โปรไฟล์</span><span class="hub2-chip">ข่าวสาร</span>
+            <span class="hub2-chip">ราคาบัตรพิเศษ</span><span class="hub2-chip">บัตรสมาชิกดิจิทัล</span><span class="hub2-chip">ทำเนียบศิษย์เก่า</span><span class="hub2-chip">E-Ticket</span>
           </div>
-          <div class="hub2-cta btn-line" style="background:var(--line-green);color:#fff;margin-top:auto">เปิดผ่าน LINE →</div>
+          <div class="hub2-cta btn-line" style="background:var(--line-green);color:#fff;margin-top:auto">เข้าในมุมมองสมาชิก →</div>
         </div>
       </a>
 
-      <!-- Web -->
+      <!-- 3) LINE LIFF — ไม่ใช่สมาชิก (ศิษย์เก่าทั่วไป) -->
+      <a class="hub2-card" href="liff/index.html">
+        <div class="hub2-card-top" style="background:linear-gradient(135deg,#7bd79b,#5bbf86)">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        </div>
+        <div class="hub2-card-body">
+          <span class="badge badge-ghost" style="align-self:flex-start;margin-bottom:.6rem">LINE LIFF · ไม่ใช่สมาชิก</span>
+          <h3 class="type-h4">LIFF — ลงทะเบียน / ทั่วไป</h3>
+          <p class="type-body-sm muted mt-1">เริ่มที่<strong>หน้าลงทะเบียน</strong> (ยินยอม PDPA → กรอกโปรไฟล์) → ใช้งานแบบศิษย์เก่าทั่วไป ราคาปกติ</p>
+          <div class="hub2-chips">
+            <span class="hub2-chip">PDPA Consent</span><span class="hub2-chip">ลงทะเบียน/โปรไฟล์</span><span class="hub2-chip">ราคาปกติ</span><span class="hub2-chip">สมัครสมาชิกได้</span>
+          </div>
+          <div class="hub2-cta btn-outline" style="border:1px solid var(--border);color:var(--foreground);margin-top:auto">เริ่มหน้าลงทะเบียน →</div>
+        </div>
+      </a>
+
+      <!-- 4) Web Information -->
       <a class="hub2-card" href="web/index.html">
         <div class="hub2-card-top" style="background:linear-gradient(135deg,#9bb8f1,#5e8aea)">
           <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
         </div>
         <div class="hub2-card-body">
           <span class="badge badge-secondary" style="align-self:flex-start;margin-bottom:.6rem">Public · Web Information</span>
-          <h3 class="type-h4">เว็บไซต์สมาคมศิษย์เก่า</h3>
-          <p class="type-body-sm muted mt-1">เว็บประชาสัมพันธ์สาธารณะ — ข่าวสาร กิจกรรม สมาชิก และช่องทางติดต่อ</p>
+          <h3 class="type-h4">เว็บไซต์สาธารณะ</h3>
+          <p class="type-body-sm muted mt-1">เว็บประชาสัมพันธ์ — ข่าวสาร กิจกรรม สมาชิก และช่องทางติดต่อ</p>
           <div class="hub2-chips">
             <span class="hub2-chip">หน้าแรก</span><span class="hub2-chip">เกี่ยวกับเรา</span><span class="hub2-chip">ข่าว/กิจกรรม</span><span class="hub2-chip">สมาชิก</span><span class="hub2-chip">ติดต่อ</span>
           </div>
@@ -157,12 +173,22 @@
       </a>
     </section>
 
+    <!-- มุมมองเพิ่มเติม -->
+    <section style="margin-top:1.5rem">
+      <div class="ds-card" style="border:1px dashed oklch(0.85 0.02 25 / 0.9);background:oklch(1 0 0 / 0.6)"><div class="ds-card-content" style="padding:.9rem 1.2rem">
+        <span class="type-caption muted">มุมมองเพิ่มเติม:</span>
+        <a class="btn-link type-body-sm" style="margin-left:.5rem" href="liff/index.html?role=teacher">ครู (สมาชิก)</a> ·
+        <a class="btn-link type-body-sm" href="liff/index.html?role=alumni">ทั่วไป (เข้าพื้นที่สมาชิกเลย ข้ามลงทะเบียน)</a> ·
+        <a class="btn-link type-body-sm" href="register/index.html?ev=EV01">หน้าลงทะเบียนผู้รับลิงก์กลุ่ม</a>
+      </div></div>
+    </section>
+
     <!-- Architecture overview -->
     <section class="hub2-arch">
       <div class="type-overline muted mb-3">ภาพรวมสถาปัตยกรรม</div>
       <div class="hub2-arch-grid">
         <div class="hub2-arch-item"><span class="hub2-arch-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span><div><strong>3 แพลตฟอร์ม</strong><p class="type-body-sm muted">Web Application (Admin), LINE LIFF, Web Information</p></div></div>
-        <div class="hub2-arch-item"><span class="hub2-arch-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><div><strong>2 Roles</strong><p class="type-body-sm muted">Administrator · Alumni / Teacher</p></div></div>
+        <div class="hub2-arch-item"><span class="hub2-arch-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><div><strong>4 ระดับสิทธิ์</strong><p class="type-body-sm muted">ผู้ดูแล · ครู · สมาชิกสมาคม · ศิษย์เก่าทั่วไป</p></div></div>
         <div class="hub2-arch-item"><span class="hub2-arch-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span><div><strong>Core Functions</strong><p class="type-body-sm muted">Register, Profile, Dashboard, Alumni Mgmt, Broadcast</p></div></div>
         <div class="hub2-arch-item"><span class="hub2-arch-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><div><strong>Integrations</strong><p class="type-body-sm muted">LINE Login, LIFF, Messaging API · PDPA Consent</p></div></div>
       </div>

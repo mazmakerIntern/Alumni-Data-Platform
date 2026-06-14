@@ -30,7 +30,7 @@ function buildAlumni(n) {
   for (let i = 0; i < n; i++) {
     const fac = pick(FACULTIES, i); // even spread across all faculties
     const majors = MAJORS[fac];
-    const year = 2548 + (i * 7) % 22; // พ.ศ.
+    const year = 2545 + (i * 7) % 22; // พ.ศ. ที่จบ (2545–2566 ไม่เกินปีปัจจุบัน)
     const statusRoll = i % 5;
     const status = statusRoll === 0 ? 'teacher' : (statusRoll < 3 ? 'member' : 'alumni');
     const linked = i % 3 !== 2;
@@ -47,16 +47,27 @@ function buildAlumni(n) {
       status,
       life: i % 17 === 16 ? 'deceased' : 'alive',
       linked,
-      phone: '08' + String(10000000 + (i * 1234567) % 89999999),
+      phone: '08' + String(10000000 + ((i + 7) * 1234567) % 89999999),
       email: 'alumni' + (1000 + i) + '@mail.example.ac.th',
       pending: i % 11 === 4, // awaiting approval
-      joined: '2566-' + String(1 + i % 12).padStart(2, '0') + '-' + String(1 + i % 27).padStart(2, '0'),
+      joined: '25' + (67 + i % 3) + '-' + String(1 + i % 12).padStart(2, '0') + '-' + String(1 + i % 27).padStart(2, '0'), // เข้าระบบช่วง 2567–2569 (หลังจบ)
+      updated: '2569-' + String(1 + (i * 5) % 12).padStart(2, '0') + '-' + String(1 + (i * 3) % 28).padStart(2, '0'), // อัปเดตล่าสุด (พ.ศ.)
     });
   }
   return out;
 }
 
 const ALUMNI = buildAlumni(48);
+// เพิ่มโปรไฟล์ที่ตั้งใจให้ "อาจซ้ำ" (ชื่อ+รุ่น+คณะ ตรงกับ record เดิม) เพื่อสาธิต Possible Duplicate Detection
+[2, 10].forEach((src, k) => {
+  const o = ALUMNI[src];
+  ALUMNI.push(Object.assign({}, o, {
+    id: 'A' + (2000 + k), photo: 1 + ((50 + k) * 13) % 70,
+    email: 'alum' + (2000 + k) + '@gmail.com',
+    phone: '09' + String(10000000 + ((k + 2) * 7654321) % 89999999), linked: false, major: o.major,
+    updated: '2569-06-' + String(12 - k).padStart(2, '0'), // ตั้งวันอัปเดตให้ต่างจากใบเดิม เพื่อสาธิต "ข้อมูลล่าสุด"
+  }));
+});
 
 /* ---- ชุดข้อมูลข่าว/กิจกรรม (ใช้ร่วมกันทั้งเว็บไซต์ และ LINE LIFF) ----
    เก็บใน localStorage เพื่อให้ Admin (CMS) แก้แล้ว เว็บ + LIFF ดึงข้อมูลชุดเดียวกัน (Single Source)
@@ -64,51 +75,51 @@ const ALUMNI = buildAlumni(48);
    body: เนื้อหาเต็ม (อาเรย์ย่อหน้า) | dateShort: ['15','ธ.ค.'] ใช้แสดงบนการ์ดกิจกรรม          */
 const DEFAULT_NEWS = [
   {
-    id: 'n1', cat: 'กิจกรรม', img: 1011, date: '15 ธ.ค. 2566', dateShort: ['15', 'ธ.ค.'],
+    id: 'n1', cat: 'กิจกรรม', img: 1011, date: '19 ธ.ค. 2569', dateShort: ['19', 'ธ.ค.'],
     isEvent: true, broadcast: true,
-    title: 'งานคืนสู่เหย้า ประจำปี 2566 “รวมใจ คืนถิ่น”',
+    title: 'งานคืนสู่เหย้า ประจำปี 2569 “รวมใจ คืนถิ่น”',
     summary: 'ขอเชิญศิษย์เก่าทุกรุ่นร่วมงานคืนสู่เหย้า พบปะสังสรรค์ พร้อมมินิคอนเสิร์ตและของที่ระลึกสุดพิเศษ',
-    place: 'หอประชุมใหญ่ มหาวิทยาลัยตัวอย่าง', time: '17:00 – 21:00 น.', fee: 'ไม่มีค่าใช้จ่าย (ลงทะเบียนล่วงหน้า)',
+    place: 'หอประชุมใหญ่ มหาวิทยาลัยรัตนบุรี', time: '17:00 – 21:00 น.', fee: 'ไม่มีค่าใช้จ่าย (ลงทะเบียนล่วงหน้า)',
     organizer: 'ฝ่ายกิจกรรมสมาคมศิษย์เก่า',
     body: [
-      'สมาคมศิษย์เก่าขอเชิญศิษย์เก่าทุกคณะ ทุกรุ่นการศึกษา กลับมาพบปะสังสรรค์ในงานคืนสู่เหย้าประจำปี 2566 ภายใต้แนวคิด “รวมใจ คืนถิ่น” เพื่อรำลึกความหลังและกระชับความสัมพันธ์ระหว่างรุ่นพี่รุ่นน้อง',
+      'สมาคมศิษย์เก่าขอเชิญศิษย์เก่าทุกคณะ ทุกรุ่นการศึกษา กลับมาพบปะสังสรรค์ในงานคืนสู่เหย้าประจำปี 2569 ภายใต้แนวคิด “รวมใจ คืนถิ่น” เพื่อรำลึกความหลังและกระชับความสัมพันธ์ระหว่างรุ่นพี่รุ่นน้อง',
       'ภายในงานพบกับซุ้มอาหารจากร้านดังของศิษย์เก่า มินิคอนเสิร์ตจากวงดนตรีศิษย์เก่า การมอบรางวัลศิษย์เก่าดีเด่น และกิจกรรมจับสลากของรางวัลมูลค่ารวมกว่า 100,000 บาท',
       'ผู้สนใจสามารถลงทะเบียนล่วงหน้าผ่าน LINE Official ของสมาคม เพื่อรับของที่ระลึกพิเศษและสำรองที่นั่ง (จำนวนจำกัด 500 ท่าน)'
     ],
     agenda: ['17:00 ลงทะเบียน & ถ่ายรูปรุ่น', '18:00 พิธีเปิด & กล่าวต้อนรับโดยนายกสมาคม', '19:00 มอบรางวัลศิษย์เก่าดีเด่น', '20:00 มินิคอนเสิร์ต & จับสลากรางวัล']
   },
   {
-    id: 'n2', cat: 'โครงการ', img: 1024, date: '2 ธ.ค. 2566', dateShort: ['02', 'ธ.ค.'],
+    id: 'n2', cat: 'โครงการ', img: 1024, date: '2 มิ.ย. 2569', dateShort: ['02', 'มิ.ย.'],
     isEvent: false, broadcast: true,
-    title: 'เปิดรับบริจาคกองทุนการศึกษา ปีการศึกษา 2566',
+    title: 'เปิดรับบริจาคกองทุนการศึกษา ปีการศึกษา 2569',
     summary: 'ร่วมสมทบทุนการศึกษาให้นักศึกษารุ่นน้องที่เรียนดีแต่ขาดแคลนทุนทรัพย์ เป้าหมาย 50 ทุน',
-    place: 'สำนักงานสมาคมศิษย์เก่า', time: 'รับบริจาคถึง 31 ม.ค. 2567', fee: 'ร่วมบริจาคได้ตามกำลังศรัทธา',
+    place: 'สำนักงานสมาคมศิษย์เก่า', time: 'รับบริจาคถึง 31 ส.ค. 2569', fee: 'ร่วมบริจาคได้ตามกำลังศรัทธา',
     organizer: 'คณะกรรมการกองทุนการศึกษา',
     body: [
-      'สมาคมศิษย์เก่าเปิดรับบริจาคเข้ากองทุนการศึกษาประจำปี 2566 โดยมีเป้าหมายมอบทุนการศึกษาจำนวน 50 ทุน ทุนละ 10,000 บาท ให้แก่นักศึกษาปัจจุบันที่มีผลการเรียนดีแต่ขาดแคลนทุนทรัพย์',
+      'สมาคมศิษย์เก่าเปิดรับบริจาคเข้ากองทุนการศึกษาประจำปี 2569 โดยมีเป้าหมายมอบทุนการศึกษาจำนวน 50 ทุน ทุนละ 10,000 บาท ให้แก่นักศึกษาปัจจุบันที่มีผลการเรียนดีแต่ขาดแคลนทุนทรัพย์',
       'ทุกยอดบริจาคสามารถนำไปลดหย่อนภาษีได้ และสมาคมจะรายงานความคืบหน้าการมอบทุนให้ผู้บริจาคทราบอย่างโปร่งใส',
       'ศิษย์เก่าที่ประสงค์ร่วมบริจาค สามารถโอนผ่านบัญชีกองทุน หรือสอบถามรายละเอียดเพิ่มเติมผ่าน LINE Official ของสมาคม'
     ],
     agenda: null
   },
   {
-    id: 'n3', cat: 'ข่าวสาร', img: 1033, date: '20 พ.ย. 2566', dateShort: ['20', 'พ.ย.'],
+    id: 'n3', cat: 'ข่าวสาร', img: 1033, date: '12 พ.ค. 2569', dateShort: ['12', 'พ.ค.'],
     isEvent: true, broadcast: true,
-    title: 'ขอเชิญประชุมใหญ่สามัญประจำปี 2566',
+    title: 'ขอเชิญประชุมใหญ่สามัญประจำปี 2569',
     summary: 'เชิญสมาชิกสมาคมเข้าร่วมประชุมใหญ่ รับทราบผลการดำเนินงานและร่วมเลือกตั้งคณะกรรมการชุดใหม่',
     place: 'ห้องประชุมแกรนด์ ชั้น 3 อาคารศิษย์เก่าสัมพันธ์', time: '09:00 – 12:00 น.', fee: 'เฉพาะสมาชิกสมาคม',
     organizer: 'เลขาธิการสมาคมศิษย์เก่า',
     body: [
-      'ตามข้อบังคับสมาคม ขอเชิญสมาชิกสมาคมศิษย์เก่าทุกท่านเข้าร่วมการประชุมใหญ่สามัญประจำปี 2566 เพื่อรับทราบรายงานผลการดำเนินงาน งบการเงิน และร่วมพิจารณาวาระสำคัญของสมาคม',
-      'ในการประชุมครั้งนี้จะมีการเลือกตั้งคณะกรรมการบริหารชุดใหม่ วาระปี 2567–2569 จึงขอเชิญสมาชิกร่วมใช้สิทธิ์ออกเสียงโดยพร้อมเพรียงกัน',
+      'ตามข้อบังคับสมาคม ขอเชิญสมาชิกสมาคมศิษย์เก่าทุกท่านเข้าร่วมการประชุมใหญ่สามัญประจำปี 2569 เพื่อรับทราบรายงานผลการดำเนินงาน งบการเงิน และร่วมพิจารณาวาระสำคัญของสมาคม',
+      'ในการประชุมครั้งนี้จะมีการเลือกตั้งคณะกรรมการบริหารชุดใหม่ วาระปี 2569–2571 จึงขอเชิญสมาชิกร่วมใช้สิทธิ์ออกเสียงโดยพร้อมเพรียงกัน',
       'สมาชิกที่ไม่สามารถเข้าร่วมด้วยตนเอง สามารถมอบฉันทะตามแบบฟอร์มที่สมาคมกำหนดได้'
     ],
     agenda: ['09:00 ลงทะเบียน & ตรวจสอบองค์ประชุม', '09:30 รายงานผลการดำเนินงานประจำปี', '10:30 พิจารณางบการเงิน', '11:00 เลือกตั้งคณะกรรมการชุดใหม่']
   },
   {
-    id: 'n4', cat: 'กิจกรรม', img: 1041, date: '24 ธ.ค. 2566', dateShort: ['24', 'ธ.ค.'],
+    id: 'n4', cat: 'กิจกรรม', img: 1041, date: '26 ก.ค. 2569', dateShort: ['26', 'ก.ค.'],
     isEvent: true, broadcast: false,
-    title: 'สัมมนาเครือข่ายธุรกิจศิษย์เก่า: Business Networking Night',
+    title: 'สัมมนาเครือข่ายธุรกิจศิษย์เก่า',
     summary: 'พบปะผู้ประกอบการศิษย์เก่า แลกเปลี่ยนโอกาสทางธุรกิจ พร้อมเวที Pitching สำหรับสตาร์ทอัพรุ่นใหม่',
     place: 'อาคารนวัตกรรม ชั้น 9', time: '18:30 – 21:30 น.', fee: 'สมาชิก 200 บาท / บุคคลทั่วไป 500 บาท',
     organizer: 'ชมรมผู้ประกอบการศิษย์เก่า',
@@ -116,36 +127,36 @@ const DEFAULT_NEWS = [
       'ชมรมผู้ประกอบการศิษย์เก่าจัดงาน Business Networking Night เพื่อเปิดโอกาสให้ศิษย์เก่าที่เป็นเจ้าของธุรกิจและผู้บริหารได้พบปะ แลกเปลี่ยนประสบการณ์ และต่อยอดความร่วมมือทางธุรกิจ',
       'ไฮไลต์ของงานคือเวที Pitching ให้สตาร์ทอัพศิษย์เก่ารุ่นใหม่นำเสนอไอเดียต่อนักลงทุน พร้อมช่วงจับคู่ธุรกิจ (Business Matching) แบบเป็นกันเอง'
     ],
-    agenda: ['18:30 Welcome Reception', '19:00 Keynote: เทรนด์ธุรกิจ 2024', '20:00 Startup Pitching', '20:45 Business Matching']
+    agenda: ['18:30 Welcome Reception', '19:00 Keynote: เทรนด์ธุรกิจ 2569', '20:00 Startup Pitching', '20:45 Business Matching']
   },
   {
-    id: 'n5', cat: 'ข่าวสาร', img: 1052, date: '28 ต.ค. 2566', dateShort: ['28', 'ต.ค.'],
+    id: 'n5', cat: 'ข่าวสาร', img: 1052, date: '20 เม.ย. 2569', dateShort: ['20', 'เม.ย.'],
     isEvent: false, broadcast: false,
-    title: 'ประกาศรายชื่อศิษย์เก่าดีเด่น ประจำปี 2566',
-    summary: 'สมาคมประกาศเกียรติคุณศิษย์เก่าดีเด่น 12 ท่าน ผู้สร้างชื่อเสียงและคุณประโยชน์ต่อสังคม',
+    title: 'ประกาศรายชื่อศิษย์เก่าดีเด่น ประจำปี 2569',
+    summary: 'สมาคมประกาศเกียรติคุณศิษย์เก่าดีเด่นหลายท่าน ผู้สร้างชื่อเสียงและคุณประโยชน์ต่อสังคม',
     place: '—', time: '—', fee: '—',
     organizer: 'คณะกรรมการสรรหาศิษย์เก่าดีเด่น',
     body: [
-      'สมาคมศิษย์เก่าขอแสดงความยินดีกับศิษย์เก่าดีเด่นประจำปี 2566 จำนวน 12 ท่าน ซึ่งได้รับการคัดเลือกจากผลงานอันโดดเด่นใน 4 สาขา ได้แก่ ความสำเร็จในวิชาชีพ การบริการสังคม นวัตกรรม และการสนับสนุนสถาบัน',
+      'สมาคมศิษย์เก่าขอแสดงความยินดีกับศิษย์เก่าดีเด่นประจำปี 2569 หลายท่าน ซึ่งได้รับการคัดเลือกจากผลงานอันโดดเด่นใน 4 สาขา ได้แก่ ความสำเร็จในวิชาชีพ การบริการสังคม นวัตกรรม และการสนับสนุนสถาบัน',
       'ศิษย์เก่าดีเด่นทุกท่านจะเข้ารับโล่เกียรติคุณในงานคืนสู่เหย้าประจำปี และจะได้รับการบันทึกเรื่องราวลงในหอเกียรติยศศิษย์เก่าเพื่อเป็นแรงบันดาลใจแก่รุ่นน้อง'
     ],
     agenda: null
   },
   {
-    id: 'n6', cat: 'กิจกรรม', img: 1062, date: '10 ม.ค. 2567', dateShort: ['10', 'ม.ค.'],
+    id: 'n6', cat: 'กิจกรรม', img: 1062, date: '8 ก.พ. 2569', dateShort: ['08', 'ก.พ.'],
     isEvent: true, broadcast: true,
-    title: 'Alumni Run 2024 เดิน-วิ่งการกุศล',
+    title: 'Alumni Run 2569 เดิน-วิ่งการกุศล',
     summary: 'ร่วมเดิน-วิ่งการกุศลระดมทุนพัฒนาห้องสมุดและกองทุนการศึกษา ระยะ Fun Run 5 กม. และ Mini Marathon 10 กม.',
-    place: 'สนามกีฬากลาง มหาวิทยาลัยตัวอย่าง', time: 'เริ่ม 05:30 น.', fee: 'Fun Run 350 บาท / Mini 500 บาท',
+    place: 'สนามกีฬากลาง มหาวิทยาลัยรัตนบุรี', time: 'เริ่ม 05:30 น.', fee: 'Fun Run 350 บาท / Mini 500 บาท',
     organizer: 'ชมรมกีฬาศิษย์เก่า',
     body: [
-      'กลับมาอีกครั้งกับงานเดิน-วิ่งการกุศล Alumni Run 2024 ที่รวมศิษย์เก่า นักศึกษา และครอบครัว มาออกกำลังกายร่วมกันท่ามกลางบรรยากาศภายในมหาวิทยาลัย',
+      'กลับมาอีกครั้งกับงานเดิน-วิ่งการกุศล Alumni Run 2569 ที่รวมศิษย์เก่า นักศึกษา และครอบครัว มาออกกำลังกายร่วมกันท่ามกลางบรรยากาศภายในมหาวิทยาลัย',
       'รายได้หลังหักค่าใช้จ่ายทั้งหมดสมทบเข้ากองทุนพัฒนาห้องสมุดและกองทุนการศึกษา ผู้สมัครทุกท่านจะได้รับเสื้อวิ่งและเหรียญที่ระลึกดีไซน์พิเศษ'
     ],
     agenda: ['05:30 ปล่อยตัว Mini Marathon 10 กม.', '06:00 ปล่อยตัว Fun Run 5 กม.', '07:30 มอบรางวัล & กิจกรรมหลังวิ่ง']
   },
   {
-    id: 'n7', cat: 'โครงการ', img: 1074, date: '20 พ.ย. 2566', dateShort: ['20', 'พ.ย.'],
+    id: 'n7', cat: 'โครงการ', img: 1074, date: '15 มี.ค. 2569', dateShort: ['15', 'มี.ค.'],
     isEvent: false, broadcast: false,
     title: 'โครงการ Mentorship รุ่นพี่สู่รุ่นน้อง',
     summary: 'เปิดรับสมัครศิษย์เก่าเป็นพี่เลี้ยง (Mentor) ให้คำปรึกษาด้านอาชีพแก่นักศึกษาปัจจุบัน',
@@ -200,13 +211,15 @@ const DEFAULT_SITE = {
     { id: 'o3', name: 'คุณอรรถพล ใจกว้าง', photo: 33, field: 'บริการสังคมดีเด่น', desc: 'อุทิศตนช่วยเหลือชุมชนและก่อตั้งมูลนิธิเพื่อการศึกษา' },
   ],
   benefits: [
-    { id: 'b1', icon: 'graduation', title: 'ส่วนลดคอร์สอบรม', desc: 'ลด 20% สำหรับคอร์สพัฒนาทักษะของมหาวิทยาลัย' },
-    { id: 'b2', icon: 'users', title: 'เครือข่ายศิษย์เก่า', desc: 'เข้าถึงกลุ่มเครือข่ายธุรกิจและสายอาชีพทั่วประเทศ' },
-    { id: 'b3', icon: 'bell', title: 'ข่าวสารก่อนใคร', desc: 'รับข่าวสารและสิทธิ์จองกิจกรรมพิเศษก่อนบุคคลทั่วไป' },
-    { id: 'b4', icon: 'pin', title: 'ใช้พื้นที่ในสถาบัน', desc: 'จองห้องสมุด / Co-working ในอัตราสมาชิก' },
+    { id: 'b1', icon: 'bell', title: 'ข่าวสารแบบเฉพาะเจาะจง', desc: 'รับข่าวสาร ประชาสัมพันธ์ และกิจกรรมผ่าน Broadcast ใน LINE แบบเจาะจงตามรุ่น ปีที่จบ หรือคณะ ไม่พลาดข่าวที่เกี่ยวกับคุณ' },
+    { id: 'b2', icon: 'users', title: 'เข้าถึงฐานข้อมูลศิษย์เก่า/ครู', desc: 'ดูรายชื่อศิษย์เก่าแยกตามรุ่น ประวัติ และข้อมูลติดต่อเพื่อนร่วมรุ่นหรือครู จากฐานข้อมูลส่วนกลาง' },
+    { id: 'b3', icon: 'ticket', title: 'บัตรสมาชิก & E-Ticket', desc: 'มี Member ID และ QR Code ส่วนตัว ใช้เป็นบัตรสมาชิกหรือตั๋วเข้างานผ่านมือถือ ไม่ต้องพกบัตรกระดาษ' },
+    { id: 'b4', icon: 'edit', title: 'จัดการโปรไฟล์ด้วยตนเอง', desc: 'เข้าถึงและแก้ไขข้อมูลส่วนตัว (เช่น เบอร์โทร) ผ่าน LINE LIFF ได้ตลอดเวลา ให้ข้อมูลถูกต้องเป็นปัจจุบัน' },
+    { id: 'b5', icon: 'star', title: 'แคมเปญพิเศษ & รางวัล', desc: 'ร่วมแคมเปญตรวจสอบ/อัปเดตข้อมูล (Verify) พร้อมลุ้นรับรางวัลสำหรับสมาชิกที่อัปเดตข้อมูลเป็นปัจจุบัน' },
+    { id: 'b6', icon: 'cal', title: 'ลงทะเบียนเข้างานสะดวก', desc: 'จอง/ซื้อบัตรกิจกรรมได้ง่าย ระบบจัดกลุ่มที่นั่งตามรุ่นอัตโนมัติ ให้ได้นั่งกับเพื่อนร่วมรุ่น' },
   ],
 };
-const SITE_STORE_KEY = 'adp_site_v1';
+const SITE_STORE_KEY = 'adp_site_v2';
 function loadSite() {
   try { const s = localStorage.getItem(SITE_STORE_KEY); if (s) { const o = JSON.parse(s); if (o && typeof o === 'object') return o; } } catch (e) {}
   return null;
@@ -226,11 +239,108 @@ function catBadge(cat) {
   return cat === 'กิจกรรม' ? 'badge-warning' : cat === 'ข่าวสาร' ? 'badge-info' : cat === 'โครงการ' ? 'badge-success' : 'badge-secondary';
 }
 
+/* ════════════════════════════════════════════════════════════
+   Phase 1+2 data models (Payment & Membership, Event & Ticketing)
+   ภาพ mock ระดับ session — ตรงตาม Proposal (ฉบับขยาย)
+   ════════════════════════════════════════════════════════════ */
+
+/* ---- Payment Queue / Membership (Phase 1) ----
+   verify: matched (VerifySlip ตรง) | mismatch (ยอดไม่ตรง) | error (API ล่ม → ตรวจมือ)
+   status: pending | approved | rejected                                            */
+const MEMBER_FEE = 300; // ค่าสมาชิกที่ต้องชำระ (บาท)
+const PAYMENTS = [
+  { id:'PM01', first:'ธนกร', last:'สินสมบัติ', photo:1+(4*13)%70, alumniId:'A1004', faculty:'คณะครุศาสตร์', year:2554,
+    amount:300, bank:'ธนาคารกสิกรไทย', bankShort:'KB', bankColor:'#138f2d',
+    fromName:'นาย ธนกร ส.', fromAcct:'xxx-x-x4938-2', date:'12 มิ.ย. 2569', time:'09:14 น.', ref:'0150621409KB7731', phone:'081-234-5678', linked:true,
+    verify:'matched', status:'pending', memberNo:null },
+  { id:'PM02', first:'ณัฐริกา', last:'รักเรียน', photo:1+(5*13)%70, alumniId:'A1009', faculty:'คณะนิติศาสตร์', year:2561,
+    amount:250, bank:'ธนาคารไทยพาณิชย์', bankShort:'SCB', bankColor:'#4e2a84',
+    fromName:'น.ส. ณัฐริกา ร.', fromAcct:'xxx-xx-x712-5', date:'12 มิ.ย. 2569', time:'20:41 น.', ref:'2025061220SCB552', phone:'089-555-1212', linked:false,
+    verify:'mismatch', status:'pending', memberNo:null },
+  { id:'PM03', first:'อาทิตยา', last:'บุญมา', photo:1+(14*13)%70, alumniId:'A1014', faculty:'คณะครุศาสตร์', year:2555,
+    amount:300, bank:'ธนาคารกรุงเทพ', bankShort:'BBL', bankColor:'#1e4598',
+    fromName:'น.ส. อาทิตยา บ.', fromAcct:'xxx-x-x2210-9', date:'11 มิ.ย. 2569', time:'18:05 น.', ref:'0110621805BBL118', phone:'062-848-1190', linked:true,
+    verify:'error', status:'pending', memberNo:null },
+  { id:'PM04', first:'ปกรณ์', last:'วัฒนกุล', photo:1+(26*13)%70, alumniId:'A1026', faculty:'คณะวิทยาศาสตร์', year:2554,
+    amount:300, bank:'ธนาคารกสิกรไทย', bankShort:'KB', bankColor:'#138f2d',
+    fromName:'นาย ปกรณ์ ว.', fromAcct:'xxx-x-x0042-1', date:'10 มิ.ย. 2569', time:'14:22 น.', ref:'0100621422KB4456', phone:'081-700-4421', linked:true,
+    verify:'matched', status:'approved', memberNo:'M-2569-0042' },
+];
+const VERIFY_LABEL = { matched:'ตรงกับยอด', mismatch:'ยอดไม่ตรง', error:'ตรวจอัตโนมัติไม่ได้' };
+const VERIFY_BADGE = { matched:'badge-success', mismatch:'badge-warning', error:'badge-destructive' };
+let MEMBER_SEQ = 43; // ลำดับเลขสมาชิกถัดไป
+function genMemberNo(){ return 'M-' + (new Date().getFullYear()+543) + '-' + String(MEMBER_SEQ++).padStart(4,'0'); }
+
+/* ---- Event & Ticketing (Phase 2) ----
+   tickets: ประเภทบัตร (ชื่อ/ราคา/ขายแล้ว/โควตา)
+   เก็บใน localStorage แบบเดียวกับข่าว: Admin สร้าง/แก้ไข → เว็บ + LIFF อ่านที่เดียวกัน    */
+/* ราคา 2 ระดับต่อบัตร: price = ราคาทั่วไป (ศิษย์เก่าทั่วไป), priceMember = ราคาสมาชิกสมาคม (พิเศษ) */
+const DEFAULT_EVENTS = [
+  { id:'EV01', title:'งานคืนสู่เหย้า ประจำปี 2569 “รวมใจ คืนถิ่น”', date:'19 ธ.ค. 2569', dateShort:['19','ธ.ค.'], time:'17:00 – 21:00 น.', place:'หอประชุมใหญ่ มหาวิทยาลัยรัตนบุรี', mapUrl:'https://maps.google.com/?q=หอประชุมใหญ่+มหาวิทยาลัย', img:1011, status:'open',
+    desc:'งานพบปะสังสรรค์ศิษย์เก่าทุกรุ่น พร้อมมินิคอนเสิร์ตและของที่ระลึก',
+    tickets:[ {id:'T1',name:'บัตรทั่วไป',price:0,priceMember:0,sold:342,quota:500} ] },
+  { id:'EV02', title:'สัมมนาเครือข่ายธุรกิจศิษย์เก่า', date:'26 ก.ค. 2569', dateShort:['26','ก.ค.'], time:'18:30 – 21:30 น.', place:'อาคารนวัตกรรม ชั้น 9', mapUrl:'https://maps.google.com/?q=อาคารนวัตกรรม', img:1041, status:'open',
+    desc:'พบปะผู้ประกอบการศิษย์เก่า แลกเปลี่ยนโอกาสทางธุรกิจ',
+    tickets:[ {id:'T1',name:'บัตรสัมมนา',price:500,priceMember:200,sold:74,quota:120} ] },
+  { id:'EV03', title:'Alumni Run 2569 เดิน-วิ่งการกุศล', date:'8 ก.พ. 2569', dateShort:['08','ก.พ.'], time:'เริ่ม 05:30 น.', place:'สนามกีฬากลาง', mapUrl:'https://maps.google.com/?q=สนามกีฬากลาง', img:1062, status:'closed',
+    desc:'เดิน-วิ่งการกุศลระดมทุนพัฒนาห้องสมุดและกองทุนการศึกษา (จัดเมื่อต้นปี — ปิดรับลงทะเบียนแล้ว)',
+    tickets:[ {id:'T1',name:'Fun Run 5 กม.',price:350,priceMember:300,sold:392,quota:400}, {id:'T2',name:'Mini Marathon 10 กม.',price:500,priceMember:450,sold:288,quota:300} ] },
+];
+const EVENTS_STORE_KEY = 'adp_events_v4';
+function loadEvents() {
+  try { const s = localStorage.getItem(EVENTS_STORE_KEY); if (s) { const a = JSON.parse(s); if (Array.isArray(a)) return a; } } catch (e) {}
+  return null;
+}
+function saveEvents() { try { localStorage.setItem(EVENTS_STORE_KEY, JSON.stringify(EVENTS)); return true; } catch (e) { return false; } }
+function resetEvents() { try { localStorage.removeItem(EVENTS_STORE_KEY); } catch (e) {} EVENTS.length = 0; DEFAULT_EVENTS.forEach(x => EVENTS.push(JSON.parse(JSON.stringify(x)))); }
+const EVENTS = loadEvents() || DEFAULT_EVENTS.map(x => JSON.parse(JSON.stringify(x)));
+function ticketsSold(e){ return e.tickets.reduce((s,t)=>s+(t.sold||0),0); }
+function ticketsQuota(e){ return e.tickets.reduce((s,t)=>s+(t.quota||0),0); }
+// ราคาที่ใช้จริงตามสถานะสมาชิก (true = สมาชิกสมาคม → ราคาพิเศษถ้ามี)
+function ticketPrice(t, isMember){ return (isMember && (t.priceMember!=null)) ? t.priceMember : (t.price||0); }
+function ticketHasMemberPrice(t){ return t.priceMember!=null && t.priceMember!==t.price; }
+// escape HTML สำหรับ interpolate ค่าที่ผู้ใช้กรอก (กัน XSS ในจุดที่ render ด้วย innerHTML)
+function escHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// ค้นหาศิษย์เก่าจากเบอร์โทร (Auto-link เมื่อพบเบอร์ในระบบ) — normalize เฉพาะตัวเลข
+function findAlumniByPhone(phone){
+  const norm = s => (s||'').replace(/\D/g,'');
+  const p = norm(phone); if(p.length < 9) return null;
+  return ALUMNI.find(a => norm(a.phone)===p) || null;
+}
+
+/* ---- Event Payment Queue (แยกจาก Membership Queue) ----
+   ค่าบัตรงาน/ค่าเข้าร่วมกิจกรรม — ตรวจสลิปแยกต่างหาก, อนุมัติแล้ว = ออก E-Ticket (ไม่ออกเลขสมาชิก) */
+const EVENT_PAYMENTS = [
+  { id:'EP01', first:'สิริพร', last:'วงศ์ทอง', photo:1+(8*13)%70, alumniId:'A1008', year:2558, eventId:'EV02', eventTitle:'สัมมนาเครือข่ายธุรกิจศิษย์เก่า', ticketName:'บัตรสัมมนา', tier:'member', qty:1,
+    amount:200, bank:'ธนาคารกสิกรไทย', bankShort:'KB', bankColor:'#138f2d', fromName:'น.ส. สิริพร ว.', fromAcct:'xxx-x-x8841-0', date:'12 มิ.ย. 2569', time:'10:22 น.', ref:'0120621022KB9021', phone:'081-884-1099', linked:true, verify:'matched', status:'pending' },
+  { id:'EP02', first:'กิตติพงษ์', last:'แสนสุข', photo:1+(11*13)%70, alumniId:'A1011', year:2552, eventId:'EV02', eventTitle:'สัมมนาเครือข่ายธุรกิจศิษย์เก่า', ticketName:'บัตรสัมมนา', tier:'general', qty:2,
+    amount:800, bank:'ธนาคารไทยพาณิชย์', bankShort:'SCB', bankColor:'#4e2a84', fromName:'นาย กิตติพงษ์ ส.', fromAcct:'xxx-xx-x335-8', date:'12 มิ.ย. 2569', time:'19:03 น.', ref:'2025061219SCB880', phone:'083-335-8080', linked:false, verify:'mismatch', status:'pending' },
+  { id:'EP03', first:'ชนิกานต์', last:'พูนผล', photo:1+(19*13)%70, alumniId:'A1019', year:2560, eventId:'EV03', eventTitle:'Alumni Run 2569 เดิน-วิ่งการกุศล', ticketName:'Fun Run 5 กม.', tier:'member', qty:1,
+    amount:300, bank:'ธนาคารกรุงเทพ', bankShort:'BBL', bankColor:'#1e4598', fromName:'น.ส. ชนิกานต์ พ.', fromAcct:'xxx-x-x1190-4', date:'11 มิ.ย. 2569', time:'21:47 น.', ref:'0110621147BBL553', phone:'062-119-0440', linked:true, verify:'matched', status:'approved' },
+  { id:'EP04', first:'ภาคิน', last:'เจริญสุข', photo:1+(22*13)%70, alumniId:'A1022', year:2557, eventId:'EV02', eventTitle:'สัมมนาเครือข่ายธุรกิจศิษย์เก่า', ticketName:'บัตรสัมมนา', tier:'general', qty:1,
+    amount:500, bank:'ธนาคารกสิกรไทย', bankShort:'KB', bankColor:'#138f2d', fromName:'นาย ภาคิน จ.', fromAcct:'xxx-x-x7720-3', date:'10 มิ.ย. 2569', time:'13:10 น.', ref:'0100621310KB1180', phone:'081-772-0331', linked:true, verify:'matched', status:'approved' },
+];
+const EVENT_TIER_LABEL = { member:'ราคาสมาชิก', general:'ราคาทั่วไป' };
+
+/* ---- Admin Activity Log + PDPA Consent Log (Technical) ---- */
+const ADMIN_LOGS = [
+  { admin:'admin', action:'อนุมัติการชำระเงิน', target:'A1026 (ออกเลข M-2569-0042)', time:'10 มิ.ย. 2569 14:22' },
+  { admin:'admin', action:'แก้ไขข้อมูลศิษย์เก่า', target:'A1002', time:'10 มิ.ย. 2569 11:05' },
+  { admin:'admin', action:'Merge โปรไฟล์', target:'A1031 → A1007', time:'9 มิ.ย. 2569 16:40' },
+  { admin:'admin', action:'ลบ (Soft Delete) ศิษย์เก่า', target:'A1099', time:'9 มิ.ย. 2569 09:12' },
+  { admin:'admin', action:'ส่ง Broadcast', target:'กลุ่มสมาชิกสมาคม (20 คน)', time:'8 มิ.ย. 2569 10:30' },
+];
+function logAction(action, target){ ADMIN_LOGS.unshift({ admin:'admin', action, target, time: todayTH() + ' ' + nowHM() }); }
+function nowHM(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+
 /* ---- UI helpers ---- */
 function initials(first, last) { return (first?.[0] || '') + (last?.[0] || ''); }
 
-/* Real-people profile photo (pravatar provides real face photos, ids 1–70) */
-function face(n) { return 'https://i.pravatar.cc/150?img=' + (((Math.abs(n) - 1) % 70) + 1); }
+/* Real-people profile photo — รับได้ทั้ง id (1–70 = รูปสต็อก), URL หรือไฟล์อัปโหลด (data URL) */
+function face(n) {
+  if (typeof n === 'string' && (n.startsWith('http') || n.startsWith('data:') || n.startsWith('blob:'))) return n;
+  return 'https://i.pravatar.cc/150?img=' + (((Math.abs(parseInt(n)||1) - 1) % 70) + 1);
+}
 /* Cover image resolver — รับได้ทั้ง seed(ตัวเลข), URL หรือไฟล์ที่อัปโหลด (data URL) */
 function IMG(seed) {
   if (typeof seed === 'string' && (seed.startsWith('http') || seed.startsWith('data:') || seed.startsWith('blob:'))) return seed;
@@ -331,6 +441,10 @@ const ICON = {
   instagram:'<rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>',
   trendUp:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
   trendDown:'<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+  card:'<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+  ticket:'<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>',
+  scan:'<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" x2="17" y1="12" y2="12"/>',
+  qr:'<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/>',
 };
 function icon(name, size) {
   const s = size || 18;

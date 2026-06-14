@@ -5,22 +5,90 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>สมาคมศิษย์เก่า · Alumni Data Platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/design-system.css?v=20260612a" />
-  <link rel="stylesheet" href="../assets/app.css?v=20260612a" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260615e" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260615e" />
+  <style>
+    /* ════════ WordPress-style theme (Web Information) ════════ */
+    /* Top utility bar */
+    .wp-topbar { background: var(--brand-700); color: oklch(1 0 0 / 0.85); font-size: .8rem; }
+    .wp-topbar-in { max-width: 1140px; margin: 0 auto; padding: .4rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .wp-topbar a { color: oklch(1 0 0 / 0.9); text-decoration: none; }
+    .wp-topbar .tinfo { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; }
+    .wp-topbar .tinfo span { display: inline-flex; align-items: center; gap: .35rem; }
+    .wp-topbar .tsocial { display: flex; gap: .5rem; align-items: center; }
+    .wp-topbar .tsocial a { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 5px; background: oklch(1 0 0 / 0.15); }
+
+    /* Main header */
+    .wp-header { position: sticky; top: 0; z-index: 50; background: oklch(1 0 0 / 0.96); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .wp-header-in { max-width: 1140px; margin: 0 auto; padding: .7rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .wp-brand { display: flex; align-items: center; gap: .65rem; font-weight: 800; font-size: 1.15rem; letter-spacing: -.01em; }
+    .wp-brand .logo { width: 42px; height: 42px; border-radius: 11px; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+    .wp-brand small { display: block; font-size: .62rem; font-weight: 400; color: var(--muted-foreground); letter-spacing: .04em; }
+    .wp-menu { display: flex; gap: .15rem; align-items: center; }
+    .wp-menu a { padding: .55rem .8rem; border-radius: 8px; font-size: .9rem; font-weight: 500; text-decoration: none; color: var(--foreground); cursor: pointer; position: relative; }
+    .wp-menu a:hover { color: var(--primary); }
+    .wp-menu a.active { color: var(--primary); }
+    .wp-menu a.active::after { content: ''; position: absolute; left: .8rem; right: .8rem; bottom: -.72rem; height: 3px; border-radius: 3px; background: var(--primary); }
+    .wp-search-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--foreground); }
+    .wp-search-btn:hover { background: var(--muted); }
+
+    /* Breadcrumb */
+    .wp-crumb { background: var(--muted); border-bottom: 1px solid var(--border); }
+    .wp-crumb-in { max-width: 1140px; margin: 0 auto; padding: .7rem 1.5rem; font-size: .82rem; color: var(--muted-foreground); display: flex; gap: .4rem; align-items: center; }
+    .wp-crumb a { color: var(--primary); text-decoration: none; cursor: pointer; }
+
+    /* Blog (news) layout */
+    .wp-blog { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; align-items: start; }
+    .wp-post { display: flex; flex-direction: column; }
+    .wp-post .meta { display: flex; gap: .8rem; align-items: center; font-size: .78rem; color: var(--muted-foreground); margin: .5rem 0; flex-wrap: wrap; }
+    .wp-post .meta .author { display: inline-flex; align-items: center; gap: .35rem; }
+    .wp-widget { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1.25rem; }
+    .wp-widget h4 { font-size: .95rem; font-weight: 700; padding-bottom: .6rem; margin-bottom: .8rem; border-bottom: 2px solid var(--primary); display: inline-block; }
+    .wp-cat { display: flex; justify-content: space-between; align-items: center; padding: .45rem 0; border-bottom: 1px solid var(--border); font-size: .85rem; cursor: pointer; }
+    .wp-cat:hover { color: var(--primary); }
+    .wp-recent { display: flex; gap: .7rem; padding: .55rem 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .wp-recent:hover .rt { color: var(--primary); }
+    .wp-recent img { width: 58px; height: 48px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+
+    /* Footer bottom bar */
+    .wp-footbottom { background: oklch(0.12 0 0); color: oklch(0.7 0 0); font-size: .8rem; }
+    .wp-footbottom-in { max-width: 1140px; margin: 0 auto; padding: .9rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+
+    @media (max-width: 860px){ .wp-menu { display: none; } .wp-blog { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
 
-<header class="web-nav">
-  <div class="brand"><span class="logo" data-ico="graduation"></span><span>สมาคมศิษย์เก่า</span></div>
-  <nav class="web-menu" id="webMenu">
-    <a onclick="nav('home')" class="active" data-p="home">หน้าแรก</a>
-    <a onclick="nav('about')" data-p="about">เกี่ยวกับเรา</a>
-    <a onclick="nav('news')" data-p="news">ข่าวและกิจกรรม</a>
-    <a onclick="nav('members')" data-p="members">สมาชิกศิษย์เก่า</a>
-    <a onclick="nav('contact')" data-p="contact">ติดต่อเรา</a>
-  </nav>
-  <div class="flex gap-2 items-center">
-    <a href="../liff/index.html" class="btn btn-line btn-md">สมัครสมาชิก</a>
+<!-- WordPress-style top utility bar -->
+<div class="wp-topbar">
+  <div class="wp-topbar-in">
+    <div class="tinfo">
+      <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.34a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.74-1.27a2 2 0 0 1 2.11-.45c.74.34 1.53.57 2.34.7A2 2 0 0 1 22 16.92z"/></svg> 02-562-0199</span>
+      <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> alumni@rattanaburi.ac.th</span>
+      <span>จันทร์–ศุกร์ 09:00–17:00 น.</span>
+    </div>
+    <div class="tsocial">
+      <a title="Facebook" data-ico="facebook"></a><a title="LINE" href="../liff/index.html" data-ico="link"></a><a title="Instagram" data-ico="instagram"></a>
+      <a href="../admin/index.html" style="background:none;width:auto;padding-left:.4rem">เข้าสู่ระบบผู้ดูแล</a>
+    </div>
+  </div>
+</div>
+
+<!-- Main header -->
+<header class="wp-header">
+  <div class="wp-header-in">
+    <div class="wp-brand"><span class="logo" data-ico="graduation"></span><span>สมาคมศิษย์เก่า<small>มหาวิทยาลัยรัตนบุรี</small></span></div>
+    <nav class="wp-menu" id="webMenu">
+      <a onclick="nav('home')" class="active" data-p="home">หน้าแรก</a>
+      <a onclick="nav('about')" data-p="about">เกี่ยวกับเรา</a>
+      <a onclick="nav('news')" data-p="news">ข่าวและกิจกรรม</a>
+      <a onclick="nav('members')" data-p="members">สมาชิกศิษย์เก่า</a>
+      <a onclick="nav('contact')" data-p="contact">ติดต่อเรา</a>
+    </nav>
+    <div class="flex gap-2 items-center">
+      <button class="wp-search-btn" onclick="nav('news')" title="ค้นหา" data-ico="search"></button>
+      <a href="../liff/index.html" class="btn btn-line btn-md">สมัครสมาชิก</a>
+    </div>
   </div>
 </header>
 
@@ -40,7 +108,7 @@
     </div>
     <div>
       <div style="color:#fff;font-weight:600;margin-bottom:.5rem">ติดต่อ</div>
-      <p>02-123-4567<br>contact@alumni.ac.th<br>LINE: @alumni-demo</p>
+      <p>02-562-0199<br>alumni@rattanaburi.ac.th<br>LINE: @rattanaburi</p>
     </div>
     <div>
       <div style="color:#fff;font-weight:600;margin-bottom:.5rem">ติดตามเรา</div>
@@ -51,12 +119,23 @@
       </div>
     </div>
   </div>
-  <div class="web-wrap" style="border-top:1px solid oklch(0.3 0 0);margin-top:1.5rem;padding-top:1rem;font-size:.78rem">© 2566 สมาคมศิษย์เก่ามหาวิทยาลัยตัวอย่าง · <a href="../index.html">กลับหน้าหลักแพลตฟอร์ม</a></div>
+  <div class="web-wrap" style="border-top:1px solid oklch(0.3 0 0);margin-top:1.5rem;padding-top:1rem;font-size:.78rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between">
+    <span>นโยบายความเป็นส่วนตัว (PDPA) · เงื่อนไขการใช้งาน · แผนผังเว็บไซต์</span>
+    <a href="../index.html">กลับหน้าหลักแพลตฟอร์ม</a>
+  </div>
 </footer>
+
+<!-- WordPress-style colophon -->
+<div class="wp-footbottom">
+  <div class="wp-footbottom-in">
+    <span>© 2569 สมาคมศิษย์เก่ามหาวิทยาลัยรัตนบุรี สงวนลิขสิทธิ์</span>
+    <span>พัฒนาระบบโดย MAZ</span>
+  </div>
+</div>
 
 <div class="ds-overlay" id="webOverlay" onclick="if(event.target===this)closeWeb()"></div>
 
-<script src="../assets/app.js?v=20260612a"></script>
+<script src="../assets/app.js?v=20260615e"></script>
 <script>
 // ข่าว/กิจกรรม ใช้ชุดข้อมูลกลาง NEWS_ITEMS จาก app.js (ใช้ร่วมกับ LINE LIFF)
 const BOARD = [
@@ -103,7 +182,7 @@ PAGES.home = () => `
   <section class="web-section">
     <div class="web-wrap">
       <div class="grid-stats">
-        ${[['12,480','ศิษย์เก่าในระบบ'],['8,200+','เชื่อมบัญชี LINE'],['320','กิจกรรมต่อปี'],['45','รุ่นการศึกษา']].map(s=>{const num=parseInt(s[0].replace(/[^0-9]/g,''))||0;const suf=s[0].replace(/[0-9,]/g,'');return `<div class="stat-card text-center"><div class="stat-value" style="color:var(--primary)" data-count="${num}" data-suffix="${suf}">0</div><div class="stat-label">${s[1]}</div></div>`}).join('')}
+        ${(()=>{ const total=(typeof ALUMNI!=='undefined'?ALUMNI.length:0); const linked=(typeof ALUMNI!=='undefined'?ALUMNI.filter(a=>a.linked).length:0); const gens=(typeof ALUMNI!=='undefined'?new Set(ALUMNI.map(a=>a.year)).size:0); const news=(typeof NEWS_ITEMS!=='undefined'?NEWS_ITEMS.length:0); return [[total,'ศิษย์เก่าในระบบ'],[linked,'เชื่อมบัญชี LINE'],[news,'ข่าว & กิจกรรม'],[gens,'รุ่นการศึกษา']]; })().map(s=>`<div class="stat-card text-center"><div class="stat-value" style="color:var(--primary)" data-count="${s[0]}" data-suffix="">0</div><div class="stat-label">${s[1]}</div></div>`).join('')}
       </div>
     </div>
   </section>
@@ -159,10 +238,33 @@ PAGES.news = () => `
     <div class="web-wrap">
       <div class="section-title">ข่าวและกิจกรรม</div>
       <p class="section-sub">ข่าวประชาสัมพันธ์ กิจกรรมย้อนหลัง และเรื่องราวศิษย์เก่าดีเด่น</p>
-      <div class="ds-tab-list mb-4">
-        <button class="ds-tab active" onclick="filterNews(this,'ทั้งหมด')">ทั้งหมด</button><button class="ds-tab" onclick="filterNews(this,'ข่าวสาร')">ข่าวสาร</button><button class="ds-tab" onclick="filterNews(this,'กิจกรรม')">กิจกรรม</button><button class="ds-tab" onclick="filterNews(this,'โครงการ')">โครงการ</button>
+      <div class="wp-blog">
+        <div>
+          <div class="ds-tab-list mb-4" id="newsTabs">
+            <button class="ds-tab active" onclick="filterNews(this,'ทั้งหมด')">ทั้งหมด</button><button class="ds-tab" onclick="filterNews(this,'ข่าวสาร')">ข่าวสาร</button><button class="ds-tab" onclick="filterNews(this,'กิจกรรม')">กิจกรรม</button><button class="ds-tab" onclick="filterNews(this,'โครงการ')">โครงการ</button>
+          </div>
+          <div id="newsGrid" style="display:flex;flex-direction:column;gap:1.5rem">${NEWS_ITEMS.map(blogPost).join('')}</div>
+        </div>
+        <aside>
+          <div class="wp-widget">
+            <h4>ค้นหา</h4>
+            <div class="search-box">${icon('search',16)}<input class="ds-input" placeholder="ค้นหาข่าว..." oninput="searchNews(this.value)"></div>
+          </div>
+          <div class="wp-widget">
+            <h4>หมวดหมู่</h4>
+            ${['ข่าวสาร','กิจกรรม','โครงการ'].map(c=>`<div class="wp-cat" onclick="filterNewsCat('${c}')"><span>${c}</span><span class="badge ${catBadge(c)}">${NEWS_ITEMS.filter(n=>n.cat===c).length}</span></div>`).join('')}
+          </div>
+          <div class="wp-widget">
+            <h4>เรื่องล่าสุด</h4>
+            ${NEWS_ITEMS.slice(0,4).map(n=>`<div class="wp-recent" onclick="openNews('${n.id}')"><img src="${IMG(n.img)}" alt=""><div><div class="rt type-body-sm" style="font-weight:500;line-height:1.3">${n.title}</div><div class="type-caption mt-1">${n.date}</div></div></div>`).join('')}
+          </div>
+          <div class="wp-widget" style="background:var(--accent);border-color:transparent;text-align:center">
+            <div style="font-weight:700">เป็นสมาชิกกับเรา</div>
+            <p class="type-body-sm muted mt-1 mb-2">รับข่าวสารและสิทธิพิเศษผ่าน LINE</p>
+            <a href="../liff/index.html" class="btn btn-line btn-md btn-block">สมัครสมาชิก</a>
+          </div>
+        </aside>
       </div>
-      <div class="card-grid" id="newsGrid">${NEWS_ITEMS.map(n=>newsCard(n)).join('')}</div>
     </div>
   </section>
 
@@ -266,7 +368,7 @@ PAGES.contact = () => `
         <div>
           <div class="ds-card mb-4">
             <div class="ds-card-content">
-              ${[['pin','ที่อยู่','123 ถนนตัวอย่าง แขวงตัวอย่าง เขตเมือง กรุงเทพฯ 10100'],['phone','โทรศัพท์','02-123-4567'],['mail','อีเมล','contact@alumni.ac.th'],['clock','เวลาทำการ','จันทร์–ศุกร์ 09:00–17:00 น.']].map(c=>`
+              ${[['pin','ที่อยู่','199 ถนนพหลโยธิน แขวงจตุจักร เขตจตุจักร กรุงเทพฯ 10900'],['phone','โทรศัพท์','02-562-0199'],['mail','อีเมล','alumni@rattanaburi.ac.th'],['clock','เวลาทำการ','จันทร์–ศุกร์ 09:00–17:00 น.']].map(c=>`
                 <div class="flex gap-3 items-center" style="padding:.6rem 0;border-bottom:1px solid var(--border)"><span class="stat-icon">${icon(c[0],18)}</span><div><div class="type-caption">${c[1]}</div><div style="font-weight:500;font-size:.9rem">${c[2]}</div></div></div>`).join('')}
               <a href="../liff/index.html" class="btn btn-line btn-md btn-block mt-3">${icon('link',16)} ติดต่อผ่าน LINE Official</a>
             </div>
@@ -286,6 +388,27 @@ function newsCard(n){
     <div class="ds-card-content"><div class="flex justify-between items-center mb-2"><span class="badge ${catBadge(n.cat)}">${n.cat}</span><span class="type-caption">${n.date}</span></div>
     <div class="type-h5">${n.title}</div><p class="type-body-sm muted mt-1">${n.summary}</p>
     <span class="btn-link type-body-sm mt-2" style="display:inline-block">อ่านต่อ →</span></div></div>`;
+}
+/* WordPress-style blog post (stacked, with featured image + meta + excerpt) */
+function blogPost(n){
+  return `<article class="ds-card wp-post" style="overflow:hidden;cursor:pointer" onclick="openNews('${n.id}')">
+    <div class="web-card-img" style="height:210px;background-image:url('${IMG(n.img)}')"></div>
+    <div class="ds-card-content">
+      <div class="meta"><span class="badge ${catBadge(n.cat)}">${n.cat}</span><span>${icon('cal',12)} ${n.date}</span><span class="author">${icon('users',12)} ${n.organizer||'สมาคมศิษย์เก่า'}</span></div>
+      <h3 class="type-h4" style="line-height:1.3">${n.title}</h3>
+      <p class="type-body muted mt-1">${n.summary}</p>
+      <span class="btn btn-outline btn-sm mt-3" style="align-self:flex-start">อ่านต่อ →</span>
+    </div>
+  </article>`;
+}
+function renderNewsList(list){
+  const el = document.getElementById('newsGrid'); if(!el) return;
+  el.innerHTML = list.length ? list.map(blogPost).join('') : '<div class="ds-card"><div class="ds-card-content text-center muted" style="padding:2.5rem">ไม่พบข่าวตามเงื่อนไข</div></div>';
+}
+function searchNews(q){ q=(q||'').trim().toLowerCase(); renderNewsList(NEWS_ITEMS.filter(n=>!q||(n.title+n.summary).toLowerCase().includes(q))); }
+function filterNewsCat(cat){
+  document.querySelectorAll('#newsTabs .ds-tab').forEach(t=>t.classList.toggle('active', t.textContent.trim()===cat));
+  renderNewsList(NEWS_ITEMS.filter(n=>n.cat===cat));
 }
 
 /* ---- Web modal system ---- */
@@ -362,12 +485,13 @@ function filterNews(btn, cat){
   newsCat = cat;
   btn.parentElement.querySelectorAll('.ds-tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  const list = cat==='ทั้งหมด' ? NEWS_ITEMS : NEWS_ITEMS.filter(n=>n.cat===cat);
-  document.getElementById('newsGrid').innerHTML = list.length ? list.map(n=>newsCard(n)).join('') : '<p class="muted">ไม่มีรายการในหมวดนี้</p>';
+  renderNewsList(cat==='ทั้งหมด' ? NEWS_ITEMS : NEWS_ITEMS.filter(n=>n.cat===cat));
 }
 
+const CRUMB = { about:'เกี่ยวกับเรา', news:'ข่าวและกิจกรรม', members:'สมาชิกศิษย์เก่า', contact:'ติดต่อเรา' };
 function nav(p){
-  document.getElementById('webMain').innerHTML = PAGES[p]();
+  const crumb = p!=='home' ? `<div class="wp-crumb"><div class="wp-crumb-in"><a onclick="nav('home')">หน้าแรก</a><span>›</span><span style="color:var(--foreground)">${CRUMB[p]||''}</span></div></div>` : '';
+  document.getElementById('webMain').innerHTML = crumb + PAGES[p]();
   document.querySelectorAll('#webMenu a').forEach(a=>a.classList.toggle('active', a.dataset.p===p));
   fillIcons();
   animateCharts(document.getElementById('webMain'));

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ลงทะเบียนเข้าร่วมงาน · ลิงก์เชิญ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260615e" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260615e" />
+</head>
+<body>
+<div class="liff-stage">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:1rem">
+    <div class="phone">
+      <div class="phone-statusbar"><span>9:41</span><span style="display:inline-flex;align-items:center;gap:5px">
+        <svg width="15" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="20" x2="4" y2="15"/><line x1="10" y1="20" x2="10" y2="11"/><line x1="16" y1="20" x2="16" y2="7"/><line x1="22" y1="20" x2="22" y2="3" opacity=".5"/></svg>
+        <svg width="20" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/><rect x="4" y="9" width="11" height="6" rx="1" fill="currentColor" stroke="none"/></svg>
+      </span></div>
+      <div class="phone-linebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.5 2 2 5.6 2 10c0 4 3.8 7.3 8.9 7.9.3.1.7.2.8.5.1.2.1.6 0 .9l-.1.9c0 .3-.2 1 .9.6 1.1-.5 6-3.5 8.2-6C21.9 13 22 11.5 22 10c0-4.4-4.5-8-10-8z"/></svg>
+        <span>ลงทะเบียนเข้าร่วมงาน</span>
+        <span style="margin-left:auto;font-weight:400;opacity:.85;font-size:.78rem">ลิงก์เชิญ</span>
+      </div>
+      <div class="phone-body">
+        <div class="liff-screen active" id="s-reg">
+          <div style="background:linear-gradient(135deg,var(--brand-700),var(--brand-500));color:#fff;padding:1.6rem 1.25rem;text-align:center">
+            <div style="color:#fff;display:flex;justify-content:center;margin-bottom:.4rem"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></div>
+            <div style="font-weight:700;font-size:1.05rem">ลงทะเบียนเข้าร่วมงาน</div>
+            <div class="type-body-sm" style="opacity:.9">คุณได้รับลิงก์เชิญให้ร่วมงานในนามกลุ่ม</div>
+          </div>
+          <div class="liff-pad" id="regBody"></div>
+        </div>
+      </div>
+    </div>
+    <div class="type-caption muted text-center" style="max-width:390px">
+      หน้านี้เป็นหน้าแยกสำหรับผู้รับลิงก์ (URL: <code>/register/?ev=EV01</code>) — แยกจากแอป LIFF สมาชิก ผู้รับไม่ต้องเป็นสมาชิกหรือล็อกอินก็กรอกได้
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js?v=20260615e"></script>
+<script>
+  /* ── helpers copied from LIFF (renderTicket/qrBox are local to that page) ── */
+  function qrBox(size){ const c=Math.max(6,Math.round(size/8)); return `<div style="width:${size}px;height:${size}px;border-radius:10px;border:3px solid #fff;box-shadow:0 0 0 1px var(--border);background:repeating-conic-gradient(#111 0 25%, #fff 0 50%) 0 0/${c}px ${c}px,#fff"></div>`; }
+  function renderTicket(t){
+    return `<div class="ds-card" style="overflow:hidden;margin-bottom:1rem">
+      <div style="background:linear-gradient(135deg,var(--brand-700),var(--brand-500));color:#fff;padding:1rem 1.1rem">
+        <div style="font-weight:700">${escHtml(t.eventTitle)}</div>
+        <div class="type-body-sm" style="opacity:.9">${icon('cal',12)} ${t.date} · ${icon('pin',12)} ${escHtml(t.place)}</div>
+      </div>
+      <div class="ds-card-content text-center">
+        <div style="display:flex;justify-content:center">${qrBox(150)}</div>
+        <div class="type-caption mt-2">รหัสบัตร</div>
+        <div style="font-family:monospace;font-weight:700;letter-spacing:2px">${escHtml(t.code)}</div>
+        <div class="ds-separator"></div>
+        <div class="flex justify-between"><span class="type-body-sm muted">ผู้ถือบัตร</span><span class="type-body-sm" style="font-weight:500">${escHtml(t.holder)}</span></div>
+        <div class="flex justify-between mt-1"><span class="type-body-sm muted">ประเภทบัตร</span><span class="type-body-sm" style="font-weight:500">${escHtml(t.ticketName)}</span></div>
+      </div>
+    </div>`;
+  }
+
+  /* ── อ่าน event จาก query string ของลิงก์ (?ev=EV01) ── */
+  function currentEvent(){
+    const id = new URLSearchParams(location.search).get('ev');
+    return EVENTS.find(x=>x.id===id) || EVENTS[0];
+  }
+
+  function renderForm(){
+    const e = currentEvent();
+    document.getElementById('regBody').innerHTML = `
+      <div class="ds-alert ds-alert-info mb-3"><span class="ds-alert-icon">${icon('link',16)}</span><div>คุณเปิดจาก<strong>ลิงก์เชิญกลุ่ม</strong> — กรอกข้อมูลเพื่อรับ E-Ticket ของคุณ ระบบจะจัดให้อยู่กลุ่ม/รุ่นเดียวกับผู้เชิญ</div></div>
+      <div class="ds-card ds-card-sm mb-3"><div class="ds-card-content">
+        <div style="font-weight:600">${escHtml(e.title)}</div>
+        <div class="type-caption mt-1">${icon('cal',12)} ${e.date} · ${escHtml(e.time||'')}</div>
+        <div class="type-caption mt-1">${icon('pin',12)} ${escHtml(e.place)}${/^https?:\/\//i.test(e.mapUrl||'')?` · <a href="${(e.mapUrl||'').replace(/"/g,'&quot;')}" target="_blank" rel="noopener" class="btn-link">ดูแผนที่</a>`:''}</div>
+      </div></div>
+      <div class="form-group"><label class="ds-label">ชื่อ-นามสกุล <span class="req">*</span></label><input class="ds-input" id="gName" placeholder="ชื่อผู้เข้าร่วม"></div>
+      <div class="form-group"><label class="ds-label">เบอร์โทรศัพท์ <span class="req">*</span></label><input class="ds-input" id="gPhone" placeholder="08X-XXX-XXXX"></div>
+      <div class="form-group"><label class="ds-label">อีเมล</label><input class="ds-input" id="gEmail" placeholder="you@email.com"></div>
+      <div class="form-group"><label class="ds-label">รุ่นที่จบ (พ.ศ. · สำหรับจัดให้อยู่กลุ่มเดียวกัน)</label><input class="ds-input" id="gYear" placeholder="เช่น 2560 (พ.ศ.)"></div>
+      <button class="btn btn-line btn-lg btn-block mt-1" onclick="submitReg()">${icon('ticket',16)} ลงทะเบียน &amp; รับ E-Ticket</button>
+      <p class="type-caption muted text-center mt-3">การกดลงทะเบียนถือว่ายินยอมให้เก็บข้อมูลตามนโยบาย PDPA ของสมาคมฯ</p>`;
+    document.querySelector('.phone-body').scrollTop = 0;
+  }
+
+  function submitReg(){
+    const name = (document.getElementById('gName').value||'').trim();
+    const phone = (document.getElementById('gPhone').value||'').trim();
+    if(!name || !phone){ toast('กรุณากรอกชื่อและเบอร์โทรศัพท์','warning'); return; }
+    const e = currentEvent();
+    const code = 'GT'+e.id.slice(2)+'-'+String(2000+Math.floor(Date.now()/1000)%8000);
+    document.getElementById('regBody').innerHTML = `
+      <div class="text-center" style="padding-top:1rem">
+        <div style="color:oklch(0.5 0.18 145)">${icon('check',44)}</div>
+        <h3 class="type-h5 mt-2">ลงทะเบียนสำเร็จ</h3>
+        <p class="type-body-sm muted">E-Ticket ของคุณพร้อมแล้ว · อยู่กลุ่มเดียวกับผู้เชิญ</p>
+      </div>
+      ${renderTicket({ eventTitle:e.title, date:e.date, place:e.place, ticketName:'บัตร Guest (กลุ่ม)', holder:name, code })}
+      <div class="ds-alert ds-alert-info mb-3"><span class="ds-alert-icon">${icon('qr',16)}</span><div>บันทึกภาพบัตรนี้ หรือแสดง QR ที่จุดลงทะเบียนหน้างานเพื่อเช็คอิน</div></div>
+      <button class="btn btn-outline btn-md btn-block" onclick="renderForm()">${icon('plus',16)} ลงทะเบียนผู้เข้าร่วมอีกคน</button>`;
+    toast('ลงทะเบียนสำเร็จ · รับ E-Ticket แล้ว','success');
+    document.querySelector('.phone-body').scrollTop = 0;
+  }
+
+  renderForm();
+</script>
+</body>
+</html>
