@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Web Portal · Alumni Data Platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/design-system.css?v=20260615f" />
-  <link rel="stylesheet" href="../assets/app.css?v=20260615f" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260617c" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260617c" />
 </head>
 <body>
 
@@ -82,7 +82,7 @@
 <!-- Modal / drawer mount -->
 <div class="ds-overlay" id="overlay" onclick="if(event.target===this)closeOverlay()"></div>
 
-<script src="../assets/app.js?v=20260615f"></script>
+<script src="../assets/app.js?v=20260617c"></script>
 <script>
 /* ───────── Navigation ───────── */
 const NAV = [
@@ -145,6 +145,7 @@ VIEWS.dashboard = function() {
       ${statCard('link','เชื่อมบัญชี LINE แล้ว', linked, Math.round(linked/total*100)+'% ของทั้งหมด','up')}
       <div onclick="go('payments')" style="cursor:pointer">${statCard('card','สลิปค่าสมาชิกรออนุมัติ', PAYMENTS.filter(p=>p.status==='pending').length, 'ตรวจที่ Payment Queue','down')}</div>
       <div onclick="go('eventpayments')" style="cursor:pointer">${statCard('ticket','สลิปค่าบัตรงานรออนุมัติ', EVENT_PAYMENTS.filter(p=>p.status==='pending').length, 'ตรวจที่ Event Payment Queue','down')}</div>
+      <div onclick="go('broadcast')" style="cursor:pointer">${statCard('send','ข้อความส่งแล้วเดือนนี้', BROADCAST_LOG.reduce((s,r)=>s+r.n,0), BROADCAST_LOG.length+' ครั้ง · เปิดอ่าน '+Math.round(BROADCAST_LOG.reduce((s,r)=>s+r.rate,0)/BROADCAST_LOG.length)+'%','up')}</div>
     </div>
 
     <div class="grid-2 mb-4">
@@ -324,7 +325,7 @@ function openProfile(id){
       <div class="grid-2" style="gap:.75rem 1.5rem">
         ${kv('รหัส', a.id)}${kv('รุ่น (พ.ศ.)', a.year)}
         ${kv('คณะ', a.faculty)}${kv('สาขา', a.major)}
-        ${kv('เบอร์โทร', a.phone)}${kv('อีเมล', a.email)}
+        ${kv('เบอร์โทร', fmtPhone(a.phone))}${kv('อีเมล', a.email)}
         ${kv('บริษัท', a.company)}${kv('ตำแหน่ง', a.position)}
         ${kv('เลขสมาชิก', a.status==='member'?('M-2569-'+String(1 + (parseInt(a.id.slice(1))%9000)).padStart(4,'0')) :'—')}${kv('สถานะการมีชีวิต', LIFE_LABEL[a.life])}
         ${kv('อัปเดตล่าสุด', a.updated?mFmtDate(a.updated):'—')}${kv('วันที่เข้าร่วม', a.joined||'—')}
@@ -641,6 +642,7 @@ VIEWS.broadcast = function(){
             <div class="form-group"><label class="ds-label">สถานะการมีชีวิต</label><select class="ds-select" onchange="bc.life=this.value;updateRecipients()"><option value="alive">มีชีวิต</option><option value="">ทั้งหมด</option></select></div>
           </div>
           <div class="ds-alert ds-alert-info" id="recipientBox"></div>
+          <div id="quotaBar" class="mt-2"></div>
 
           <div class="ds-card-title mt-4 mb-2">2 · เขียนข้อความ</div>
           ${imgUploader('bc','','รูปภาพประกอบ (ถ้ามี)')}
@@ -652,7 +654,7 @@ VIEWS.broadcast = function(){
             <span class="ds-switch on" id="bcSaveNews" data-toggle></span>
           </div>
           <div class="flex gap-2 mt-2">
-            <button class="btn btn-default btn-lg" onclick="openSendConfirm()">${icon('send',16)} ส่งข้อความ</button>
+            <button class="btn btn-default btn-lg" id="bcSendBtn" onclick="openSendConfirm()">${icon('send',16)} ส่งข้อความ</button>
             <button class="btn btn-outline btn-lg" onclick="toast('บันทึกแบบร่างแล้ว')">บันทึกแบบร่าง</button>
           </div>
         </div>
@@ -673,12 +675,12 @@ VIEWS.broadcast = function(){
           </div>
         </div>
         <div class="ds-card">
-          <div class="ds-card-header"><div class="ds-card-title">สถิติการส่งล่าสุด</div></div>
+          <div class="ds-card-header"><div class="ds-card-title">สถิติการส่งล่าสุด</div><div class="ds-card-desc">${LINE_QUOTA.month} ใช้ไป ${LINE_QUOTA.used}/${LINE_QUOTA.total} ข้อความ</div></div>
           <div class="ds-card-content">
-            ${[['เชิญงานคืนสู่เหย้า 2569','28','82%'],['ทุนการศึกษา 2569','22','77%'],['ขอเชิญประชุมใหญ่','19','74%']].map(r=>`
+            ${BROADCAST_LOG.map(r=>`
               <div class="flex justify-between items-center" style="padding:.5rem 0;border-bottom:1px solid var(--border)">
-                <div><div style="font-weight:500;font-size:.85rem">${r[0]}</div><div class="type-caption">ผู้รับ ${r[1]} คน</div></div>
-                <span class="badge badge-success">เปิด ${r[2]}</span>
+                <div><div style="font-weight:500;font-size:.85rem">${r.title}</div><div class="type-caption">ผู้รับ ${r.n} คน · ${r.date}</div></div>
+                <span class="badge badge-success">เปิด ${r.rate}%</span>
               </div>`).join('')}
           </div>
         </div>
@@ -700,8 +702,28 @@ function bcRecipients(){
 }
 function updateRecipients(){
   const n = bcRecipients();
+  const remaining = LINE_QUOTA.total - LINE_QUOTA.used;
+  const overQuota = n > remaining;
   const box = document.getElementById('recipientBox');
-  if(box) box.innerHTML = `<span class="ds-alert-icon">${icon('users',16)}</span><div><strong>กลุ่มเป้าหมาย ${n} คน</strong>ผู้รับที่เชื่อมบัญชี LINE และตรงตามเงื่อนไขที่เลือก</div>`;
+  if(box) box.innerHTML = `<span class="ds-alert-icon">${icon('users',16)}</span><div><strong>กลุ่มเป้าหมาย ${n} คน</strong> — ผู้รับที่เชื่อมบัญชี LINE และตรงตามเงื่อนไข</div>`;
+  const qbar = document.getElementById('quotaBar');
+  if(qbar){
+    const usedPct = Math.round(LINE_QUOTA.used / LINE_QUOTA.total * 100);
+    const afterPct = Math.min(100, Math.round((LINE_QUOTA.used + n) / LINE_QUOTA.total * 100));
+    qbar.innerHTML = `
+      <div style="font-size:.8rem;display:flex;justify-content:space-between;margin-bottom:.35rem;color:var(--muted-foreground)">
+        <span>${icon('zap',13)} LINE Quota ${LINE_QUOTA.month}</span>
+        <span${overQuota?' style="color:var(--destructive);font-weight:600"':''}>${overQuota?'⚠ Quota ไม่พอ! ':''}เหลือ <strong>${remaining}</strong>/${LINE_QUOTA.total}</span>
+      </div>
+      <div style="height:6px;border-radius:99px;background:var(--border);overflow:hidden;position:relative">
+        <div style="height:100%;border-radius:99px;background:var(--primary);width:${usedPct}%;transition:width .3s"></div>
+        ${n>0?`<div style="position:absolute;top:0;left:${usedPct}%;height:100%;width:${afterPct-usedPct}%;background:${overQuota?'var(--destructive)':'oklch(0.65 0.18 145)'};opacity:.5;border-radius:0 99px 99px 0"></div>`:''}
+      </div>
+      ${overQuota?`<div class="ds-alert ds-alert-destructive mt-2" style="padding:.45rem .75rem"><span class="ds-alert-icon">${icon('alert',14)}</span><div>ต้องการ ${n} quota แต่เหลือเพียง ${remaining} — ลดกลุ่มเป้าหมายก่อนส่ง</div></div>`:''}
+    `;
+  }
+  const sendBtn = document.getElementById('bcSendBtn');
+  if(sendBtn){ sendBtn.disabled = overQuota; sendBtn.style.opacity = overQuota ? '.4' : ''; }
 }
 function updatePreview(){
   const t=document.getElementById('bcTitle'), b=document.getElementById('bcBody'), l=document.getElementById('bcLink');
@@ -713,21 +735,30 @@ function updatePreview(){
 }
 function openSendConfirm(){
   const n=bcRecipients();
+  const remaining = LINE_QUOTA.total - LINE_QUOTA.used;
+  const overQuota = n > remaining;
   const saveNewsOn = document.getElementById('bcSaveNews')?.classList.contains('on');
   openModal(`<div class="ds-modal" style="max-width:420px">
     <div class="ds-modal-body text-center" style="padding-top:2rem">
-      <div class="stat-icon" style="margin:0 auto 1rem;width:48px;height:48px">${icon('send',22)}</div>
-      <h3 class="type-h4 mb-2">ยืนยันการส่งข้อความ</h3>
+      <div class="stat-icon" style="margin:0 auto 1rem;width:48px;height:48px;${overQuota?'background:var(--destructive-light,oklch(0.96 0.04 25))':''}">${icon(overQuota?'alert':'send',22)}</div>
+      <h3 class="type-h4 mb-2">${overQuota?'Quota ไม่เพียงพอ':'ยืนยันการส่งข้อความ'}</h3>
       <p class="type-body-sm muted">ข้อความนี้จะถูกส่งไปยัง <strong>${n} คน</strong> ผ่าน LINE Messaging API</p>
-      ${saveNewsOn?`<div class="ds-alert ds-alert-info mt-3" style="text-align:left"><span class="ds-alert-icon">${icon('link',16)}</span><div>จะบันทึกเป็นข่าวและแสดงบนเว็บไซต์ + ฟีด LIFF ด้วย</div></div>`:''}
+      <div style="background:var(--muted);border-radius:var(--radius-lg);padding:.65rem .9rem;margin-top:.85rem;text-align:left;font-size:.82rem;display:flex;flex-direction:column;gap:.3rem">
+        <div class="flex justify-between"><span style="color:var(--muted-foreground)">LINE Quota ${LINE_QUOTA.month}</span><span>${LINE_QUOTA.used} / ${LINE_QUOTA.total} ข้อความ</span></div>
+        <div class="flex justify-between"><span style="color:var(--muted-foreground)">คงเหลือก่อนส่ง</span><span>${remaining} ข้อความ</span></div>
+        <div class="flex justify-between" style="border-top:1px solid var(--border);padding-top:.3rem;margin-top:.1rem"><span style="color:var(--muted-foreground)">หลังส่งครั้งนี้</span><span ${overQuota?'style="color:var(--destructive);font-weight:700"':'style="font-weight:600"'}>${LINE_QUOTA.used+n} / ${LINE_QUOTA.total}${overQuota?' ⚠':''}</span></div>
+      </div>
+      ${overQuota?`<div class="ds-alert ds-alert-destructive mt-3" style="text-align:left"><span class="ds-alert-icon">${icon('alert',15)}</span><div>ไม่สามารถส่งได้: ต้องการ <strong>${n}</strong> quota แต่เหลือเพียง <strong>${remaining}</strong> ข้อความ</div></div>`:''}
+      ${!overQuota&&saveNewsOn?`<div class="ds-alert ds-alert-info mt-3" style="text-align:left"><span class="ds-alert-icon">${icon('link',16)}</span><div>จะบันทึกเป็นข่าวและแสดงบนเว็บไซต์ + ฟีด LIFF ด้วย</div></div>`:''}
     </div>
     <div class="ds-modal-footer" style="justify-content:center">
       <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
-      <button class="btn btn-default btn-md" onclick="sendBroadcast(${n})">${icon('send',16)} ยืนยันส่ง</button>
+      <button class="btn btn-default btn-md" onclick="sendBroadcast(${n})" ${overQuota?'disabled style="opacity:.4"':''}>${icon('send',16)} ยืนยันส่ง</button>
     </div>
   </div>`);
 }
 function sendBroadcast(n){
+  LINE_QUOTA.used += n;
   const title = (document.getElementById('bcTitle')?.value||'').trim();
   const bodyText = (document.getElementById('bcBody')?.value||'').trim();
   const saveNewsOn = document.getElementById('bcSaveNews')?.classList.contains('on');
@@ -1117,12 +1148,12 @@ function renderPayments(){
 /* ── Contact info ของเจ้าของสลิป (เบอร์ + สถานะ LINE) ── */
 function lineStatusBadge(linked){ return linked ? '<span class="badge badge-success">LINE: เชื่อมแล้ว</span>' : '<span class="badge badge-warning">ไม่มี LINE</span>'; }
 function contactCell(p){
-  return `<div class="type-caption" style="white-space:nowrap">${icon('phone',12)} ${p.phone||'—'}</div><div class="mt-1">${lineStatusBadge(p.linked)}</div>`;
+  return `<div class="type-caption" style="white-space:nowrap">${icon('phone',12)} ${fmtPhone(p.phone)}</div><div class="mt-1">${lineStatusBadge(p.linked)}</div>`;
 }
 function contactBlock(p){
   return `<div class="ds-card ds-card-sm mt-3" style="${p.linked?'':'border-color:var(--destructive)'}"><div class="ds-card-content" style="padding:.6rem .85rem">
     <div class="flex justify-between items-center"><span class="type-caption">ติดต่อเจ้าของสลิป</span>${lineStatusBadge(p.linked)}</div>
-    <div class="flex items-center gap-2 mt-1">${icon('phone',14)}<span style="font-weight:600">${p.phone||'—'}</span></div>
+    <div class="flex items-center gap-2 mt-1">${icon('phone',14)}<span style="font-weight:600">${fmtPhone(p.phone)}</span></div>
     <div class="type-caption mt-1" ${p.linked?'':'style="color:var(--destructive)"'}>${p.linked?'มี LINE — ระบบจะส่งแจ้งเตือนผลอัตโนมัติเมื่อปฏิเสธ':'ไม่มี LINE — ต้องโทรแจ้งผลด้วยตนเองนอกระบบ'}</div>
   </div></div>`;
 }
@@ -1325,7 +1356,12 @@ VIEWS.events = function(){
     </div>
     <div class="ds-alert ds-alert-info mb-4"><span class="ds-alert-icon">${icon('link',16)}</span><div><strong>ข้อมูลชุดเดียว (Single Source of Truth)</strong>Event ที่สร้าง/แก้ไขที่นี่จะถูกบันทึกและแสดงตรงกันในแท็บ “กิจกรรม” ของ LINE LIFF และหน้าลงทะเบียนผู้รับลิงก์ (รีเฟรชหน้าเหล่านั้นเพื่อเห็นผลล่าสุด)</div></div>
     <div class="card-grid">
-      ${EVENTS.map(e=>{ const sold=ticketsSold(e), quota=ticketsQuota(e); const pct=Math.round(sold/quota*100); return `
+      ${EVENTS.map(e=>{
+        const sold=ticketsSold(e), quota=ticketsQuota(e); const pct=Math.round(sold/quota*100);
+        const grpOrders = GROUP_ORDERS.filter(o=>o.eventId===e.id);
+        const grpUsed   = grpOrders.reduce((s,o)=>s+o.used,0);
+        const grpSlots  = grpOrders.reduce((s,o)=>s+o.slots,0);
+        return `
         <div class="ds-card">
           <div class="web-card-img" style="background-image:url('${IMG(e.img)}');position:relative">
             <span class="badge ${e.status==='open'?'badge-success':'badge-ghost'}" style="position:absolute;top:8px;right:8px">${e.status==='open'?'เปิดรับสมัคร':'ปิดแล้ว'}</span>
@@ -1338,9 +1374,11 @@ VIEWS.events = function(){
               <div class="progress-track"><div class="progress-bar" style="width:${Math.min(100,pct)}%"></div></div>
             </div>
             <div class="mt-2">${e.tickets.map(t=>`<div class="flex justify-between type-caption" style="padding:.15rem 0"><span>${escHtml(t.name)}</span><span style="text-align:right">${t.sold}/${t.quota} · ${priceTiers(t)}</span></div>`).join('')}</div>
+            ${grpOrders.length?`<div class="flex items-center gap-1 mt-2 type-caption" style="color:var(--muted-foreground)">${icon('link',12)} กลุ่ม ${grpOrders.length} order · ใช้ ${grpUsed}/${grpSlots} ที่นั่ง${grpUsed>=grpSlots?' · <span style="color:var(--destructive)">ครบแล้ว</span>':''}</div>`:''}
             <div class="flex gap-1 mt-3 wrap">
               <button class="btn btn-outline btn-sm" onclick="openBookings('${e.id}')">${icon('users',14)} Booking</button>
               <button class="btn btn-outline btn-sm" onclick="openGroupLink('${e.id}')">${icon('link',14)} Group Link</button>
+              ${e.status==='open'?`<button class="btn btn-default btn-sm" onclick="openManualBooking('${e.id}')">${icon('ticket',14)} ขายบัตร</button>`:''}
               <button class="btn btn-ghost btn-icon" title="แก้ไข" onclick="openEventForm('${e.id}')">${icon('edit',15)}</button>
             </div>
           </div>
@@ -1586,17 +1624,155 @@ function exportBookings(id){
   logAction('Export รายชื่อผู้จอง', e.id+' · '+rows.length+' รายการ'+(bookYear?(' · รุ่น '+bookYear):''));
   toast('ส่งออก '+rows.length+' รายการ (อนุมัติแล้ว) เป็นไฟล์ Excel','success');
 }
+let groupSelOrderId = null;
 function openGroupLink(id){
   const e = EVENTS.find(x=>x.id===id);
-  const link = 'https://liff.line.me/2001234567-group/'+e.id.toLowerCase();
-  openModal(`<div class="ds-modal" style="max-width:480px">
+  const orders = GROUP_ORDERS.filter(o=>o.eventId===id);
+  const totalSlots = orders.reduce((s,o)=>s+o.slots,0);
+  const totalUsed  = orders.reduce((s,o)=>s+o.used,0);
+  groupSelOrderId = null;
+  const orderRows  = orders.length
+    ? orders.map(o=>{
+        const rem  = o.slots - o.used;
+        const full = rem <= 0;
+        return `<div class="grp-order-row" data-oid="${o.id}" onclick="selectGroupOrder('${o.id}')" style="display:flex;justify-content:space-between;align-items:center;padding:.6rem .75rem;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:.5rem;cursor:pointer;transition:border-color .15s,background .15s">
+          <div>
+            <div style="font-weight:500;font-size:.85rem">${escHtml(o.buyerName)} <span class="type-caption">(${o.id})</span></div>
+            <div class="type-caption">${icon('phone',11)} ${fmtPhone(o.phone)} · ${o.date}</div>
+          </div>
+          <div class="text-right" style="flex-shrink:0">
+            <div style="font-weight:600;font-size:.85rem">${o.used}/${o.slots} ที่นั่ง</div>
+            <span class="badge ${full?'badge-warning':'badge-success'}">${full?'ใช้ครบแล้ว':'เหลือ '+rem+' ที่'}</span>
+          </div>
+        </div>`;
+      }).join('')
+    : `<div class="type-caption muted" style="text-align:center;padding:1.5rem 0">ยังไม่มีคำสั่งซื้อกลุ่มสำหรับงานนี้</div>`;
+
+  openModal(`<div class="ds-modal" style="max-width:520px">
     <div class="ds-modal-header"><span class="ds-modal-title">Group Registration Link</span><button class="btn btn-ghost btn-icon" onclick="closeOverlay()">${icon('x',18)}</button></div>
     <div class="ds-modal-body">
-      <p class="type-body-sm muted mb-3">ลิงก์สำหรับผู้ซื้อบัตรแทนหลายคน — ส่งให้ผู้ที่ต้องการลงทะเบียนแบบกลุ่มของงาน “${escHtml(e.title)}”</p>
-      <div class="flex gap-2"><input class="ds-input" value="${link}" readonly><button class="btn btn-default btn-md" onclick="toast('คัดลอกลิงก์แล้ว','success')">คัดลอก</button></div>
-      <div class="text-center mt-3"><div style="width:120px;height:120px;margin:0 auto;color:var(--foreground)">${icon('qr',120)}</div><div class="type-caption mt-1">หรือสแกน QR เพื่อเปิดลิงก์</div></div>
+      ${orders.length ? `
+        <div class="ds-alert ${totalUsed>=totalSlots?'ds-alert-warning':'ds-alert-info'} mb-3">
+          <span class="ds-alert-icon">${icon('users',16)}</span>
+          <div><strong>${orders.length} คำสั่งซื้อกลุ่ม</strong> · ใช้ไป <strong>${totalUsed}/${totalSlots}</strong> ที่นั่ง${totalUsed>=totalSlots?' · <strong>ใช้ครบทุก Order แล้ว</strong>':''}</div>
+        </div>
+      ` : ''}
+      <div class="ds-card-title mb-1">เลือกผู้ซื้อบัตรกลุ่ม</div>
+      <p class="type-body-sm muted mb-2">เลือกรายชื่อเพื่อดูลิงก์เฉพาะของผู้ซื้อรายนั้น แล้วคัดลอกส่งให้</p>
+      <div class="mb-1">${orderRows}</div>
+      <div id="grpLinkSection"></div>
     </div>
   </div>`);
+}
+function selectGroupOrder(orderId){
+  const o = GROUP_ORDERS.find(x=>x.id===orderId); if(!o) return;
+  groupSelOrderId = orderId;
+  document.querySelectorAll('.grp-order-row').forEach(r=>{
+    const sel = r.getAttribute('data-oid')===orderId;
+    r.style.borderColor = sel ? 'var(--primary)' : 'var(--border)';
+    r.style.background   = sel ? 'var(--accent)' : '';
+  });
+  const rem = o.slots - o.used, full = rem <= 0;
+  const sec = document.getElementById('grpLinkSection'); if(!sec) return;
+  sec.innerHTML = `
+    <div class="ds-separator mb-3"></div>
+    <div class="ds-card-title mb-1">ลิงก์ของ ${escHtml(o.buyerName)} <span class="type-caption">(${o.id})</span></div>
+    ${full
+      ? `<div class="ds-alert ds-alert-warning"><span class="ds-alert-icon">${icon('alert',16)}</span><div>คำสั่งซื้อนี้ใช้ครบ <strong>${o.slots}</strong> ที่นั่งแล้ว — ลิงก์ปิดรับอัตโนมัติ ไม่จำเป็นต้องส่งเพิ่ม</div></div>`
+      : `<p class="type-body-sm muted mb-3">เหลือ <strong>${rem}</strong> ที่นั่ง · ส่งลิงก์นี้ให้ ${escHtml(o.buyerName)} เพื่อแชร์ต่อให้เพื่อนในกลุ่ม<br><span style="color:var(--muted-foreground);font-size:.78rem">ลิงก์นับ slot จากคำสั่งซื้อนี้ — ออกลิงก์ใหม่ไม่เพิ่ม slot</span></p>
+         <div class="flex gap-2 mb-3"><input class="ds-input" value="${o.link}" readonly><button class="btn btn-default btn-md" onclick="copyText('${o.link}','คัดลอกลิงก์แล้ว')">คัดลอก</button></div>
+         <div class="text-center"><div style="display:flex;justify-content:center">${qrFrame(120)}</div><div class="type-caption mt-1">หรือสแกน QR เพื่อเปิดลิงก์</div></div>`}
+  `;
+  sec.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* ───────── MANUAL / WALK-IN BOOKING ───────── */
+function openManualBooking(eventId){
+  const e = EVENTS.find(x=>x.id===eventId); if(!e) return;
+  const remaining = e.tickets.map(t=>(t.quota||0)-(t.sold||0)).reduce((s,v)=>s+v,0);
+  openModal(`<div class="ds-modal" style="max-width:480px">
+    <div class="ds-modal-header"><span class="ds-modal-title">${icon('ticket',16)} ขายบัตร ณ จุดลงทะเบียน</span><button class="btn btn-ghost btn-icon" onclick="closeOverlay()">${icon('x',18)}</button></div>
+    <div class="ds-modal-body">
+      <div class="ds-alert ds-alert-info mb-3"><span class="ds-alert-icon">${icon('check',15)}</span><div>บัตรที่ขายผ่านช่องนี้ <strong>ออก E-Ticket ทันที</strong> ไม่ต้องรอตรวจสลิป · ที่นั่งคงเหลือ <strong>${remaining}</strong> ที่</div></div>
+      <div class="grid-2" style="gap:0 1rem">
+        <div class="form-group"><label class="ds-label">ชื่อ <span class="req">*</span></label><input class="ds-input" id="mbFirst" placeholder="ชื่อ"></div>
+        <div class="form-group"><label class="ds-label">นามสกุล <span class="req">*</span></label><input class="ds-input" id="mbLast" placeholder="นามสกุล"></div>
+      </div>
+      <div class="form-group"><label class="ds-label">ประเภทบัตร <span class="req">*</span></label>
+        <select class="ds-select" id="mbTicket" onchange="updateManualPrice('${eventId}')">
+          ${e.tickets.map(t=>`<option value="${escHtml(t.id)}">${escHtml(t.name)} · เหลือ ${Math.max(0,(t.quota||0)-(t.sold||0))} ที่</option>`).join('')}
+        </select>
+      </div>
+      <div class="grid-2" style="gap:0 1rem">
+        <div class="form-group"><label class="ds-label">ระดับราคา</label>
+          <select class="ds-select" id="mbTier" onchange="updateManualPrice('${eventId}')">
+            <option value="general">ราคาทั่วไป</option>
+            <option value="member">ราคาสมาชิก</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="ds-label">จำนวนบัตร</label>
+          <input class="ds-input" id="mbQty" type="number" value="1" min="1" max="20" oninput="updateManualPrice('${eventId}')">
+        </div>
+      </div>
+      <div class="form-group"><label class="ds-label">ช่องทางชำระเงิน</label>
+        <select class="ds-select" id="mbPayMethod">
+          <option value="เงินสด">เงินสด (รับหน้างาน)</option>
+          <option value="QR Code">QR Code พร้อมเพย์</option>
+          <option value="โอนเงิน">โอนเงิน (ยืนยันแล้ว)</option>
+        </select>
+      </div>
+      <div style="background:var(--accent);border-radius:var(--radius-lg);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:500">ยอดที่รับ</span>
+        <span id="mbTotal" style="font-size:1.3rem;font-weight:700;color:var(--primary)">—</span>
+      </div>
+    </div>
+    <div class="ds-modal-footer">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-default btn-md" onclick="saveManualBooking('${eventId}')">${icon('ticket',16)} ออกบัตรทันที</button>
+    </div>
+  </div>`);
+  updateManualPrice(eventId);
+}
+function updateManualPrice(eventId){
+  const e = EVENTS.find(x=>x.id===eventId); if(!e) return;
+  const tId  = document.getElementById('mbTicket')?.value;
+  const tier = document.getElementById('mbTier')?.value;
+  const qty  = Math.max(1, parseInt(document.getElementById('mbQty')?.value)||1);
+  const t    = e.tickets.find(x=>x.id===tId) || e.tickets[0];
+  const unit = (tier==='member' && t.priceMember!=null) ? t.priceMember : t.price;
+  const el   = document.getElementById('mbTotal');
+  if(el) el.textContent = (unit*qty).toLocaleString()+' ฿';
+}
+function saveManualBooking(eventId){
+  const e = EVENTS.find(x=>x.id===eventId); if(!e) return;
+  const first  = document.getElementById('mbFirst')?.value.trim();
+  const last   = document.getElementById('mbLast')?.value.trim();
+  if(!first||!last){ toast('กรุณากรอกชื่อ-นามสกุล','error'); return; }
+  const tId    = document.getElementById('mbTicket')?.value;
+  const tier   = document.getElementById('mbTier')?.value;
+  const qty    = Math.max(1, parseInt(document.getElementById('mbQty')?.value)||1);
+  const method = document.getElementById('mbPayMethod')?.value;
+  const t      = e.tickets.find(x=>x.id===tId) || e.tickets[0];
+  const unit   = (tier==='member' && t.priceMember!=null) ? t.priceMember : t.price;
+  const total  = unit * qty;
+  if((t.sold||0)+qty > (t.quota||0)){
+    toast('บัตรประเภทนี้เต็มแล้ว ไม่สามารถขายเพิ่มได้','error'); return;
+  }
+  EVENT_PAYMENTS.unshift({
+    id:'EP'+String(Date.now()).slice(-6), first, last,
+    photo: 1+((first.charCodeAt(0)||1)*13)%70,
+    alumniId:'walk-in', year:'—', eventId:e.id, eventTitle:e.title,
+    ticketName:t.name, tier, qty, amount:total,
+    bank:method, bankShort:method.slice(0,3), bankColor:'#555',
+    fromName:first+' '+last, fromAcct:'—',
+    date:todayTH(), time:nowHM()+' น.', ref:'ADMIN-'+String(Date.now()).slice(-8),
+    phone:'—', linked:false, verify:'admin', status:'approved', source:'admin-manual',
+  });
+  t.sold = (t.sold||0)+qty;
+  saveEvents();
+  logAction('ขายบัตร Walk-in', `${first} ${last} · ${t.name} ×${qty} · ${method} · ${total.toLocaleString()}฿`);
+  closeOverlay(); VIEWS.events();
+  toast(`ออกบัตร ${t.name} ×${qty} ให้ ${first} ${last} แล้ว · ${total.toLocaleString()} ฿`,'success');
 }
 
 /* ───────── CHECK-IN SCANNER (Phase 2) ───────── */

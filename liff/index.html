@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LINE LIFF · Alumni Data Platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/design-system.css?v=20260615f" />
-  <link rel="stylesheet" href="../assets/app.css?v=20260615f" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260617c" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260617c" />
 </head>
 <body>
 <div class="liff-stage">
@@ -143,7 +143,7 @@
   </div>
 </div>
 
-<script src="../assets/app.js?v=20260615f"></script>
+<script src="../assets/app.js?v=20260617c"></script>
 <script>
 let consented = false;
 function show(id){ document.querySelectorAll('.liff-screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector('.phone-body').scrollTop=0; }
@@ -216,8 +216,8 @@ function setRoleView(role){
   else { ME.status='alumni'; ME.memberStatus='none'; ME.memberNo=null; } // ศิษย์เก่าทั่วไป
 }
 
-// QR placeholder (checkered)
-function qrBox(size){ const c=Math.max(6,Math.round(size/8)); return `<div style="width:${size}px;height:${size}px;border-radius:10px;border:3px solid #fff;box-shadow:0 0 0 1px var(--border);background:repeating-conic-gradient(#111 0 25%, #fff 0 50%) 0 0/${c}px ${c}px,#fff"></div>`; }
+// QR — ใช้สัญลักษณ์สไตล์เดียวกับฝั่งแอดมิน (qrFrame ใน app.js)
+function qrBox(size){ return qrFrame(size); }
 
 function buildTabbar(){
   const tabs = [['home','หน้าหลัก'],['events','กิจกรรม'],['tickets','บัตร'],['profile','โปรไฟล์']];
@@ -336,7 +336,18 @@ const MEMBER_VIEWS = {
 
   tickets: () => {
     if(!ME.tickets.length) return `<div class="liff-pad text-center" style="padding-top:3rem"><div style="color:var(--muted-foreground)">${icon('ticket',48)}</div><h3 class="type-h5 mt-2">ยังไม่มีบัตร</h3><p class="type-body-sm muted mt-1">ลงทะเบียนกิจกรรมเพื่อรับ E-Ticket</p><button class="btn btn-line btn-md mt-3" onclick="memberTab('events')">ดูกิจกรรม</button></div>`;
-    return `<div class="liff-pad"><h3 class="type-h5 mb-1">บัตรของฉัน (E-Ticket)</h3><p class="type-caption mb-3">แสดง QR Code นี้ที่หน้างานเพื่อเช็คอิน</p>${ME.tickets.map(renderTicket).join('')}</div>`;
+    return `<div class="liff-pad"><h3 class="type-h5 mb-1">บัตรของฉัน (E-Ticket)</h3><p class="type-caption mb-3">แตะกิจกรรมเพื่อดู QR Code สำหรับเช็คอินหน้างาน</p>
+      ${ME.tickets.map(t=>`
+        <div class="event-item" style="cursor:pointer" onclick="openMyTicket('${t.id}')">
+          <div class="event-date" style="background:var(--brand-500);color:#fff">${icon('ticket',20)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:.88rem">${escHtml(t.eventTitle)}</div>
+            <div class="type-caption">${icon('cal',12)} ${t.date}</div>
+            <div class="type-caption">${escHtml(t.ticketName)}${t.tier==='member'?' · ราคาสมาชิก':''}</div>
+          </div>
+          <span style="color:var(--muted-foreground);transform:rotate(180deg)">${icon('back',16)}</span>
+        </div>`).join('')}
+    </div>`;
   },
 
   profile: () => `
@@ -363,6 +374,19 @@ function toggleDemoMember(){
   memberTab('profile');
 }
 
+/* เปิดดู E-Ticket ของกิจกรรมที่เลือก (จากรายการในแท็บบัตร) */
+function openMyTicket(ticketId){
+  const t = ME.tickets.find(x=>x.id===ticketId); if(!t) return;
+  document.getElementById('memberContent').innerHTML = `
+    <div class="liff-pad">
+      <button class="btn btn-ghost btn-sm" style="padding-left:0" onclick="memberTab('tickets')">${icon('back',16)} บัตรทั้งหมด</button>
+      <h3 class="type-h5 mt-1 mb-1">E-Ticket</h3>
+      <p class="type-caption mb-3">แสดง QR Code นี้ที่หน้างานเพื่อเช็คอิน</p>
+      ${renderTicket(t)}
+    </div>`;
+  document.querySelector('.phone-body').scrollTop = 0;
+}
+
 /* ── E-Ticket card ── */
 function renderTicket(t){
   return `<div class="ds-card" style="overflow:hidden;margin-bottom:1rem">
@@ -378,8 +402,33 @@ function renderTicket(t){
       <div class="flex justify-between"><span class="type-body-sm muted">ผู้ถือบัตร</span><span class="type-body-sm" style="font-weight:500">${escHtml(t.holder)}</span></div>
       <div class="flex justify-between mt-1"><span class="type-body-sm muted">ประเภทบัตร</span><span class="type-body-sm" style="font-weight:500">${escHtml(t.ticketName)}${t.qty>1?' ×'+t.qty:''}</span></div>
       ${t.amount>0?`<div class="flex justify-between mt-1"><span class="type-body-sm muted">ชำระแล้ว</span><span class="type-body-sm" style="font-weight:500">${t.amount.toLocaleString()} ฿${t.tier==='member'?' · ราคาสมาชิก':''}</span></div>`:'<div class="flex justify-between mt-1"><span class="type-body-sm muted">ค่าเข้าร่วม</span><span class="type-body-sm" style="font-weight:500">ฟรี</span></div>'}
+      ${t.group?groupLinkSection(t):''}
     </div>
   </div>`;
+}
+/* ส่วนลิงก์กลุ่มในบัตร — คัดลอกซ้ำได้ + แสดงโควตาที่เหลือ (นับจากบัตรนี้ ไม่ใช่จากลิงก์) */
+function groupLinkSection(t){
+  const g=t.group, remaining=g.slots-g.used, full=remaining<=0;
+  return `<div class="ds-separator"></div>
+    <div style="text-align:left">
+      <div class="flex justify-between items-center mb-1">
+        <span class="type-overline muted" style="display:inline-flex;align-items:center;gap:.3rem">${icon('link',12)} ลิงก์กลุ่มสำหรับเพื่อน</span>
+        <span class="badge ${full?'badge-warning':'badge-success'}">${full?'ครบจำนวนแล้ว':'เหลือ '+remaining+' ที่'}</span>
+      </div>
+      <div class="type-caption mb-2">เพื่อนลงทะเบียนแล้ว <strong>${g.used-1}/${g.slots-1}</strong> คน · รวมคุณ ${g.used}/${g.slots} ที่นั่ง</div>
+      ${full
+        ? `<div class="ds-alert ds-alert-info" style="padding:.5rem .7rem"><span class="ds-alert-icon">${icon('check',14)}</span><div class="type-caption">ทุกที่นั่งลงทะเบียนครบแล้ว — ลิงก์ปิดรับอัตโนมัติ</div></div>`
+        : `<div class="flex gap-2"><input class="ds-input ds-input-sm" value="${g.link}" readonly style="font-size:.68rem"><button class="btn btn-default btn-sm" onclick="copyText('${g.link}','คัดลอกลิงก์กลุ่มแล้ว')">คัดลอก</button></div>
+           <button class="btn btn-ghost btn-sm btn-block mt-2" style="opacity:.85" onclick="demoFriendJoin('${t.id}')">${icon('users',14)} เดโม: จำลองเพื่อนลงทะเบียน +1</button>`}
+    </div>`;
+}
+/* เดโม: จำลองเพื่อนเปิดลิงก์ลงทะเบียน 1 คน → โควตาลดลง (ในระบบจริงเกิดเมื่อเพื่อนกรอกฟอร์มเสร็จ) */
+function demoFriendJoin(ticketId){
+  const t=ME.tickets.find(x=>x.id===ticketId); if(!t||!t.group) return;
+  if(t.group.used>=t.group.slots){ toast('ครบจำนวนแล้ว','warning'); return; }
+  t.group.used++;
+  toast('เพื่อนลงทะเบียนเพิ่ม 1 คน · โควตาเหลือ '+(t.group.slots-t.group.used)+' ที่','success');
+  memberTab('tickets');
 }
 
 /* ── Event detail + registration ── */
@@ -460,8 +509,15 @@ function issueTicket(qty, group, paidAmount, tier){
   t.sold += qty;
   if(typeof saveEvents==='function') saveEvents(); // ยอดลงทะเบียนสะท้อนกลับไปแอดมิน (SSOT)
   const code = 'TK' + e.id.slice(2) + '-' + String(1000 + Math.floor(Math.random()*9000)); // รหัสบัตรไม่ซ้ำ
-  ME.tickets.push({ id:'tk'+Date.now(), eventTitle:e.title, date:e.date, place:e.place, ticketName:t.name+(group?` · กลุ่ม ${qty} คน`:''), qty, holder:ME.first+' '+ME.last, code, amount:paidAmount, tier });
-  if(group){ showGroupResult(e, qty); }
+  const ticket = { id:'tk'+Date.now(), eventTitle:e.title, date:e.date, place:e.place, ticketName:t.name+(group?` · กลุ่ม ${qty} คน`:''), qty, holder:ME.first+' '+ME.last, code, amount:paidAmount, tier };
+  if(group){
+    // ผูกลิงก์กลุ่มกับบัตร (Order) — โควตานับจากบัตรนี้ ไม่ใช่จากลิงก์ · used=1 คือผู้จองหลัก
+    const link = 'https://liff.line.me/2001234567-grp/' + e.id.toLowerCase() + '-' + ticket.id.toLowerCase().slice(-5);
+    ticket.group = { slots: qty, used: 1, link };
+    groupLink = link;
+  }
+  ME.tickets.push(ticket);
+  if(group){ showGroupResult(e, ticket); }
   else { toast(paidAmount>0?'ชำระเงินสำเร็จ · รับ E-Ticket แล้ว':'ลงทะเบียนสำเร็จ · รับ E-Ticket แล้ว','success'); memberTab('tickets'); }
 }
 /* ชำระค่าเข้าร่วมกิจกรรม — ใช้ราคาตามสถานะสมาชิก (สมาชิก/ทั่วไป) */
@@ -513,8 +569,9 @@ function submitEventPay(qty, group){
   issueTicket(qty, group, total, isMember?'member':'general');
 }
 /* หน้าผลการจองกลุ่ม + ลิงก์ให้สมาชิกกรอกข้อมูล (Group Registration Link) */
-function showGroupResult(e, qty){
-  groupLink = 'https://liff.line.me/2001234567-grp/' + e.id.toLowerCase() + '-' + (e.id+String(ME.tickets.length)).toLowerCase().slice(-5);
+function showGroupResult(e, ticket){
+  const qty = ticket.group.slots;
+  groupLink = ticket.group.link;
   document.getElementById('memberContent').innerHTML = `
     <div class="liff-pad">
       <div class="text-center" style="padding-top:.5rem">
@@ -524,10 +581,10 @@ function showGroupResult(e, qty){
       </div>
       <div class="ds-card ds-card-sm mt-3"><div class="ds-card-content">
         <div class="type-overline muted mb-2">ลิงก์ลงทะเบียนสำหรับสมาชิกในกลุ่ม</div>
-        <div class="flex gap-2"><input class="ds-input ds-input-sm" value="${groupLink}" readonly style="font-size:.7rem"><button class="btn btn-default btn-sm" onclick="toast('คัดลอกลิงก์แล้ว','success')">คัดลอก</button></div>
+        <div class="flex gap-2"><input class="ds-input ds-input-sm" value="${groupLink}" readonly style="font-size:.7rem"><button class="btn btn-default btn-sm" onclick="copyText('${groupLink}','คัดลอกลิงก์กลุ่มแล้ว')">คัดลอก</button></div>
         <div style="display:flex;justify-content:center;margin-top:.9rem">${qrBox(120)}</div>
         <div class="type-caption text-center mt-1">หรือให้สมาชิกสแกน QR เพื่อเปิดลิงก์</div>
-        <div class="ds-alert ds-alert-info mt-3"><span class="ds-alert-icon">${icon('users',16)}</span><div>ส่งให้สมาชิกอีก <strong>${qty-1} คน</strong> — แต่ละคนเปิดลิงก์เพื่อกรอกชื่อ-เบอร์ และรับ E-Ticket ของตนเอง ระบบจัดให้อยู่กลุ่ม/รุ่นเดียวกันอัตโนมัติ</div></div>
+        <div class="ds-alert ds-alert-info mt-3"><span class="ds-alert-icon">${icon('users',16)}</span><div>ส่งให้สมาชิกอีก <strong>${qty-1} คน</strong> — แต่ละคนเปิดลิงก์เพื่อกรอกชื่อ-เบอร์ และรับ E-Ticket ของตนเอง · ดูจำนวนที่เหลือได้ในหน้า "บัตรของฉัน" ตลอดเวลา</div></div>
       </div></div>
       <button class="btn btn-outline btn-md btn-block mt-3" onclick="window.open('../register/?ev=${e.id}','_blank')">${icon('search',16)} ดูตัวอย่างหน้าที่สมาชิกกรอก (เปิดหน้าแยก)</button>
       <button class="btn btn-line btn-md btn-block mt-2" onclick="memberTab('tickets')">ดู E-Ticket ของฉัน</button>

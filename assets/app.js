@@ -278,7 +278,7 @@ function genMemberNo(){ return 'M-' + (new Date().getFullYear()+543) + '-' + Str
 const DEFAULT_EVENTS = [
   { id:'EV01', title:'งานคืนสู่เหย้า ประจำปี 2569 “รวมใจ คืนถิ่น”', date:'19 ธ.ค. 2569', dateShort:['19','ธ.ค.'], time:'17:00 – 21:00 น.', place:'หอประชุมใหญ่ มหาวิทยาลัยรัตนบุรี', mapUrl:'https://maps.google.com/?q=หอประชุมใหญ่+มหาวิทยาลัย', img:1011, status:'open',
     desc:'งานพบปะสังสรรค์ศิษย์เก่าทุกรุ่น พร้อมมินิคอนเสิร์ตและของที่ระลึก',
-    tickets:[ {id:'T1',name:'บัตรทั่วไป',price:0,priceMember:0,sold:342,quota:500} ] },
+    tickets:[ {id:'T1',name:'บัตรทั่วไป',price:500,priceMember:300,sold:342,quota:500} ] },
   { id:'EV02', title:'สัมมนาเครือข่ายธุรกิจศิษย์เก่า', date:'26 ก.ค. 2569', dateShort:['26','ก.ค.'], time:'18:30 – 21:30 น.', place:'อาคารนวัตกรรม ชั้น 9', mapUrl:'https://maps.google.com/?q=อาคารนวัตกรรม', img:1041, status:'open',
     desc:'พบปะผู้ประกอบการศิษย์เก่า แลกเปลี่ยนโอกาสทางธุรกิจ',
     tickets:[ {id:'T1',name:'บัตรสัมมนา',price:500,priceMember:200,sold:74,quota:120} ] },
@@ -286,7 +286,7 @@ const DEFAULT_EVENTS = [
     desc:'เดิน-วิ่งการกุศลระดมทุนพัฒนาห้องสมุดและกองทุนการศึกษา (จัดเมื่อต้นปี — ปิดรับลงทะเบียนแล้ว)',
     tickets:[ {id:'T1',name:'Fun Run 5 กม.',price:350,priceMember:300,sold:392,quota:400}, {id:'T2',name:'Mini Marathon 10 กม.',price:500,priceMember:450,sold:288,quota:300} ] },
 ];
-const EVENTS_STORE_KEY = 'adp_events_v4';
+const EVENTS_STORE_KEY = 'adp_events_v6';
 function loadEvents() {
   try { const s = localStorage.getItem(EVENTS_STORE_KEY); if (s) { const a = JSON.parse(s); if (Array.isArray(a)) return a; } } catch (e) {}
   return null;
@@ -333,8 +333,33 @@ const ADMIN_LOGS = [
 function logAction(action, target){ ADMIN_LOGS.unshift({ admin:'admin', action, target, time: todayTH() + ' ' + nowHM() }); }
 function nowHM(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
 
+/* ---- Group Registration Orders (demo) ---- · link ผูกกับ order ของผู้ซื้อแต่ละราย ---- */
+const GROUP_ORDERS = [
+  { id:'GRP-001', eventId:'EV01', buyerName:'สมชาย วงศ์ทอง',  buyerId:'A1004', phone:'0812345678', slots:3, used:3, date:'10 มิ.ย. 2569', link:'https://liff.line.me/2001234567-grp/ev01-grp001' },
+  { id:'GRP-002', eventId:'EV01', buyerName:'กมลา รักไทย',    buyerId:'A1009', phone:'0898887766', slots:5, used:2, date:'11 มิ.ย. 2569', link:'https://liff.line.me/2001234567-grp/ev01-grp002' },
+  { id:'GRP-003', eventId:'EV02', buyerName:'ประเสริฐ ดีงาม', buyerId:'A1014', phone:'0865554433', slots:4, used:4, date:'8 มิ.ย. 2569',  link:'https://liff.line.me/2001234567-grp/ev02-grp003' },
+];
+
+/* ---- LINE Messaging API Quota (รายเดือน) ---- */
+const LINE_QUOTA = { used: 312, total: 1000, month: 'มิ.ย. 2569' };
+
+/* ---- ประวัติการส่ง Broadcast (3 รายการล่าสุด) ---- */
+const BROADCAST_LOG = [
+  { title: 'เชิญงานคืนสู่เหย้า 2569', n: 28, rate: 82, date: '8 มิ.ย. 2569' },
+  { title: 'ทุนการศึกษา 2569',         n: 22, rate: 77, date: '5 มิ.ย. 2569' },
+  { title: 'ขอเชิญประชุมใหญ่',          n: 19, rate: 74, date: '1 มิ.ย. 2569' },
+];
+
 /* ---- UI helpers ---- */
 function initials(first, last) { return (first?.[0] || '') + (last?.[0] || ''); }
+/* แสดงเบอร์โทรในรูปแบบสากล +66-XX-XXX-XXXX (เก็บใน DB เป็น 0XXXXXXXXX ตามปกติ) */
+function fmtPhone(p){
+  if(!p) return '—';
+  const d = String(p).replace(/\D/g,'');
+  if(d.length===10 && d[0]==='0')
+    return '+66-' + d.slice(1,3) + '-' + d.slice(3,6) + '-' + d.slice(6);
+  return p;
+}
 
 /* Real-people profile photo — รับได้ทั้ง id (1–70 = รูปสต็อก), URL หรือไฟล์อัปโหลด (data URL) */
 function face(n) {
@@ -362,6 +387,16 @@ function toast(msg, type) {
   t.innerHTML = `<span style="color:${color};display:inline-flex">${icon(ic, 16)}</span><span>${msg}</span>`;
   wrap.appendChild(t);
   setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 2600);
+}
+/* คัดลอกข้อความลงคลิปบอร์ด + แจ้งเตือน (ใช้ร่วมทั้ง admin/LIFF/register) */
+function copyText(text, msg) {
+  try { navigator.clipboard && navigator.clipboard.writeText(text); } catch (e) {}
+  toast(msg || 'คัดลอกแล้ว', 'success');
+}
+/* กล่อง QR สไตล์เดียวกับฝั่งแอดมิน — ใช้สัญลักษณ์ icon('qr') ในกรอบสีขาว (ใช้ร่วมทุกหน้า) */
+function qrFrame(size) {
+  const s = size || 120;
+  return `<div style="width:${s}px;height:${s}px;display:inline-flex;align-items:center;justify-content:center;border-radius:16px;border:1px solid var(--border);background:#fff;color:var(--foreground);padding:${Math.round(s*0.1)}px;box-shadow:var(--shadow-sm)">${icon('qr', Math.round(s*0.8))}</div>`;
 }
 
 /* Toggle helpers for checkbox / switch built from markup */
