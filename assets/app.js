@@ -182,6 +182,24 @@ function resetNews() { try { localStorage.removeItem(NEWS_STORE_KEY); } catch (e
 // live array used everywhere (seeded from store, else from defaults)
 const NEWS_ITEMS = loadNews() || DEFAULT_NEWS.map(x => JSON.parse(JSON.stringify(x)));
 
+/* ---- Keyword Trigger store — จัดการผ่าน Admin → ใช้โดย LIFF chatReply() ---- */
+const KW_STORE_KEY = 'adp_keywords_v1';
+const DEFAULT_KEYWORD_TRIGGERS = [
+  { id:'kw1', label:'ข่าวสาร', patterns:['ข่าว','news'], type:'news', reply:'' },
+  { id:'kw2', label:'กิจกรรม', patterns:['กิจกรรม','event'], type:'events', reply:'' },
+  { id:'kw3', label:'บัตร / E-Ticket', patterns:['บัตร','ticket','qr'], type:'text', reply:'🎫 ดู E-Ticket และ QR Code ของคุณได้ที่เมนู "บัตรของฉัน" ครับ' },
+  { id:'kw4', label:'สมัครสมาชิก', patterns:['สมัคร','สมาชิก','member'], type:'text', reply:'⭐ สมัครสมาชิกสมาคมเพื่อรับราคาบัตรพิเศษและสิทธิประโยชน์ต่าง ๆ — แตะ "สมัครสมาชิก" ในเมนูได้เลยครับ' },
+  { id:'kw5', label:'สิทธิพิเศษ', patterns:['สิทธิ','พิเศษ','benefit'], type:'text', reply:'🎁 สิทธิพิเศษสมาชิก\n• ราคาบัตรกิจกรรมพิเศษ\n• เข้าถึงทำเนียบศิษย์เก่า\n• ข่าวสารเฉพาะสมาชิก' },
+  { id:'kw6', label:'ติดต่อสมาคม', patterns:['ติดต่อ','contact','โทร'], type:'text', reply:'📞 ติดต่อสมาคม\nโทร 02-562-0199\n✉️ alumni@rattanaburi.ac.th\n🕘 จันทร์–ศุกร์ 09:00–17:00 น.' },
+  { id:'kw7', label:'โปรไฟล์ / ลงทะเบียน', patterns:['โปรไฟล์','ลงทะเบียน','profile'], type:'text', reply:'👤 จัดการโปรไฟล์ได้ที่ "เข้าสู่พื้นที่สมาชิก" จากหน้าแรกครับ' },
+  { id:'kw8', label:'ทักทาย', patterns:['สวัสดี','hello','hi','หวัดดี'], type:'text', reply:'สวัสดีครับ 👋 มีอะไรให้ช่วยไหมครับ? เลือกจาก Rich Menu หรือพิมพ์คำถามได้เลย' },
+  { id:'kw9', label:'อ่านข่าว', patterns:['อ่านข่าว'], type:'text', reply:'📰 อ่านข่าวทั้งหมดได้ในเมนู "ข่าวสาร" ของแอป LIFF ครับ' },
+];
+function loadKeywords(){ try{ const s=localStorage.getItem(KW_STORE_KEY); if(s){ const a=JSON.parse(s); if(Array.isArray(a)) return a; } }catch(e){} return null; }
+function saveKeywords(){ try{ localStorage.setItem(KW_STORE_KEY, JSON.stringify(KEYWORD_TRIGGERS)); }catch(e){} }
+function resetKeywords(){ try{ localStorage.removeItem(KW_STORE_KEY); }catch(e){} KEYWORD_TRIGGERS.length=0; DEFAULT_KEYWORD_TRIGGERS.forEach(x=>KEYWORD_TRIGGERS.push(JSON.parse(JSON.stringify(x)))); }
+const KEYWORD_TRIGGERS = loadKeywords() || DEFAULT_KEYWORD_TRIGGERS.map(x=>JSON.parse(JSON.stringify(x)));
+
 /* ---- SITE content store — เนื้อหาเว็บไซต์ (จัดการผ่าน Admin CMS) ----
    hero, สารนายกสมาคม, แกลเลอรีภาพ, วิดีโอ, สิทธิพิเศษ, ศิษย์เก่าดีเด่น           */
 const DEFAULT_SITE = {
@@ -350,6 +368,14 @@ const BROADCAST_LOG = [
   { title: 'ขอเชิญประชุมใหญ่',          n: 19, rate: 74, date: '1 มิ.ย. 2569' },
 ];
 
+/* ---- Email Broadcast (ผ่าน Brevo / Mailchimp) ---- */
+const EMAIL_PROVIDER = { name: 'Brevo', freeNote: 'แพ็กเกจฟรี: 300 อีเมล/วัน', sentToday: 64, dailyCap: 300 };
+const EMAIL_LOG = [
+  { subject: 'จดหมายข่าวสมาคม ฉบับ มิ.ย. 2569', n: 220, rate: 41, date: '7 มิ.ย. 2569', provider: 'Brevo' },
+  { subject: 'แจ้งเปิดรับสมัครทุนการศึกษา',        n: 180, rate: 38, date: '3 มิ.ย. 2569', provider: 'Brevo' },
+  { subject: 'สรุปกิจกรรมไตรมาสที่ผ่านมา',         n: 240, rate: 35, date: '28 พ.ค. 2569', provider: 'Brevo' },
+];
+
 /* ---- UI helpers ---- */
 function initials(first, last) { return (first?.[0] || '') + (last?.[0] || ''); }
 /* แสดงเบอร์โทรในรูปแบบสากล +66-XX-XXX-XXXX (เก็บใน DB เป็น 0XXXXXXXXX ตามปกติ) */
@@ -479,6 +505,7 @@ const ICON = {
   card:'<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
   ticket:'<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>',
   scan:'<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" x2="17" y1="12" y2="12"/>',
+  chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
   qr:'<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/>',
 };
 function icon(name, size) {

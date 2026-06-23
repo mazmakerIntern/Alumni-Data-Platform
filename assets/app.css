@@ -64,6 +64,13 @@
 .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; }
 
+/* sub-tabs (settings page) */
+.set-tabs { display: flex; gap: 0.25rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; overflow-x: auto; }
+.set-tab { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 0.95rem; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 500; color: var(--muted-foreground); border-bottom: 2px solid transparent; white-space: nowrap; transition: color .15s, border-color .15s; margin-bottom: -1px; }
+.set-tab:hover { color: var(--foreground); }
+.set-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.set-tab svg { flex-shrink: 0; }
+
 /* filter bar */
 .filter-bar { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
 .filter-bar .ds-select, .filter-bar .search-box { min-width: 0; }

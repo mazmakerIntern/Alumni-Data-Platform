@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Web Portal · Alumni Data Platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/design-system.css?v=20260617c" />
-  <link rel="stylesheet" href="../assets/app.css?v=20260617c" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260617g" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260617g" />
 </head>
 <body>
 
@@ -82,7 +82,7 @@
 <!-- Modal / drawer mount -->
 <div class="ds-overlay" id="overlay" onclick="if(event.target===this)closeOverlay()"></div>
 
-<script src="../assets/app.js?v=20260617c"></script>
+<script src="../assets/app.js?v=20260617g"></script>
 <script>
 /* ───────── Navigation ───────── */
 const NAV = [
@@ -90,7 +90,9 @@ const NAV = [
     { id: 'dashboard', label: 'Dashboard', icon: 'chart' },
     { id: 'alumni', label: 'จัดการศิษย์เก่า', icon: 'users' },
     { id: 'payments', label: 'Payment Queue (สมาชิก)', icon: 'card' },
-    { id: 'broadcast', label: 'Broadcast Message', icon: 'send' },
+    { id: 'broadcast', label: 'Broadcast (LINE)', icon: 'send' },
+    { id: 'emailbroadcast', label: 'ส่งข่าวสาร (Email)', icon: 'mail' },
+    { id: 'keywords', label: 'Keyword Trigger (LINE OA)', icon: 'chat' },
   ]},
   { group: 'กิจกรรม & บัตร', items: [
     { id: 'events', label: 'Event Management', icon: 'ticket' },
@@ -106,7 +108,7 @@ const NAV = [
     { id: 'settings', label: 'ตั้งค่า', icon: 'settings' },
   ]},
 ];
-const TITLES = { dashboard:'Dashboard', alumni:'จัดการศิษย์เก่า', payments:'Payment Queue — ค่าสมาชิก', eventpayments:'Event Payment Queue — ค่าบัตรงาน', events:'Event Management', checkin:'Check-in Scanner', cms:'จัดการข่าว/กิจกรรม', sitecontent:'เนื้อหาเว็บไซต์', broadcast:'Broadcast Message', permissions:'สิทธิ์ผู้ใช้ (User Permissions)', settings:'ตั้งค่า' };
+const TITLES = { dashboard:'Dashboard', alumni:'จัดการศิษย์เก่า', payments:'Payment Queue — ค่าสมาชิก', eventpayments:'Event Payment Queue — ค่าบัตรงาน', events:'Event Management', checkin:'Check-in Scanner', cms:'จัดการข่าว/กิจกรรม', sitecontent:'เนื้อหาเว็บไซต์', broadcast:'Broadcast Message (LINE)', emailbroadcast:'ส่งข่าวสารผ่าน Email', keywords:'Keyword Trigger — LINE OA Auto-Reply', permissions:'สิทธิ์ผู้ใช้ (User Permissions)', settings:'ตั้งค่า' };
 let current = 'dashboard';
 
 function renderNav() {
@@ -636,15 +638,15 @@ VIEWS.broadcast = function(){
         <div class="ds-card-header"><div class="ds-card-title">1 · เลือกกลุ่มเป้าหมาย</div><div class="ds-card-desc">กรองผู้รับตามเงื่อนไข</div></div>
         <div class="ds-card-content">
           <div class="grid-2" style="gap:0 1rem">
-            <div class="form-group"><label class="ds-label">คณะ</label><select class="ds-select" onchange="bc.faculty=this.value;updateRecipients()"><option value="">ทุกคณะ</option>${FACULTIES.map(f=>`<option>${f}</option>`).join('')}</select></div>
-            <div class="form-group"><label class="ds-label">ปีที่สำเร็จ (พ.ศ.)</label><select class="ds-select" onchange="bc.year=this.value;updateRecipients()"><option value="">ทุกรุ่น</option>${[...new Set(ALUMNI.map(a=>a.year))].sort().map(y=>`<option>${y}</option>`).join('')}</select></div>
-            <div class="form-group"><label class="ds-label">สถานะสมาชิก</label><select class="ds-select" onchange="bc.status=this.value;updateRecipients()"><option value="">ทุกสถานะ</option><option value="alumni">ศิษย์เก่าทั่วไป</option><option value="member">สมาชิกสมาคม</option><option value="teacher">ครู (สมาชิก)</option></select></div>
-            <div class="form-group"><label class="ds-label">สถานะการมีชีวิต</label><select class="ds-select" onchange="bc.life=this.value;updateRecipients()"><option value="alive">มีชีวิต</option><option value="">ทั้งหมด</option></select></div>
+            <div class="form-group"><label class="ds-label">คณะ</label><select class="ds-select" id="bcFaculty" onchange="bc.faculty=this.value;updateRecipients()"><option value="">ทุกคณะ</option>${FACULTIES.map(f=>`<option>${f}</option>`).join('')}</select></div>
+            <div class="form-group"><label class="ds-label">ปีที่สำเร็จ (พ.ศ.)</label><select class="ds-select" id="bcYear" onchange="bc.year=this.value;updateRecipients()"><option value="">ทุกรุ่น</option>${[...new Set(ALUMNI.map(a=>a.year))].sort().map(y=>`<option>${y}</option>`).join('')}</select></div>
+            <div class="form-group"><label class="ds-label">สถานะสมาชิก</label><select class="ds-select" id="bcStatus" onchange="bc.status=this.value;updateRecipients()"><option value="">ทุกสถานะ</option><option value="alumni">ศิษย์เก่าทั่วไป</option><option value="member">สมาชิกสมาคม</option><option value="teacher">ครู (สมาชิก)</option></select></div>
+            <div class="form-group"><label class="ds-label">สถานะการมีชีวิต</label><select class="ds-select" id="bcLife" onchange="bc.life=this.value;updateRecipients()"><option value="alive">มีชีวิต</option><option value="">ทั้งหมด</option></select></div>
           </div>
           <div class="ds-alert ds-alert-info" id="recipientBox"></div>
           <div id="quotaBar" class="mt-2"></div>
 
-          <div class="ds-card-title mt-4 mb-2">2 · เขียนข้อความ</div>
+          <div class="flex items-center justify-between mt-4 mb-2"><div class="ds-card-title">2 · เขียนข้อความ</div><button class="btn btn-ghost btn-sm" onclick="openNewsPickerForLine()">${icon('link',14)} นำเข้าจากข่าว</button></div>
           ${imgUploader('bc','','รูปภาพประกอบ (ถ้ามี)')}
           <div class="form-group"><label class="ds-label">หัวข้อ</label><input class="ds-input" id="bcTitle" placeholder="เช่น เชิญร่วมงานคืนสู่เหย้า 2569" oninput="updatePreview()"></div>
           <div class="form-group"><label class="ds-label">เนื้อหาข้อความ</label><textarea class="ds-textarea" id="bcBody" rows="4" placeholder="พิมพ์ข้อความที่จะส่ง..." oninput="updatePreview()"></textarea></div>
@@ -655,7 +657,7 @@ VIEWS.broadcast = function(){
           </div>
           <div class="flex gap-2 mt-2">
             <button class="btn btn-default btn-lg" id="bcSendBtn" onclick="openSendConfirm()">${icon('send',16)} ส่งข้อความ</button>
-            <button class="btn btn-outline btn-lg" onclick="toast('บันทึกแบบร่างแล้ว')">บันทึกแบบร่าง</button>
+            <button class="btn btn-outline btn-lg" onclick="saveBcDraft()">บันทึกแบบร่าง</button>
           </div>
         </div>
       </div>
@@ -684,12 +686,60 @@ VIEWS.broadcast = function(){
               </div>`).join('')}
           </div>
         </div>
+        <div class="ds-card mt-4">
+          <div class="ds-card-header"><div class="ds-card-title">แบบร่างที่บันทึกไว้</div><div class="ds-card-desc">กดเพื่อเรียกคืนมาแก้ไข/ส่งต่อ</div></div>
+          <div class="ds-card-content" id="bcDraftList"></div>
+        </div>
       </div>
     </div>`;
-  updateRecipients(); updatePreview();
+  updateRecipients(); updatePreview(); renderBcDrafts();
   _imgCb['bc'] = updatePreview; // เปลี่ยนรูป → อัปเดตพรีวิวสด
   bindToggles(document.getElementById('content'));
 };
+/* ── แบบร่าง Broadcast (LINE) — เก็บได้หลายร่างใน localStorage ── */
+let LINE_DRAFTS = [];
+try { const s = localStorage.getItem('adp_draft_line'); if(s){ const a=JSON.parse(s); if(Array.isArray(a)) LINE_DRAFTS=a; } } catch(e){}
+function persistLineDrafts(){ try{ localStorage.setItem('adp_draft_line', JSON.stringify(LINE_DRAFTS)); }catch(e){} }
+function saveBcDraft(){
+  const title=(document.getElementById('bcTitle')?.value||'').trim();
+  const body =(document.getElementById('bcBody')?.value||'').trim();
+  const link =(document.getElementById('bcLink')?.value||'').trim();
+  const img  =(document.getElementById('bcImg')?.value||'');
+  if(!title && !body){ toast('กรอกหัวข้อหรือเนื้อหาก่อนบันทึกร่าง','error'); return; }
+  LINE_DRAFTS.unshift({ id:'dl'+Date.now(), title, body, link, img, faculty:bc.faculty, year:bc.year, status:bc.status, life:bc.life, date:todayTH()+' '+nowHM() });
+  persistLineDrafts(); renderBcDrafts();
+  toast('บันทึกแบบร่างแล้ว','success');
+}
+function loadBcDraft(id){
+  const d=LINE_DRAFTS.find(x=>x.id===id); if(!d) return;
+  document.getElementById('bcTitle').value=d.title||'';
+  document.getElementById('bcBody').value=d.body||'';
+  document.getElementById('bcLink').value=d.link||'';
+  const im=document.getElementById('bcImg'); if(im) im.value=d.img||'';
+  bc.faculty=d.faculty||''; bc.year=d.year||''; bc.status=d.status||''; bc.life=d.life||'';
+  const f=document.getElementById('bcFaculty'); if(f) f.value=bc.faculty;
+  const y=document.getElementById('bcYear'); if(y) y.value=bc.year;
+  const st=document.getElementById('bcStatus'); if(st) st.value=bc.status;
+  const lf=document.getElementById('bcLife'); if(lf) lf.value=bc.life;
+  updateRecipients(); updatePreview();
+  window.scrollTo(0,0);
+  toast('เรียกคืนแบบร่างแล้ว','success');
+}
+function deleteBcDraft(id){ LINE_DRAFTS=LINE_DRAFTS.filter(x=>x.id!==id); persistLineDrafts(); renderBcDrafts(); toast('ลบแบบร่างแล้ว','error'); }
+function renderBcDrafts(){
+  const el=document.getElementById('bcDraftList'); if(!el) return;
+  el.innerHTML = LINE_DRAFTS.length ? LINE_DRAFTS.map(d=>`
+    <div class="flex justify-between items-center" style="padding:.5rem 0;border-bottom:1px solid var(--border);gap:.5rem">
+      <div style="min-width:0;cursor:pointer" onclick="loadBcDraft('${d.id}')">
+        <div style="font-weight:500;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(d.title||'(ไม่มีหัวข้อ)')}</div>
+        <div class="type-caption">${d.date}</div>
+      </div>
+      <div class="flex gap-1" style="flex-shrink:0">
+        <button class="btn btn-ghost btn-sm" onclick="loadBcDraft('${d.id}')">แก้ไข</button>
+        <button class="btn btn-ghost btn-icon" title="ลบ" onclick="deleteBcDraft('${d.id}')">${icon('trash',15)}</button>
+      </div>
+    </div>`).join('') : '<div class="type-caption muted" style="text-align:center;padding:.75rem 0">ยังไม่มีแบบร่าง</div>';
+}
 function bcRecipients(){
   return ALUMNI.filter(a=>{
     if(!a.linked) return false;
@@ -778,7 +828,386 @@ function sendBroadcast(n){
   toast(saveNewsOn?`ส่งถึง ${n} คน & บันทึกเป็นข่าวแล้ว`:`ส่งข้อความถึง ${n} คนเรียบร้อย`,'success');
 }
 
+/* ───────── EMAIL BROADCAST (Brevo) ───────── */
+let em = { faculty:'', year:'', status:'', provider:'Brevo' };
+function emRecipients(){
+  return ALUMNI.filter(a=>{
+    if(!a.email) return false;
+    if(a.life && a.life!=='alive') return false;
+    if(em.faculty && a.faculty!==em.faculty) return false;
+    if(em.status && a.status!==em.status) return false;
+    if(em.year && String(a.year)!==String(em.year)) return false;
+    return true;
+  }).length;
+}
+VIEWS.emailbroadcast = function(){
+  document.getElementById('content').innerHTML = `
+    <div class="page-head"><h3>ส่งข่าวสารผ่าน Email</h3><p>ส่งจดหมายข่าว/ประชาสัมพันธ์ทางอีเมล ผ่าน Brevo — เหมาะกับข้อความที่ไม่เร่งด่วน (ใช้แทน/เสริม LINE)</p></div>
+    <div class="grid-2" style="grid-template-columns:1.4fr 1fr">
+      <div class="ds-card">
+        <div class="ds-card-header"><div class="ds-card-title">1 · เลือกกลุ่มผู้รับ</div><div class="ds-card-desc">กรองผู้รับที่มีอีเมลในระบบ</div></div>
+        <div class="ds-card-content">
+          <div class="grid-2" style="gap:0 1rem">
+            <div class="form-group"><label class="ds-label">คณะ</label><select class="ds-select" id="emFaculty" onchange="em.faculty=this.value;updateEmRecipients()"><option value="">ทุกคณะ</option>${FACULTIES.map(f=>`<option>${f}</option>`).join('')}</select></div>
+            <div class="form-group"><label class="ds-label">ปีที่สำเร็จ (พ.ศ.)</label><select class="ds-select" id="emYear" onchange="em.year=this.value;updateEmRecipients()"><option value="">ทุกรุ่น</option>${[...new Set(ALUMNI.map(a=>a.year))].sort().map(y=>`<option>${y}</option>`).join('')}</select></div>
+            <div class="form-group"><label class="ds-label">สถานะสมาชิก</label><select class="ds-select" id="emStatus" onchange="em.status=this.value;updateEmRecipients()"><option value="">ทุกสถานะ</option><option value="alumni">ศิษย์เก่าทั่วไป</option><option value="member">สมาชิกสมาคม</option><option value="teacher">ครู (สมาชิก)</option></select></div>
+          </div>
+          <div class="ds-alert ds-alert-info" id="emRecipientBox"></div>
+
+          <div class="flex items-center justify-between mt-4 mb-2"><div class="ds-card-title">2 · เขียนอีเมล</div><button class="btn btn-ghost btn-sm" onclick="openNewsPickerForEmail()">${icon('link',14)} นำเข้าจากข่าว</button></div>
+          <div class="form-group"><label class="ds-label">หัวเรื่อง (Subject)</label><input class="ds-input" id="emSubject" placeholder="เช่น จดหมายข่าวสมาคม ฉบับเดือนนี้" oninput="updateEmailPreview()"></div>
+          <div class="form-group"><label class="ds-label">ข้อความเกริ่น (Preheader)</label><input class="ds-input" id="emPre" placeholder="ข้อความสั้นใต้หัวเรื่องในกล่องจดหมาย (ถ้ามี)" oninput="updateEmailPreview()"></div>
+          <div class="form-group"><label class="ds-label">เนื้อหาอีเมล</label><textarea class="ds-textarea" id="emBody" rows="6" placeholder="พิมพ์เนื้อหาอีเมล..." oninput="updateEmailPreview()"></textarea></div>
+          <div class="flex gap-2 mt-2">
+            <button class="btn btn-default btn-lg" onclick="openEmailConfirm()">${icon('mail',16)} ส่งอีเมล</button>
+            <button class="btn btn-outline btn-lg" onclick="saveEmDraft()">บันทึกแบบร่าง</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="ds-card mb-4">
+          <div class="ds-card-header"><div class="ds-card-title">ตัวอย่างอีเมล</div><div class="ds-card-desc">แสดงผลตามที่ผู้รับจะเห็นจริง</div></div>
+          <div class="ds-card-content" id="emPreviewBody">
+            <div class="type-caption muted text-center" style="padding:.5rem 0">พิมพ์หัวเรื่องหรือเนื้อหาเพื่อดูตัวอย่าง</div>
+          </div>
+        </div>
+        <div class="ds-card mb-4">
+          <div class="ds-card-header"><div class="ds-card-title">การเชื่อมต่อผู้ให้บริการ</div></div>
+          <div class="ds-card-content">
+            <div class="ds-alert ds-alert-success" style="margin-bottom:.85rem"><span class="ds-alert-icon">${icon('check',16)}</span><div>เชื่อมต่อ <strong id="emProvName">Brevo</strong> สำเร็จ · <span id="emProvNote">แพ็กเกจฟรี: 300 อีเมล/วัน</span></div></div>
+            <div id="emQuotaBox"></div>
+          </div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-header"><div class="ds-card-title">ประวัติการส่งอีเมลล่าสุด</div></div>
+          <div class="ds-card-content">
+            ${EMAIL_LOG.map(r=>`
+              <div class="flex justify-between items-center" style="padding:.5rem 0;border-bottom:1px solid var(--border)">
+                <div><div style="font-weight:500;font-size:.85rem">${escHtml(r.subject)}</div><div class="type-caption">ผู้รับ ${r.n} คน · ${r.date} · ${r.provider}</div></div>
+                <span class="badge badge-success">เปิด ${r.rate}%</span>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div class="ds-card mt-4">
+          <div class="ds-card-header"><div class="ds-card-title">แบบร่างที่บันทึกไว้</div><div class="ds-card-desc">กดเพื่อเรียกคืนมาแก้ไข/ส่งต่อ</div></div>
+          <div class="ds-card-content" id="emDraftList"></div>
+        </div>
+      </div>
+    </div>`;
+  updateEmRecipients(); renderEmDrafts(); updateEmailPreview();
+};
+/* ── แบบร่าง Email — เก็บได้หลายร่างใน localStorage ── */
+let EMAIL_DRAFTS = [];
+try { const s = localStorage.getItem('adp_draft_email'); if(s){ const a=JSON.parse(s); if(Array.isArray(a)) EMAIL_DRAFTS=a; } } catch(e){}
+function persistEmailDrafts(){ try{ localStorage.setItem('adp_draft_email', JSON.stringify(EMAIL_DRAFTS)); }catch(e){} }
+function saveEmDraft(){
+  const subject=(document.getElementById('emSubject')?.value||'').trim();
+  const pre =(document.getElementById('emPre')?.value||'').trim();
+  const body=(document.getElementById('emBody')?.value||'').trim();
+  if(!subject && !body){ toast('กรอกหัวเรื่องหรือเนื้อหาก่อนบันทึกร่าง','error'); return; }
+  EMAIL_DRAFTS.unshift({ id:'de'+Date.now(), subject, pre, body, faculty:em.faculty, year:em.year, status:em.status, provider:em.provider, date:todayTH()+' '+nowHM() });
+  persistEmailDrafts(); renderEmDrafts();
+  toast('บันทึกแบบร่างแล้ว','success');
+}
+function loadEmDraft(id){
+  const d=EMAIL_DRAFTS.find(x=>x.id===id); if(!d) return;
+  document.getElementById('emSubject').value=d.subject||'';
+  document.getElementById('emPre').value=d.pre||'';
+  document.getElementById('emBody').value=d.body||'';
+  em.faculty=d.faculty||''; em.year=d.year||''; em.status=d.status||''; em.provider=d.provider||'Brevo';
+  const f=document.getElementById('emFaculty'); if(f) f.value=em.faculty;
+  const y=document.getElementById('emYear'); if(y) y.value=em.year;
+  const st=document.getElementById('emStatus'); if(st) st.value=em.status;
+  const pr=document.getElementById('emProvider'); if(pr) pr.value=em.provider;
+  updateEmRecipients();
+  window.scrollTo(0,0);
+  toast('เรียกคืนแบบร่างแล้ว','success');
+}
+function deleteEmDraft(id){ EMAIL_DRAFTS=EMAIL_DRAFTS.filter(x=>x.id!==id); persistEmailDrafts(); renderEmDrafts(); toast('ลบแบบร่างแล้ว','error'); }
+function renderEmDrafts(){
+  const el=document.getElementById('emDraftList'); if(!el) return;
+  el.innerHTML = EMAIL_DRAFTS.length ? EMAIL_DRAFTS.map(d=>`
+    <div class="flex justify-between items-center" style="padding:.5rem 0;border-bottom:1px solid var(--border);gap:.5rem">
+      <div style="min-width:0;cursor:pointer" onclick="loadEmDraft('${d.id}')">
+        <div style="font-weight:500;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(d.subject||'(ไม่มีหัวเรื่อง)')}</div>
+        <div class="type-caption">${d.date} · ${d.provider}</div>
+      </div>
+      <div class="flex gap-1" style="flex-shrink:0">
+        <button class="btn btn-ghost btn-sm" onclick="loadEmDraft('${d.id}')">แก้ไข</button>
+        <button class="btn btn-ghost btn-icon" title="ลบ" onclick="deleteEmDraft('${d.id}')">${icon('trash',15)}</button>
+      </div>
+    </div>`).join('') : '<div class="type-caption muted" style="text-align:center;padding:.75rem 0">ยังไม่มีแบบร่าง</div>';
+}
+function updateEmRecipients(){
+  const n = emRecipients();
+  const box = document.getElementById('emRecipientBox');
+  if(box) box.innerHTML = `<span class="ds-alert-icon">${icon('mail',16)}</span><div><strong>กลุ่มผู้รับ ${n} คน</strong> — ศิษย์เก่า/ครู ที่มีอีเมลในระบบและตรงตามเงื่อนไข</div>`;
+  const cap = 300, unit = 'วัน', used = EMAIL_PROVIDER.sentToday;
+  const qbox = document.getElementById('emQuotaBox');
+  if(qbox){
+    const remaining = Math.max(0, cap - used);
+    const afterSend = Math.max(0, remaining - n);
+    const over = n > remaining;
+    const usedPct = Math.min(100, Math.round(used/cap*100));
+    const afterPct = Math.min(100, Math.round((used+Math.min(n,remaining))/cap*100));
+    qbox.innerHTML = `
+      <div style="font-size:.8rem;display:flex;justify-content:space-between;margin-bottom:.35rem;color:var(--muted-foreground)">
+        <span>โควตาฟรีต่อ${unit}</span><span>ใช้ไป <strong>${used}</strong>/${cap}</span>
+      </div>
+      <div style="height:8px;border-radius:99px;background:var(--border);overflow:hidden;position:relative">
+        <div style="height:100%;border-radius:99px;background:var(--primary);width:${usedPct}%;position:absolute;top:0;left:0;transition:width .3s"></div>
+        <div style="height:100%;border-radius:99px;background:oklch(0.75 0.15 50 / .5);width:${afterPct}%;position:absolute;top:0;left:0;transition:width .3s"></div>
+      </div>
+      <div style="font-size:.78rem;display:flex;justify-content:space-between;margin-top:.4rem">
+        <span style="color:var(--muted-foreground)">ปัจจุบันเหลือ <strong>${remaining}</strong></span>
+        <span style="${over?'color:var(--destructive);font-weight:600':'color:var(--muted-foreground)'}">หลังส่ง ${n} คน: เหลือ <strong>${afterSend}</strong></span>
+      </div>
+      ${over?`<div class="ds-alert ds-alert-warning mt-2" style="padding:.45rem .75rem"><span class="ds-alert-icon">${icon('alert',14)}</span><div>ผู้รับ ${n} คน เกินโควตาที่เหลือ ${remaining} — ระบบจะทยอยส่ง (batch) ข้าม${unit}ถัดไป</div></div>`:''}
+    `;
+  }
+}
+function updateEmailPreview(){
+  const subj = (document.getElementById('emSubject')?.value||'').trim();
+  const pre  = (document.getElementById('emPre')?.value||'').trim();
+  const body = (document.getElementById('emBody')?.value||'').trim();
+  const el = document.getElementById('emPreviewBody'); if(!el) return;
+  if(!subj && !body){ el.innerHTML = '<div class="type-caption muted text-center" style="padding:.5rem 0">พิมพ์หัวเรื่องหรือเนื้อหาเพื่อดูตัวอย่าง</div>'; return; }
+  el.innerHTML = `
+    <div style="background:#f1f1f1;border-radius:8px;padding:.55rem .8rem;margin-bottom:.75rem">
+      <div class="type-caption" style="color:#888;margin-bottom:.2rem">ตัวอย่างใน inbox</div>
+      <div style="font-weight:600;font-size:.85rem;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(subj||'(ยังไม่มีหัวเรื่อง)')}</div>
+      <div style="font-size:.75rem;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(pre||'ไม่มีข้อความเกริ่น')}</div>
+    </div>
+    <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:.82rem">
+      <div style="background:var(--primary);color:#fff;padding:.55rem .9rem;font-weight:600">สมาคมศิษย์เก่า · alumni@univ.ac.th</div>
+      <div style="padding:.9rem 1rem;background:#fff">
+        <div style="font-size:.95rem;font-weight:700;margin-bottom:.5rem;color:#111">${escHtml(subj||'(ยังไม่มีหัวเรื่อง)')}</div>
+        ${pre?`<div style="font-size:.78rem;color:#888;border-left:3px solid var(--border);padding-left:.6rem;margin-bottom:.6rem;font-style:italic">${escHtml(pre)}</div>`:''}
+        <div style="color:#333;white-space:pre-wrap;line-height:1.65">${escHtml(body||'(ยังไม่มีเนื้อหา)')}</div>
+        <div style="border-top:1px solid #eee;margin-top:.9rem;padding-top:.65rem;font-size:.72rem;color:#bbb;text-align:center">
+          สมาคมศิษย์เก่า มหาวิทยาลัยรัตนบุรี &nbsp;·&nbsp; <span style="text-decoration:underline;cursor:pointer">ยกเลิกรับข่าวสาร</span>
+        </div>
+      </div>
+    </div>`;
+}
+function openNewsPickerForEmail(){
+  openModal(`<div class="ds-modal" style="max-width:480px">
+    <div class="ds-modal-body" style="padding:1rem 1.1rem .5rem">
+      <div style="font-weight:600;font-size:1rem;margin-bottom:.25rem">${icon('link',16)} นำเข้าจากข่าวในระบบ</div>
+      <div class="type-caption muted">เลือกข่าว/กิจกรรมเพื่อกรอกหัวเรื่องและเนื้อหาอีเมลอัตโนมัติ</div>
+    </div>
+    <div style="max-height:55vh;overflow-y:auto;border-top:1px solid var(--border)">
+      ${NEWS_ITEMS.map(n=>`
+      <div onclick="fillEmailFromNews('${n.id}')" style="padding:.85rem 1.1rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--muted)'" onmouseout="this.style.background=''">
+        <div style="display:flex;align-items:flex-start;gap:.65rem">
+          <div style="flex-shrink:0;margin-top:.15rem"><span class="badge badge-info" style="white-space:nowrap">${escHtml(n.cat)}</span></div>
+          <div style="min-width:0">
+            <div style="font-weight:500;font-size:.88rem;line-height:1.35">${escHtml(n.title)}</div>
+            <div class="type-caption mt-1">${n.date}</div>
+            <div class="type-caption muted mt-1" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escHtml(n.summary)}</div>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="ds-modal-footer"><button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button></div>
+  </div>`);
+}
+function fillEmailFromNews(id){
+  const n = NEWS_ITEMS.find(x=>x.id===id); if(!n) return;
+  closeOverlay();
+  const subEl = document.getElementById('emSubject');
+  const preEl = document.getElementById('emPre');
+  const bodyEl = document.getElementById('emBody');
+  if(subEl) subEl.value = n.title;
+  if(preEl) preEl.value = n.summary;
+  if(bodyEl) bodyEl.value = Array.isArray(n.body) ? n.body.join('\n\n') : (n.summary||'');
+  toast('นำเข้าเนื้อหาจากข่าว "'+n.title+'" เรียบร้อย','success');
+}
+function openNewsPickerForLine(){
+  openModal(`<div class="ds-modal" style="max-width:480px">
+    <div class="ds-modal-body" style="padding:1rem 1.1rem .5rem">
+      <div style="font-weight:600;font-size:1rem;margin-bottom:.25rem">${icon('link',16)} นำเข้าจากข่าวในระบบ</div>
+      <div class="type-caption muted">เลือกข่าว/กิจกรรมเพื่อกรอกหัวข้อและเนื้อหาข้อความ LINE อัตโนมัติ</div>
+    </div>
+    <div style="max-height:55vh;overflow-y:auto;border-top:1px solid var(--border)">
+      ${NEWS_ITEMS.map(n=>`
+      <div onclick="fillLineFromNews('${n.id}')" style="padding:.85rem 1.1rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--muted)'" onmouseout="this.style.background=''">
+        <div style="display:flex;align-items:flex-start;gap:.65rem">
+          <div style="flex-shrink:0;margin-top:.15rem"><span class="badge badge-info" style="white-space:nowrap">${escHtml(n.cat)}</span></div>
+          <div style="min-width:0">
+            <div style="font-weight:500;font-size:.88rem;line-height:1.35">${escHtml(n.title)}</div>
+            <div class="type-caption mt-1">${n.date}</div>
+            <div class="type-caption muted mt-1" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escHtml(n.summary)}</div>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="ds-modal-footer"><button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button></div>
+  </div>`);
+}
+function fillLineFromNews(id){
+  const n = NEWS_ITEMS.find(x=>x.id===id); if(!n) return;
+  closeOverlay();
+  const titleEl = document.getElementById('bcTitle');
+  const bodyEl  = document.getElementById('bcBody');
+  const linkEl  = document.getElementById('bcLink');
+  if(titleEl) titleEl.value = n.title;
+  if(bodyEl)  bodyEl.value  = n.summary;
+  if(linkEl && !linkEl.value) linkEl.value = '';
+  const sw = document.getElementById('bcSaveNews');
+  if(sw && sw.classList.contains('on')) sw.classList.remove('on');
+  updatePreview();
+  toast('นำเข้าเนื้อหาจากข่าว "'+n.title+'" เรียบร้อย · ปิด "บันทึกเป็นข่าว" แล้ว (ข่าวมีอยู่แล้ว)','success');
+}
+function openEmailConfirm(){
+  const n = emRecipients();
+  const subject = (document.getElementById('emSubject')?.value||'').trim();
+  if(!subject){ toast('กรุณากรอกหัวเรื่องอีเมล','error'); return; }
+  openModal(`<div class="ds-modal" style="max-width:430px">
+    <div class="ds-modal-body text-center" style="padding-top:2rem">
+      <div class="stat-icon" style="margin:0 auto 1rem;width:48px;height:48px">${icon('mail',22)}</div>
+      <h3 class="type-h4 mb-2">ยืนยันการส่งอีเมล</h3>
+      <p class="type-body-sm muted">อีเมลนี้จะถูกส่งไปยัง <strong>${n} คน</strong> ผ่าน <strong>${em.provider}</strong></p>
+      <div style="background:var(--muted);border-radius:var(--radius-lg);padding:.65rem .9rem;margin-top:.85rem;text-align:left;font-size:.82rem">
+        <div class="flex justify-between"><span style="color:var(--muted-foreground)">หัวเรื่อง</span><span style="font-weight:500;max-width:60%;text-align:right">${escHtml(subject)}</span></div>
+        <div class="flex justify-between mt-1"><span style="color:var(--muted-foreground)">ผู้ให้บริการ</span><span style="font-weight:500">${em.provider}</span></div>
+      </div>
+    </div>
+    <div class="ds-modal-footer" style="justify-content:center">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-default btn-md" onclick="sendEmail(${n})">${icon('mail',16)} ยืนยันส่ง</button>
+    </div>
+  </div>`);
+}
+function sendEmail(n){
+  const subject = (document.getElementById('emSubject')?.value||'').trim() || 'จดหมายข่าวสมาคม';
+  EMAIL_LOG.unshift({ subject, n, rate: 0, date: todayTH(), provider: em.provider });
+  if(em.provider==='Brevo') EMAIL_PROVIDER.sentToday += n;
+  logAction('ส่งอีเมล (Email Broadcast)', `${subject} · ${n} คน · ${em.provider}`);
+  closeOverlay();
+  toast(`ส่งอีเมลถึง ${n} คน ผ่าน ${em.provider} เรียบร้อย`,'success');
+  if(current==='emailbroadcast') VIEWS.emailbroadcast();
+}
+
 /* ───────── CMS — จัดการข่าว/กิจกรรม (Single Source สำหรับเว็บ + LIFF) ───────── */
+/* ───────── KEYWORD TRIGGER MANAGEMENT ───────── */
+VIEWS.keywords = function(){
+  document.getElementById('content').innerHTML = `
+    <div class="page-head flex justify-between items-center wrap gap-3">
+      <div><h3>Keyword Trigger — LINE OA Auto-Reply</h3><p>กำหนดคำสำคัญและข้อความตอบกลับอัตโนมัติ — LIFF chat ใช้ข้อมูลชุดเดียวกันนี้แบบ real-time</p></div>
+      <div class="flex gap-2">
+        <button class="btn btn-ghost btn-md" onclick="resetKeywords();VIEWS.keywords();toast('คืนค่าเริ่มต้นแล้ว')">คืนค่าเริ่มต้น</button>
+        <button class="btn btn-default btn-md" onclick="openKwForm()">${icon('plus',16)} เพิ่ม Keyword</button>
+      </div>
+    </div>
+    <div class="ds-alert ds-alert-info mb-4"><span class="ds-alert-icon">${icon('link',16)}</span><div><strong>Single Source of Truth</strong> — แก้ไขที่นี่แล้ว LIFF chat ตอบกลับตาม keyword ที่กำหนดได้ทันที (ไม่ต้อง deploy ใหม่)</div></div>
+    <div class="ds-card">
+      <div class="ds-card-content" style="padding:0">
+        <table style="width:100%;border-collapse:collapse;font-size:.875rem">
+          <thead><tr style="border-bottom:2px solid var(--border);background:var(--muted)">
+            <th style="padding:.75rem 1rem;text-align:left;font-weight:600">Label</th>
+            <th style="padding:.75rem 1rem;text-align:left;font-weight:600">Keyword (patterns)</th>
+            <th style="padding:.75rem 1rem;text-align:left;font-weight:600">ประเภทการตอบ</th>
+            <th style="padding:.75rem 1rem;text-align:left;font-weight:600">ข้อความ / ผลลัพธ์</th>
+            <th style="padding:.75rem 1rem;text-align:center;font-weight:600">จัดการ</th>
+          </tr></thead>
+          <tbody>
+            ${KEYWORD_TRIGGERS.map((kw,i)=>`
+            <tr style="border-bottom:1px solid var(--border);${i%2===1?'background:var(--muted)':''}">
+              <td style="padding:.7rem 1rem;font-weight:500">${escHtml(kw.label)}</td>
+              <td style="padding:.7rem 1rem">
+                <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+                  ${kw.patterns.map(p=>`<span class="badge badge-info" style="font-family:monospace;font-size:.75rem">${escHtml(p)}</span>`).join('')}
+                </div>
+              </td>
+              <td style="padding:.7rem 1rem">
+                ${kw.type==='news'?`<span class="badge badge-warning">📢 ข่าว (dynamic)</span>`:kw.type==='events'?`<span class="badge badge-success">🎟️ กิจกรรม (dynamic)</span>`:`<span class="badge">💬 ข้อความ</span>`}
+              </td>
+              <td style="padding:.7rem 1rem;max-width:280px">
+                ${kw.type==='news'||kw.type==='events'
+                  ?`<span class="type-caption muted">ดึงข้อมูล${kw.type==='news'?'ข่าว':'กิจกรรม'}จากระบบอัตโนมัติ</span>`
+                  :`<div style="white-space:pre-wrap;color:#444;font-size:.8rem;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escHtml(kw.reply)}</div>`}
+              </td>
+              <td style="padding:.7rem 1rem;text-align:center">
+                <div class="flex gap-1 justify-center">
+                  <button class="btn btn-ghost btn-sm" onclick="openKwForm('${kw.id}')">${icon('edit',14)} แก้ไข</button>
+                  <button class="btn btn-ghost btn-icon" title="ลบ" onclick="deleteKw('${kw.id}')">${icon('trash',14)}</button>
+                </div>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+        ${KEYWORD_TRIGGERS.length===0?'<div class="type-caption muted text-center" style="padding:2rem">ยังไม่มี Keyword — กด "เพิ่ม Keyword" เพื่อเริ่ม</div>':''}
+      </div>
+    </div>`;
+};
+function openKwForm(id){
+  const kw = id ? KEYWORD_TRIGGERS.find(x=>x.id===id) : null;
+  openModal(`<div class="ds-modal" style="max-width:520px">
+    <div class="ds-modal-header"><span class="ds-modal-title">${icon('chat',16)} ${kw?'แก้ไข':'เพิ่ม'} Keyword Trigger</span><button class="btn btn-ghost btn-icon" onclick="closeOverlay()">${icon('x',18)}</button></div>
+    <div class="ds-modal-body">
+      <div class="form-group"><label class="ds-label">Label (ชื่อสำหรับอ้างอิง) <span class="req">*</span></label><input class="ds-input" id="kwLabel" value="${kw?escHtml(kw.label):''}" placeholder="เช่น ถามเรื่องบัตร"></div>
+      <div class="form-group">
+        <label class="ds-label">Keyword patterns <span class="req">*</span></label>
+        <input class="ds-input" id="kwPatterns" value="${kw?kw.patterns.join(', '):''}" placeholder="เช่น บัตร, ticket, qr (คั่นด้วยจุลภาค)">
+        <div class="ds-helper">ใช้ regex ได้ · ไม่แยก case · คั่นหลาย pattern ด้วย " , "</div>
+      </div>
+      <div class="form-group">
+        <label class="ds-label">ประเภทการตอบกลับ</label>
+        <select class="ds-select" id="kwType" onchange="toggleKwReplyField()">
+          <option value="text" ${!kw||kw.type==='text'?'selected':''}>💬 ข้อความ (กำหนดเอง)</option>
+          <option value="news" ${kw&&kw.type==='news'?'selected':''}>📢 ข่าวล่าสุด (dynamic — ดึงจาก CMS)</option>
+          <option value="events" ${kw&&kw.type==='events'?'selected':''}>🎟️ กิจกรรมที่เปิดรับสมัคร (dynamic)</option>
+        </select>
+      </div>
+      <div class="form-group" id="kwReplyGroup" style="${kw&&kw.type!=='text'?'display:none':''}">
+        <label class="ds-label">ข้อความตอบกลับ</label>
+        <textarea class="ds-textarea" id="kwReply" rows="4" placeholder="ข้อความที่จะส่งกลับเมื่อผู้ใช้พิมพ์ keyword นี้">${kw&&kw.type==='text'?escHtml(kw.reply):''}</textarea>
+        <div class="ds-helper">รองรับ emoji · ขึ้นบรรทัดใหม่ได้ปกติ</div>
+      </div>
+    </div>
+    <div class="ds-modal-footer">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-default btn-md" onclick="saveKw('${id||''}')">${icon('check',16)} บันทึก</button>
+    </div>
+  </div>`);
+}
+function toggleKwReplyField(){
+  const t = document.getElementById('kwType')?.value;
+  const g = document.getElementById('kwReplyGroup');
+  if(g) g.style.display = t==='text' ? '' : 'none';
+}
+function saveKw(id){
+  const label = (document.getElementById('kwLabel')?.value||'').trim();
+  const rawPat = (document.getElementById('kwPatterns')?.value||'').trim();
+  if(!label || !rawPat){ toast('กรอก Label และ Pattern ก่อน','error'); return; }
+  const patterns = rawPat.split(',').map(s=>s.trim()).filter(Boolean);
+  const type = document.getElementById('kwType')?.value || 'text';
+  const reply = type==='text' ? (document.getElementById('kwReply')?.value||'').trim() : '';
+  if(id){
+    const i = KEYWORD_TRIGGERS.findIndex(x=>x.id===id);
+    if(i>-1) KEYWORD_TRIGGERS[i] = { ...KEYWORD_TRIGGERS[i], label, patterns, type, reply };
+  } else {
+    KEYWORD_TRIGGERS.push({ id:'kw'+Date.now(), label, patterns, type, reply });
+  }
+  saveKeywords(); closeOverlay(); VIEWS.keywords();
+  toast((id?'แก้ไข':'เพิ่ม')+' Keyword "'+label+'" แล้ว','success');
+}
+function deleteKw(id){
+  const kw = KEYWORD_TRIGGERS.find(x=>x.id===id); if(!kw) return;
+  openModal(`<div class="ds-modal" style="max-width:380px">
+    <div class="ds-modal-body text-center" style="padding-top:1.5rem">
+      <div style="color:var(--destructive);margin-bottom:.75rem">${icon('trash',32)}</div>
+      <h3 class="type-h5">ลบ Keyword นี้?</h3>
+      <p class="type-body-sm muted mt-1">"${escHtml(kw.label)}" จะถูกลบออกจากระบบ ผู้ใช้จะไม่ได้รับคำตอบอัตโนมัติสำหรับ pattern นี้อีก</p>
+    </div>
+    <div class="ds-modal-footer" style="justify-content:center">
+      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
+      <button class="btn btn-destructive btn-md" onclick="(function(){const i=KEYWORD_TRIGGERS.findIndex(x=>x.id==='${id}');if(i>-1)KEYWORD_TRIGGERS.splice(i,1);saveKeywords();closeOverlay();VIEWS.keywords();toast('ลบ Keyword แล้ว','error');})()">ลบ</button>
+    </div>
+  </div>`);
+}
 VIEWS.cms = function(){
   document.getElementById('content').innerHTML = `
     <div class="page-head flex justify-between items-center wrap gap-3">
@@ -845,6 +1274,7 @@ function openNewsForm(id){
           <div class="form-group"><label class="ds-label">สรุปสั้น</label><input class="ds-input" id="nfSummary" value="${n?n.summary.replace(/"/g,'&quot;'):''}" oninput="updateNewsPreview()"></div>
           <div class="form-group"><label class="ds-label">เนื้อหาเต็ม (เว้นบรรทัดเพื่อแยกย่อหน้า)</label><textarea class="ds-textarea" id="nfBody" rows="4" oninput="updateNewsPreview()">${n?n.body.join('\n'):''}</textarea></div>
           <div class="flex items-center justify-between mb-3"><div><div style="font-weight:500;font-size:.875rem">ส่งถึงสมาชิกผ่าน LINE (Broadcast)</div><div class="type-caption">แสดงในฟีด "ข่าวสารที่ได้รับ" ของ LIFF</div></div><span class="ds-switch ${n&&n.broadcast?'on':''}" id="nfBroadcast" data-toggle></span></div>
+          <div class="flex items-center justify-between mb-3"><div><div style="font-weight:500;font-size:.875rem">ส่งถึงสมาชิกผ่าน Email (Broadcast)</div><div class="type-caption">ส่งจดหมายข่าวผ่าน Brevo ไปยังศิษย์เก่าที่มีอีเมล</div></div><span class="ds-switch ${n&&n.emailBroadcast?'on':''}" id="nfEmailBroadcast" data-toggle></span></div>
           <div class="ds-separator"></div>
           <div class="flex items-center justify-between mb-2"><div><div style="font-weight:500;font-size:.875rem">เป็นกิจกรรม (มีวันเวลา/สถานที่)</div><div class="type-caption">เปิดเพื่อกรอกวันเวลา/สถานที่</div></div><span class="ds-switch ${n&&n.isEvent?'on':''}" id="nfEvent" data-toggle></span></div>
           <div id="nfEventFields" class="${n&&n.isEvent?'':'hidden'}">
@@ -870,6 +1300,7 @@ function openNewsForm(id){
   const ev = document.getElementById('nfEvent');
   ev.addEventListener('toggled', e=>{ document.getElementById('nfEventFields').classList.toggle('hidden', !e.detail.on); updateNewsPreview(); });
   document.getElementById('nfBroadcast').addEventListener('toggled', updateNewsPreview);
+  document.getElementById('nfEmailBroadcast').addEventListener('toggled', updateNewsPreview);
   bindToggles(document.getElementById('overlay'));
   updateNewsPreview();
 }
@@ -887,7 +1318,13 @@ function updateNewsPreview(){
   const img = g('nfImg').value;
   const isEvent = g('nfEvent').classList.contains('on');
   const broadcast = g('nfBroadcast').classList.contains('on');
+  const emailBc  = g('nfEmailBroadcast')?.classList.contains('on');
   const place = esc(g('nfPlace')?.value.trim()||''), time = esc(g('nfTime')?.value.trim()||'');
+  const lineUsed = LINE_QUOTA.used, lineTotal = LINE_QUOTA.total;
+  const lineLeft = Math.max(0, lineTotal - lineUsed);
+  const emUsed = EMAIL_PROVIDER.sentToday, emCap = 300;
+  const emLeft = Math.max(0, emCap - emUsed);
+  const emRecip = emRecipients();
   g('nfPreview').innerHTML = `
     <div class="ds-card ds-card-sm" style="overflow:hidden">
       <div style="height:140px;background:var(--muted) center/cover no-repeat;background-image:url('${IMG(img)}')"></div>
@@ -902,9 +1339,25 @@ function updateNewsPreview(){
     <div class="ds-card ds-card-sm mt-3"><div class="ds-card-content" style="padding:.85rem 1rem">
       <div class="type-caption mb-2">จะแสดงผลที่</div>
       <div class="flex items-center gap-2 mb-1" style="color:oklch(0.5 0.18 145)">${icon('check',15)}<span class="type-body-sm" style="color:var(--foreground)">เว็บไซต์สาธารณะ — หน้าข่าว/กิจกรรม</span></div>
-      <div class="flex items-center gap-2" style="${broadcast?'color:oklch(0.5 0.18 145)':'color:var(--muted-foreground)'}">${broadcast?icon('check',15):icon('x',15)}<span class="type-body-sm" style="${broadcast?'color:var(--foreground)':''}">ฟีด "ข่าวสารที่ได้รับ" ใน LINE LIFF${broadcast?'':' (เปิด Broadcast เพื่อแสดง)'}</span></div>
+      <div class="flex items-center gap-2 mb-1" style="${broadcast?'color:oklch(0.5 0.18 145)':'color:var(--muted-foreground)'}">${broadcast?icon('check',15):icon('x',15)}<span class="type-body-sm" style="${broadcast?'color:var(--foreground)':''}">ฟีด "ข่าวสารที่ได้รับ" ใน LINE LIFF${broadcast?'':' (เปิด LINE Broadcast)'}</span></div>
+      <div class="flex items-center gap-2" style="${emailBc?'color:oklch(0.5 0.18 145)':'color:var(--muted-foreground)'}">${emailBc?icon('check',15):icon('x',15)}<span class="type-body-sm" style="${emailBc?'color:var(--foreground)':''}">ส่ง Email ถึงสมาชิก${emailBc?'':' (เปิด Email Broadcast)'}</span></div>
       ${isEvent?`<div class="flex items-center gap-2 mt-1" style="color:oklch(0.5 0.18 145)">${icon('check',15)}<span class="type-body-sm" style="color:var(--foreground)">แท็บ "กิจกรรม" ใน LIFF</span></div>`:''}
-    </div></div>`;
+    </div></div>
+    ${broadcast||emailBc?`<div class="ds-card ds-card-sm mt-3"><div class="ds-card-content" style="padding:.85rem 1rem">
+      <div class="type-caption mb-2">โควตา Broadcast</div>
+      ${broadcast?`<div class="flex justify-between items-center mb-2">
+        <span class="type-body-sm">${icon('line',14)} LINE</span>
+        <span class="type-body-sm" style="${lineLeft<100?'color:var(--destructive);font-weight:600':''}">เหลือ <strong>${lineLeft.toLocaleString()}</strong>/${lineTotal.toLocaleString()} · ${LINE_QUOTA.month}</span>
+      </div>
+      <div style="height:5px;border-radius:99px;background:var(--border);overflow:hidden;margin-bottom:.65rem"><div style="height:100%;border-radius:99px;background:oklch(0.5 0.18 145);width:${Math.min(100,Math.round(lineUsed/lineTotal*100))}%"></div></div>`:''}
+      ${emailBc?`<div class="flex justify-between items-center mb-2">
+        <span class="type-body-sm">${icon('mail',14)} Email (Brevo)</span>
+        <span class="type-body-sm" style="${emLeft<emRecip?'color:var(--destructive);font-weight:600':''}">เหลือ <strong>${emLeft}</strong>/300 วันนี้ · ผู้รับ ${emRecip} คน</span>
+      </div>
+      <div style="height:5px;border-radius:99px;background:var(--border);overflow:hidden"><div style="height:100%;border-radius:99px;background:oklch(0.62 0.19 25);width:${Math.min(100,Math.round(emUsed/emCap*100))}%"></div></div>
+      ${emLeft<emRecip?`<div class="type-caption mt-1" style="color:var(--destructive)">โควตาอาจไม่พอ — ระบบจะ batch ส่งวันถัดไป</div>`:''}`:''}
+    </div></div>`:''}`;
+
 }
 
 function saveNewsItem(id){
@@ -913,13 +1366,14 @@ function saveNewsItem(id){
   if(!title){ toast('กรุณากรอกหัวข้อ','error'); return; }
   const isEvent = v('nfEvent').classList.contains('on');
   const broadcast = v('nfBroadcast').classList.contains('on');
+  const emailBroadcast = v('nfEmailBroadcast')?.classList.contains('on') || false;
   const body = v('nfBody').value.split('\n').map(s=>s.trim()).filter(Boolean);
   let img = v('nfImg').value; if(/^\d+$/.test(img)) img = parseInt(img); // เก็บ seed เป็นตัวเลข, URL/dataURL เป็น string
   const data = {
     cat: v('nfCat').value, date: v('nfDate').value || todayTH(),
     title, summary: v('nfSummary').value.trim() || (body[0]||'').slice(0,90),
     body: body.length?body:[v('nfSummary').value.trim()||title],
-    img, isEvent, broadcast,
+    img, isEvent, broadcast, emailBroadcast,
     place: isEvent?(v('nfPlace').value||'—'):'—', time: isEvent?(v('nfTime').value||'—'):'—', fee: isEvent?(v('nfFee').value||'—'):'—',
     organizer: 'สมาคมศิษย์เก่า',
     dateShort: (v('nfDate').value||todayTH()).split(' ').slice(0,2),
@@ -1378,7 +1832,6 @@ VIEWS.events = function(){
             <div class="flex gap-1 mt-3 wrap">
               <button class="btn btn-outline btn-sm" onclick="openBookings('${e.id}')">${icon('users',14)} Booking</button>
               <button class="btn btn-outline btn-sm" onclick="openGroupLink('${e.id}')">${icon('link',14)} Group Link</button>
-              ${e.status==='open'?`<button class="btn btn-default btn-sm" onclick="openManualBooking('${e.id}')">${icon('ticket',14)} ขายบัตร</button>`:''}
               <button class="btn btn-ghost btn-icon" title="แก้ไข" onclick="openEventForm('${e.id}')">${icon('edit',15)}</button>
             </div>
           </div>
@@ -1686,95 +2139,6 @@ function selectGroupOrder(orderId){
   sec.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
-/* ───────── MANUAL / WALK-IN BOOKING ───────── */
-function openManualBooking(eventId){
-  const e = EVENTS.find(x=>x.id===eventId); if(!e) return;
-  const remaining = e.tickets.map(t=>(t.quota||0)-(t.sold||0)).reduce((s,v)=>s+v,0);
-  openModal(`<div class="ds-modal" style="max-width:480px">
-    <div class="ds-modal-header"><span class="ds-modal-title">${icon('ticket',16)} ขายบัตร ณ จุดลงทะเบียน</span><button class="btn btn-ghost btn-icon" onclick="closeOverlay()">${icon('x',18)}</button></div>
-    <div class="ds-modal-body">
-      <div class="ds-alert ds-alert-info mb-3"><span class="ds-alert-icon">${icon('check',15)}</span><div>บัตรที่ขายผ่านช่องนี้ <strong>ออก E-Ticket ทันที</strong> ไม่ต้องรอตรวจสลิป · ที่นั่งคงเหลือ <strong>${remaining}</strong> ที่</div></div>
-      <div class="grid-2" style="gap:0 1rem">
-        <div class="form-group"><label class="ds-label">ชื่อ <span class="req">*</span></label><input class="ds-input" id="mbFirst" placeholder="ชื่อ"></div>
-        <div class="form-group"><label class="ds-label">นามสกุล <span class="req">*</span></label><input class="ds-input" id="mbLast" placeholder="นามสกุล"></div>
-      </div>
-      <div class="form-group"><label class="ds-label">ประเภทบัตร <span class="req">*</span></label>
-        <select class="ds-select" id="mbTicket" onchange="updateManualPrice('${eventId}')">
-          ${e.tickets.map(t=>`<option value="${escHtml(t.id)}">${escHtml(t.name)} · เหลือ ${Math.max(0,(t.quota||0)-(t.sold||0))} ที่</option>`).join('')}
-        </select>
-      </div>
-      <div class="grid-2" style="gap:0 1rem">
-        <div class="form-group"><label class="ds-label">ระดับราคา</label>
-          <select class="ds-select" id="mbTier" onchange="updateManualPrice('${eventId}')">
-            <option value="general">ราคาทั่วไป</option>
-            <option value="member">ราคาสมาชิก</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="ds-label">จำนวนบัตร</label>
-          <input class="ds-input" id="mbQty" type="number" value="1" min="1" max="20" oninput="updateManualPrice('${eventId}')">
-        </div>
-      </div>
-      <div class="form-group"><label class="ds-label">ช่องทางชำระเงิน</label>
-        <select class="ds-select" id="mbPayMethod">
-          <option value="เงินสด">เงินสด (รับหน้างาน)</option>
-          <option value="QR Code">QR Code พร้อมเพย์</option>
-          <option value="โอนเงิน">โอนเงิน (ยืนยันแล้ว)</option>
-        </select>
-      </div>
-      <div style="background:var(--accent);border-radius:var(--radius-lg);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center">
-        <span style="font-weight:500">ยอดที่รับ</span>
-        <span id="mbTotal" style="font-size:1.3rem;font-weight:700;color:var(--primary)">—</span>
-      </div>
-    </div>
-    <div class="ds-modal-footer">
-      <button class="btn btn-secondary btn-md" onclick="closeOverlay()">ยกเลิก</button>
-      <button class="btn btn-default btn-md" onclick="saveManualBooking('${eventId}')">${icon('ticket',16)} ออกบัตรทันที</button>
-    </div>
-  </div>`);
-  updateManualPrice(eventId);
-}
-function updateManualPrice(eventId){
-  const e = EVENTS.find(x=>x.id===eventId); if(!e) return;
-  const tId  = document.getElementById('mbTicket')?.value;
-  const tier = document.getElementById('mbTier')?.value;
-  const qty  = Math.max(1, parseInt(document.getElementById('mbQty')?.value)||1);
-  const t    = e.tickets.find(x=>x.id===tId) || e.tickets[0];
-  const unit = (tier==='member' && t.priceMember!=null) ? t.priceMember : t.price;
-  const el   = document.getElementById('mbTotal');
-  if(el) el.textContent = (unit*qty).toLocaleString()+' ฿';
-}
-function saveManualBooking(eventId){
-  const e = EVENTS.find(x=>x.id===eventId); if(!e) return;
-  const first  = document.getElementById('mbFirst')?.value.trim();
-  const last   = document.getElementById('mbLast')?.value.trim();
-  if(!first||!last){ toast('กรุณากรอกชื่อ-นามสกุล','error'); return; }
-  const tId    = document.getElementById('mbTicket')?.value;
-  const tier   = document.getElementById('mbTier')?.value;
-  const qty    = Math.max(1, parseInt(document.getElementById('mbQty')?.value)||1);
-  const method = document.getElementById('mbPayMethod')?.value;
-  const t      = e.tickets.find(x=>x.id===tId) || e.tickets[0];
-  const unit   = (tier==='member' && t.priceMember!=null) ? t.priceMember : t.price;
-  const total  = unit * qty;
-  if((t.sold||0)+qty > (t.quota||0)){
-    toast('บัตรประเภทนี้เต็มแล้ว ไม่สามารถขายเพิ่มได้','error'); return;
-  }
-  EVENT_PAYMENTS.unshift({
-    id:'EP'+String(Date.now()).slice(-6), first, last,
-    photo: 1+((first.charCodeAt(0)||1)*13)%70,
-    alumniId:'walk-in', year:'—', eventId:e.id, eventTitle:e.title,
-    ticketName:t.name, tier, qty, amount:total,
-    bank:method, bankShort:method.slice(0,3), bankColor:'#555',
-    fromName:first+' '+last, fromAcct:'—',
-    date:todayTH(), time:nowHM()+' น.', ref:'ADMIN-'+String(Date.now()).slice(-8),
-    phone:'—', linked:false, verify:'admin', status:'approved', source:'admin-manual',
-  });
-  t.sold = (t.sold||0)+qty;
-  saveEvents();
-  logAction('ขายบัตร Walk-in', `${first} ${last} · ${t.name} ×${qty} · ${method} · ${total.toLocaleString()}฿`);
-  closeOverlay(); VIEWS.events();
-  toast(`ออกบัตร ${t.name} ×${qty} ให้ ${first} ${last} แล้ว · ${total.toLocaleString()} ฿`,'success');
-}
-
 /* ───────── CHECK-IN SCANNER (Phase 2) ───────── */
 let checkinEvent = 'EV01', checkedIn = [], scanSeq = 0;
 VIEWS.checkin = function(){
@@ -1844,9 +2208,22 @@ const PERM_ROWS = [
   { cap:'เข้าถึงฐานข้อมูล / ทำเนียบศิษย์เก่า & ครู',      admin:1, teacher:1, member:1, alumni:0 },
   { cap:'บัตรสมาชิกดิจิทัล & สิทธิประโยชน์สมาชิก',         admin:0, teacher:1, member:1, alumni:0 },
 ];
+/* เก็บค่าเริ่มต้นไว้ก่อน (สำหรับปุ่มคืนค่า) แล้วค่อยโหลดที่บันทึกไว้ทับ */
+const DEFAULT_PERM_ROWS = PERM_ROWS.map(r=>({admin:r.admin,teacher:r.teacher,member:r.member,alumni:r.alumni}));
+const PERM_STORE_KEY = 'adp_perms_v1';
+(function loadPerms(){
+  try{ const s=localStorage.getItem(PERM_STORE_KEY); if(!s) return; const saved=JSON.parse(s);
+    if(Array.isArray(saved)&&saved.length===PERM_ROWS.length){
+      saved.forEach((row,i)=>['admin','teacher','member','alumni'].forEach(k=>{ if(typeof row[k]==='number') PERM_ROWS[i][k]=row[k]; }));
+    }
+  }catch(e){}
+})();
+let permDirty = false;
+const PERM_YES = `<span style="color:oklch(0.5 0.18 145);display:inline-flex">${icon('check',17)}</span>`;
+const PERM_NO  = `<span class="muted" style="opacity:.45">—</span>`;
 VIEWS.permissions = function(){
-  const yes = `<span style="color:oklch(0.5 0.18 145);display:inline-flex">${icon('check',17)}</span>`;
-  const no  = `<span class="muted" style="opacity:.45">—</span>`;
+  const yes = PERM_YES;
+  const no  = PERM_NO;
   document.getElementById('content').innerHTML = `
     <div class="page-head"><h3>สิทธิ์ผู้ใช้ (User Permissions)</h3><p>กำหนดระดับผู้ใช้และสิทธิ์การเข้าถึงของแต่ละกลุ่ม · แยก “ศิษย์เก่าทั่วไป” ออกจาก “สมาชิกสมาคม” อย่างชัดเจน</p></div>
 
@@ -1889,14 +2266,21 @@ VIEWS.permissions = function(){
     </div>
 
     <div class="ds-card mb-4">
-      <div class="ds-card-header"><div class="ds-card-title">ตารางสิทธิ์การเข้าถึง</div><div class="ds-card-desc">คลิกที่ช่อง ✓ / — เพื่อเปิด/ปิดสิทธิ์ของแต่ละ Role (เดโม — ระบบจริงบังคับสิทธิ์ที่ Backend)</div></div>
+      <div class="ds-card-header flex justify-between items-center wrap gap-2">
+        <div><div class="ds-card-title">ตารางสิทธิ์การเข้าถึง</div><div class="ds-card-desc">คลิกที่ช่อง ✓ / — เพื่อเปิด/ปิดสิทธิ์ของแต่ละ Role แล้วกด “บันทึก”</div></div>
+        <div class="flex items-center gap-2">
+          <span id="permDirtyTag" class="badge badge-warning" style="display:${permDirty?'inline-flex':'none'}">มีการเปลี่ยนแปลงที่ยังไม่บันทึก</span>
+          <button class="btn btn-outline btn-sm" onclick="resetPerms()">คืนค่าเริ่มต้น</button>
+          <button class="btn btn-default btn-sm" id="permSaveBtn" onclick="savePerms()" ${permDirty?'':'disabled style="opacity:.5"'}>${icon('check',14)} บันทึก</button>
+        </div>
+      </div>
       <div class="ds-card-content">
         <div class="ds-table-wrap"><table class="ds-table">
           <thead><tr><th style="min-width:230px">ความสามารถ</th>${PERM_ROLES.map(r=>`<th class="text-center">${r.label}</th>`).join('')}</tr></thead>
           <tbody>
             ${PERM_ROWS.map((row,ri)=>`<tr>
               <td>${row.cap}</td>
-              ${PERM_ROLES.map(r=>`<td class="text-center"><span style="cursor:pointer;display:inline-flex;padding:2px 8px;border-radius:6px" title="คลิกเพื่อสลับสิทธิ์" onclick="togglePerm(${ri},'${r.key}')">${row[r.key]?yes:no}</span></td>`).join('')}
+              ${PERM_ROLES.map(r=>`<td class="text-center"><span id="pc-${ri}-${r.key}" style="cursor:pointer;display:inline-flex;padding:2px 8px;border-radius:6px" title="คลิกเพื่อสลับสิทธิ์" onclick="togglePerm(${ri},'${r.key}')">${row[r.key]?yes:no}</span></td>`).join('')}
             </tr>`).join('')}
           </tbody>
         </table></div>
@@ -1922,8 +2306,31 @@ VIEWS.permissions = function(){
     </div>`;
 };
 
-/* สลับสิทธิ์ใน matrix (เดโม) */
-function togglePerm(ri, roleKey){ if(!PERM_ROWS[ri]) return; PERM_ROWS[ri][roleKey] = PERM_ROWS[ri][roleKey]?0:1; VIEWS.permissions(); }
+/* สลับสิทธิ์ใน matrix — อัปเดตเฉพาะช่องที่กด + เปิดปุ่มบันทึก */
+function togglePerm(ri, roleKey){
+  if(!PERM_ROWS[ri]) return;
+  PERM_ROWS[ri][roleKey] = PERM_ROWS[ri][roleKey]?0:1;
+  const cell = document.getElementById('pc-'+ri+'-'+roleKey);
+  if(cell) cell.innerHTML = PERM_ROWS[ri][roleKey]?PERM_YES:PERM_NO;
+  permDirty = true;
+  const tag = document.getElementById('permDirtyTag'); if(tag) tag.style.display='inline-flex';
+  const btn = document.getElementById('permSaveBtn'); if(btn){ btn.disabled=false; btn.style.opacity='1'; }
+}
+function savePerms(){
+  try{ localStorage.setItem(PERM_STORE_KEY, JSON.stringify(PERM_ROWS.map(r=>({admin:r.admin,teacher:r.teacher,member:r.member,alumni:r.alumni})))); }catch(e){}
+  permDirty = false;
+  logAction('แก้ไขสิทธิ์การเข้าถึง (Role Permissions)', 'อัปเดตตารางสิทธิ์ '+PERM_ROWS.length+' รายการ');
+  const tag = document.getElementById('permDirtyTag'); if(tag) tag.style.display='none';
+  const btn = document.getElementById('permSaveBtn'); if(btn){ btn.disabled=true; btn.style.opacity='.5'; }
+  toast('บันทึกสิทธิ์การเข้าถึงเรียบร้อย','success');
+}
+function resetPerms(){
+  try{ localStorage.removeItem(PERM_STORE_KEY); }catch(e){}
+  DEFAULT_PERM_ROWS.forEach((row,i)=>['admin','teacher','member','alumni'].forEach(k=>{ PERM_ROWS[i][k]=row[k]; }));
+  permDirty = false;
+  VIEWS.permissions();
+  toast('คืนค่าสิทธิ์เริ่มต้นแล้ว','success');
+}
 /* CRUD ผู้ใช้งาน */
 function openUserForm(id){
   const u = id ? USERS.find(x=>x.id===id) : null;
@@ -1972,58 +2379,98 @@ function confirmDeleteUser(id){
 }
 
 /* ───────── SETTINGS ───────── */
+let settingsActiveTab = 'general';
+const SETTINGS_TABS = [
+  ['general','ทั่วไป','settings'],
+  ['integrations','การเชื่อมต่อ API','link'],
+  ['security','ความปลอดภัย','check'],
+  ['log','Activity Log','clock'],
+];
 VIEWS.settings = function(){
   document.getElementById('content').innerHTML = `
-    <div class="page-head"><h3>ตั้งค่าระบบ</h3><p>ข้อมูลพื้นฐาน การเชื่อมต่อ LINE API และความปลอดภัย</p></div>
+    <div class="page-head"><h3>ตั้งค่าระบบ</h3><p>ข้อมูลพื้นฐาน · การเชื่อมต่อ API · ความปลอดภัย · บันทึกการใช้งาน</p></div>
+    <div class="set-tabs">
+      ${SETTINGS_TABS.map(t=>`<button class="set-tab ${settingsActiveTab===t[0]?'active':''}" onclick="setSettingsTab('${t[0]}')">${icon(t[2],15)} ${t[1]}</button>`).join('')}
+    </div>
+    <div id="setBody"></div>`;
+  const b = document.getElementById('setBody');
+  b.innerHTML = settingsTabHTML(settingsActiveTab);
+  bindToggles(b);
+};
+function setSettingsTab(t){ settingsActiveTab = t; VIEWS.settings(); }
+function settingsTabHTML(tab){
+  if(tab==='general') return `
+    <div class="ds-card" style="max-width:560px">
+      <div class="ds-card-header"><div class="ds-card-title">ข้อมูลพื้นฐาน</div><div class="ds-card-desc">ชื่อ โลโก้ และข้อมูลติดต่อสมาคม</div></div>
+      <div class="ds-card-content">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="avatar avatar-2xl" style="border-radius:var(--radius-lg)"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
+          <button class="btn btn-outline btn-sm">${icon('upload',14)} เปลี่ยนโลโก้</button>
+        </div>
+        <div class="form-group"><label class="ds-label">ชื่อสมาคม / มหาวิทยาลัย</label><input class="ds-input" value="สมาคมศิษย์เก่ามหาวิทยาลัยรัตนบุรี"></div>
+        <div class="form-group"><label class="ds-label">อีเมลติดต่อ</label><input class="ds-input" value="contact@alumni.ac.th"></div>
+        <div class="form-group"><label class="ds-label">เบอร์โทรติดต่อ</label><input class="ds-input" value="02-123-4567"></div>
+        <button class="btn btn-default btn-md" onclick="toast('บันทึกข้อมูลพื้นฐานแล้ว','success')">บันทึก</button>
+      </div>
+    </div>`;
+
+  if(tab==='integrations') return `
     <div class="grid-2">
       <div class="ds-card">
-        <div class="ds-card-header"><div class="ds-card-title">ข้อมูลพื้นฐาน</div><div class="ds-card-desc">ชื่อ โลโก้ และข้อมูลติดต่อสมาคม</div></div>
+        <div class="ds-card-header"><div class="ds-card-title">เชื่อมต่อ LINE API</div><div class="ds-card-desc">จัดการ LINE Official Account & Messaging API</div></div>
         <div class="ds-card-content">
-          <div class="flex items-center gap-3 mb-3">
-            <span class="avatar avatar-2xl" style="border-radius:var(--radius-lg)"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
-            <button class="btn btn-outline btn-sm">${icon('upload',14)} เปลี่ยนโลโก้</button>
-          </div>
-          <div class="form-group"><label class="ds-label">ชื่อสมาคม / มหาวิทยาลัย</label><input class="ds-input" value="สมาคมศิษย์เก่ามหาวิทยาลัยรัตนบุรี"></div>
-          <div class="form-group"><label class="ds-label">อีเมลติดต่อ</label><input class="ds-input" value="contact@alumni.ac.th"></div>
-          <div class="form-group"><label class="ds-label">เบอร์โทรติดต่อ</label><input class="ds-input" value="02-123-4567"></div>
-          <button class="btn btn-default btn-md" onclick="toast('บันทึกข้อมูลพื้นฐานแล้ว','success')">บันทึก</button>
+          <div class="ds-alert ds-alert-success"><span class="ds-alert-icon">${icon('check',16)}</span><div><strong>เชื่อมต่อสำเร็จ</strong>LINE OA: @alumni-demo</div></div>
+          <div class="form-group"><label class="ds-label">Channel Access Token</label><input class="ds-input" type="password" value="x9aP2k7Lm0qWvB3nZ8sT5dF1cJ6hR4eY"></div>
+          <div class="form-group"><label class="ds-label">Channel Secret</label><input class="ds-input" type="password" value="3f8b1c9d2e7a45069c1d8e0f2a6b4c7d"></div>
+          <div class="form-group"><label class="ds-label">LIFF ID</label><input class="ds-input" value="2001234567-abcDEF12"></div>
+          <button class="btn btn-default btn-md" onclick="toast('บันทึกการตั้งค่า LINE API แล้ว','success')">บันทึก & ทดสอบการเชื่อมต่อ</button>
         </div>
       </div>
 
-      <div>
-        <div class="ds-card mb-4">
-          <div class="ds-card-header"><div class="ds-card-title">เชื่อมต่อ LINE API</div><div class="ds-card-desc">จัดการ LINE Official Account & Messaging API</div></div>
-          <div class="ds-card-content">
-            <div class="ds-alert ds-alert-success"><span class="ds-alert-icon">${icon('check',16)}</span><div><strong>เชื่อมต่อสำเร็จ</strong>LINE OA: @alumni-demo</div></div>
-            <div class="form-group"><label class="ds-label">Channel Access Token</label><input class="ds-input" type="password" value="x9aP2k7Lm0qWvB3nZ8sT5dF1cJ6hR4eY"></div>
-            <div class="form-group"><label class="ds-label">Channel Secret</label><input class="ds-input" type="password" value="3f8b1c9d2e7a45069c1d8e0f2a6b4c7d"></div>
-            <div class="form-group"><label class="ds-label">LIFF ID</label><input class="ds-input" value="2001234567-abcDEF12"></div>
-            <button class="btn btn-default btn-md" onclick="toast('บันทึกการตั้งค่า LINE API แล้ว','success')">บันทึก & ทดสอบการเชื่อมต่อ</button>
-          </div>
-        </div>
-
-        <div class="ds-card mb-4">
-          <div class="ds-card-header"><div class="ds-card-title">VerifySlip API</div><div class="ds-card-desc">ตรวจสอบสลิปการชำระเงินอัตโนมัติ (เช่น EasySlip)</div></div>
-          <div class="ds-card-content">
-            <div class="form-group"><label class="ds-label">VerifySlip API Key</label><input class="ds-input" type="password" value="es_live_8K2mPq5xV9bT3nR7wL1c"></div>
-            <div class="flex items-center justify-between mb-3"><div><div style="font-weight:500;font-size:.875rem">เปิดใช้งานตรวจสลิปอัตโนมัติ</div><div class="type-caption">ปิดเพื่อให้แอดมินตรวจสลิปด้วยตนเอง (0 บาท)</div></div><span class="ds-switch on" data-toggle></span></div>
-            <button class="btn btn-default btn-md" onclick="toast('บันทึก VerifySlip API Key แล้ว','success')">บันทึก</button>
-          </div>
-        </div>
-
-        <div class="ds-card">
-          <div class="ds-card-header"><div class="ds-card-title">ความปลอดภัย</div></div>
-          <div class="ds-card-content">
-            <div class="form-group"><label class="ds-label">รหัสผ่านปัจจุบัน</label><input class="ds-input" type="password" value="********"></div>
-            <div class="form-group"><label class="ds-label">รหัสผ่านใหม่</label><input class="ds-input" type="password" placeholder="อย่างน้อย 8 ตัวอักษร"></div>
-            <div class="flex items-center justify-between mb-3"><div><div style="font-weight:500;font-size:.875rem">ยืนยันตัวตน 2 ขั้นตอน (2FA)</div><div class="type-caption">เพิ่มความปลอดภัยในการเข้าสู่ระบบ</div></div><span class="ds-switch on" data-toggle></span></div>
-            <button class="btn btn-default btn-md" onclick="toast('เปลี่ยนรหัสผ่านเรียบร้อย','success')">เปลี่ยนรหัสผ่าน</button>
-          </div>
+      <div class="ds-card">
+        <div class="ds-card-header"><div class="ds-card-title">เชื่อมต่อ Email API (Brevo)</div><div class="ds-card-desc">สำหรับส่งข่าวสาร/จดหมายข่าวผ่านอีเมล</div></div>
+        <div class="ds-card-content">
+          <div class="ds-alert ds-alert-success"><span class="ds-alert-icon">${icon('check',16)}</span><div><strong>เชื่อมต่อสำเร็จ</strong>Brevo · แพ็กเกจฟรี 300 อีเมล/วัน</div></div>
+          <div class="form-group"><label class="ds-label">Brevo API Key</label><input class="ds-input" type="password" value="xkeysib-demo-9a8b7c6d5e4f2a1b"></div>
+          <div class="form-group"><label class="ds-label">อีเมลผู้ส่ง (Sender)</label><input class="ds-input" value="no-reply@alumni.ac.th"></div>
+          <div class="ds-alert ds-alert-info" style="padding:.5rem .75rem"><span class="ds-alert-icon">${icon('bell',15)}</span><div class="type-caption">ต้องยืนยันโดเมน/อีเมลผู้ส่ง (SPF, DKIM) ก่อนส่งจริง เพื่อไม่ให้อีเมลเข้า spam</div></div>
+          <button class="btn btn-default btn-md mt-2" onclick="toast('บันทึกการเชื่อมต่อ Email API แล้ว','success')">บันทึก</button>
         </div>
       </div>
-    </div>
 
-    <div class="ds-card mt-4">
+      <div class="ds-card">
+        <div class="ds-card-header"><div class="ds-card-title">VerifySlip API</div><div class="ds-card-desc">ตรวจสอบสลิปการชำระเงินอัตโนมัติ (เช่น EasySlip)</div></div>
+        <div class="ds-card-content">
+          <div class="form-group"><label class="ds-label">VerifySlip API Key</label><input class="ds-input" type="password" value="es_live_8K2mPq5xV9bT3nR7wL1c"></div>
+          <div class="flex items-center justify-between mb-3"><div><div style="font-weight:500;font-size:.875rem">เปิดใช้งานตรวจสลิปอัตโนมัติ</div><div class="type-caption">ปิดเพื่อให้แอดมินตรวจสลิปด้วยตนเอง (0 บาท)</div></div><span class="ds-switch on" data-toggle></span></div>
+          <button class="btn btn-default btn-md" onclick="toast('บันทึก VerifySlip API Key แล้ว','success')">บันทึก</button>
+        </div>
+      </div>
+
+      <div class="ds-card">
+        <div class="ds-card-header"><div class="ds-card-title">เครื่องมือวัดผล (Analytics)</div><div class="ds-card-desc">ฝังสคริปต์ติดตามผลบนเว็บไซต์สาธารณะอัตโนมัติ</div></div>
+        <div class="ds-card-content">
+          <div class="form-group"><label class="ds-label">Google Analytics — Measurement ID</label><input class="ds-input" id="setGaId" placeholder="G-XXXXXXXXXX" value="G-DEMO12345"></div>
+          <div class="form-group"><label class="ds-label">Facebook Pixel ID</label><input class="ds-input" id="setFbId" placeholder="123456789012345" value="987654321098765"></div>
+          <div class="flex items-center justify-between mb-3"><div><div style="font-weight:500;font-size:.875rem">เปิดใช้งานการติดตามผล</div><div class="type-caption">เว็บไซต์จะฝัง tag ทั้งสองนี้ในทุกหน้า</div></div><span class="ds-switch on" data-toggle></span></div>
+          <button class="btn btn-default btn-md" onclick="toast('บันทึกการตั้งค่า Analytics แล้ว · เว็บไซต์จะฝัง tag อัตโนมัติ','success')">บันทึก</button>
+        </div>
+      </div>
+    </div>`;
+
+  if(tab==='security') return `
+    <div class="ds-card" style="max-width:560px">
+      <div class="ds-card-header"><div class="ds-card-title">ความปลอดภัย</div><div class="ds-card-desc">รหัสผ่านและการยืนยันตัวตน 2 ขั้นตอน</div></div>
+      <div class="ds-card-content">
+        <div class="form-group"><label class="ds-label">รหัสผ่านปัจจุบัน</label><input class="ds-input" type="password" value="********"></div>
+        <div class="form-group"><label class="ds-label">รหัสผ่านใหม่</label><input class="ds-input" type="password" placeholder="อย่างน้อย 8 ตัวอักษร"></div>
+        <div class="flex items-center justify-between mb-3"><div><div style="font-weight:500;font-size:.875rem">ยืนยันตัวตน 2 ขั้นตอน (2FA)</div><div class="type-caption">เพิ่มความปลอดภัยในการเข้าสู่ระบบ</div></div><span class="ds-switch on" data-toggle></span></div>
+        <button class="btn btn-default btn-md" onclick="toast('เปลี่ยนรหัสผ่านเรียบร้อย','success')">เปลี่ยนรหัสผ่าน</button>
+      </div>
+    </div>`;
+
+  return `
+    <div class="ds-card">
       <div class="ds-card-header"><div class="ds-card-title">Activity Log — ประวัติการดำเนินการของผู้ดูแล</div><div class="ds-card-desc">บันทึกทุก Action (เพิ่ม/แก้ไข/ลบ/Merge/อนุมัติ) เพื่อ Audit Trail</div></div>
       <div class="ds-card-content" style="padding-top:.5rem">
         <div class="ds-table-wrap" style="border:none"><table class="ds-table">
@@ -2032,8 +2479,7 @@ VIEWS.settings = function(){
         </table></div>
       </div>
     </div>`;
-  bindToggles(document.getElementById('content'));
-};
+}
 
 /* ───────── init icons in chrome ───────── */
 document.getElementById('logoutBtn').innerHTML = icon('logout',18);

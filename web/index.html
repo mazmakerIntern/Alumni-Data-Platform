@@ -4,9 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>สมาคมศิษย์เก่า · Alumni Data Platform</title>
+
+  <!-- ════════ Analytics tags (ตั้งค่าจาก Admin → ตั้งค่า → เครื่องมือวัดผล) ════════
+       เดโม: ใช้ ID ตัวอย่าง G-DEMO12345 / FB Pixel 987654321098765
+       ระบบจริงจะฝัง ID ที่บันทึกไว้ในหน้าตั้งค่าอัตโนมัติทุกหน้า -->
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DEMO12345"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-DEMO12345');
+  </script>
+  <!-- Meta (Facebook) Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '987654321098765');
+    fbq('track', 'PageView');
+  </script>
+  <!-- ════════ /Analytics ════════ -->
+
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/design-system.css?v=20260617c" />
-  <link rel="stylesheet" href="../assets/app.css?v=20260617c" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260617g" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260617g" />
   <style>
     /* ════════ WordPress-style theme (Web Information) ════════ */
     /* Top utility bar */
@@ -168,7 +192,7 @@
 
 <div class="ds-overlay" id="webOverlay" onclick="if(event.target===this)closeWeb()"></div>
 
-<script src="../assets/app.js?v=20260617c"></script>
+<script src="../assets/app.js?v=20260617g"></script>
 <script>
 // ข่าว/กิจกรรม ใช้ชุดข้อมูลกลาง NEWS_ITEMS จาก app.js (ใช้ร่วมกับ LINE LIFF)
 const BOARD = [

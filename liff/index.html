@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LINE LIFF · Alumni Data Platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/design-system.css?v=20260617c" />
-  <link rel="stylesheet" href="../assets/app.css?v=20260617c" />
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260617g" />
+  <link rel="stylesheet" href="../assets/app.css?v=20260617g" />
+  <style>
+    @keyframes typingDot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+    .typing-dot{width:6px;height:6px;border-radius:50%;background:#bbb;display:inline-block;animation:typingDot 1.2s ease infinite}
+    .typing-dot:nth-child(2){animation-delay:.2s}.typing-dot:nth-child(3){animation-delay:.4s}
+  </style>
 </head>
 <body>
 <div class="liff-stage">
@@ -52,6 +57,8 @@
             <div class="ds-separator"></div>
             <p class="type-caption text-center">เป็นสมาชิกอยู่แล้ว? <a class="btn-link" onclick="enterMember()">เข้าสู่พื้นที่สมาชิก</a></p>
             <p class="type-caption text-center mt-1">ได้รับลิงก์เชิญร่วมงาน? <a class="btn-link" onclick="window.open('../register/','_blank')">เปิดหน้าลงทะเบียนผู้รับลิงก์</a></p>
+            <p class="type-caption text-center mt-1">อยากดูหน้าแชท LINE OA? <a class="btn-link" onclick="show('s-chat');renderChat()">ดูตัวอย่าง Rich Menu + พิมพ์คำสั่ง</a></p>
+            <p class="type-caption text-center mt-1">เจ้าหน้าที่? <a class="btn-link" onclick="openManualMode()">ลงทะเบียนแทนสมาชิก (Manual mode)</a></p>
           </div>
         </div>
 
@@ -134,6 +141,33 @@
           </div>
         </div>
 
+        <!-- SCREEN 5: LINE OA Chat — Rich Menu + Keyword Trigger (mockup) -->
+        <div class="liff-screen" id="s-chat">
+          <div style="background:#fff;border-bottom:1px solid var(--border);padding:.55rem .9rem;display:flex;align-items:center;gap:.6rem">
+            <button class="btn btn-ghost btn-icon" style="width:30px;height:30px" onclick="show('s-welcome')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <span class="avatar avatar-sm" style="background:var(--line-green);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.5 2 2 5.6 2 10c0 4 3.8 7.3 8.9 7.9.3.1.7.2.8.5.1.2.1.6 0 .9l-.1.9c0 .3-.2 1 .9.6 1.1-.5 6-3.5 8.2-6C21.9 13 22 11.5 22 10c0-4.4-4.5-8-10-8z"/></svg></span>
+            <div style="line-height:1.1"><div style="font-weight:600;font-size:.85rem">สมาคมศิษย์เก่า</div><div class="type-caption" style="color:var(--line-green)">● ออนไลน์</div></div>
+          </div>
+          <div id="chatBody" style="flex:1;overflow-y:auto;background:#8aacd0;padding:.85rem .8rem;display:flex;flex-direction:column;gap:.55rem"></div>
+          <div style="background:#fff;border-top:1px solid var(--border)">
+            <div id="chatChips" style="display:flex;gap:.4rem;padding:.5rem .6rem;overflow-x:auto;white-space:nowrap"></div>
+            <div style="display:flex;gap:.5rem;padding:.4rem .7rem .6rem;align-items:center">
+              <input class="ds-input ds-input-sm" id="chatInput" placeholder="พิมพ์ข้อความ เช่น ข่าว / กิจกรรม" onkeydown="if(event.key==='Enter')chatSendInput()" style="flex:1">
+              <button class="btn btn-line btn-icon" onclick="chatSendInput()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
+            </div>
+            <!-- Rich Menu -->
+            <div style="border-top:1px solid var(--border)">
+              <div class="type-caption text-center" style="padding:.3rem 0 .15rem;color:var(--muted-foreground)">▾ Rich Menu</div>
+              <div id="richMenu" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 6: Staff Manual Registration Mode -->
+        <div class="liff-screen" id="s-manual">
+          <div id="manualBody"></div>
+        </div>
+
       </div>
     </div>
     <div style="display:flex;gap:.5rem;align-items:center">
@@ -143,7 +177,7 @@
   </div>
 </div>
 
-<script src="../assets/app.js?v=20260617c"></script>
+<script src="../assets/app.js?v=20260617g"></script>
 <script>
 let consented = false;
 function show(id){ document.querySelectorAll('.liff-screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector('.phone-body').scrollTop=0; }
@@ -209,6 +243,143 @@ const ME = { first:'สมชาย', last:'ใจดี', id:'A9001', faculty:'
   memberStatus:'none', memberNo:null, tickets:[] };
 
 function enterMember(){ show('s-member'); memberTab('home'); }
+
+/* ───────── LINE OA Chat mockup — Rich Menu + Keyword Trigger ───────── */
+let chatStarted = false;
+function chatBubble(text, who){
+  const me = who==='me';
+  return `<div style="display:flex;justify-content:${me?'flex-end':'flex-start'}">
+    <div style="max-width:82%;padding:.5rem .75rem;border-radius:14px;font-size:.82rem;line-height:1.5;${me?'background:var(--line-green);color:#fff;border-bottom-right-radius:4px':'background:#fff;color:#1f1f1f;border-bottom-left-radius:4px'};box-shadow:0 1px 3px rgba(0,0,0,.13)">${text}</div>
+  </div>`;
+}
+
+/* Flex Message — event card */
+function chatCard(e){
+  const open = e.status==='open';
+  return `<div style="display:flex;justify-content:flex-start"><div style="border-radius:12px;overflow:hidden;width:220px;box-shadow:0 2px 8px rgba(0,0,0,.16);background:#fff;font-size:.8rem">
+    <div style="background:linear-gradient(135deg,var(--brand-700),var(--brand-500));padding:.65rem .85rem;color:#fff">
+      <div style="font-size:.68rem;opacity:.8;margin-bottom:.1rem">สมาคมศิษย์เก่า · กิจกรรม</div>
+      <div style="font-weight:700;font-size:.86rem;line-height:1.35">${escHtml(e.title)}</div>
+    </div>
+    <div style="padding:.55rem .85rem;color:#333;line-height:1.6">
+      <div>📅 <span style="font-size:.78rem">${escHtml(e.date)}</span></div>
+      <div>📍 <span style="font-size:.78rem">${escHtml(e.place)}</span></div>
+    </div>
+    ${open
+      ? `<button onclick="chatSend('ลงทะเบียน ${escHtml(e.title)}')" style="width:100%;padding:.5rem;border:none;border-top:1px solid #e5e5e5;background:var(--line-green);color:#fff;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer">ลงทะเบียน ›</button>`
+      : `<div style="padding:.4rem .85rem;font-size:.74rem;color:#aaa;border-top:1px solid #f0f0f0;text-align:center">ปิดรับสมัครแล้ว</div>`}
+  </div></div>`;
+}
+
+/* Flex Message — news card */
+function chatNewsCard(n){
+  return `<div style="display:flex;justify-content:flex-start"><div style="border-radius:12px;overflow:hidden;width:220px;box-shadow:0 2px 8px rgba(0,0,0,.16);background:#fff;font-size:.8rem">
+    <div style="height:70px;background:linear-gradient(135deg,oklch(0.45 0.16 280),oklch(0.35 0.12 250));display:flex;align-items:center;justify-content:center;font-size:2rem">📢</div>
+    <div style="padding:.55rem .85rem;color:#333">
+      <div style="font-weight:600;font-size:.82rem;line-height:1.4;margin-bottom:.2rem">${escHtml(n.title)}</div>
+      <div style="font-size:.72rem;color:#999">${escHtml(n.date||'')}</div>
+    </div>
+    <button onclick="chatSend('อ่านข่าว')" style="width:100%;padding:.45rem;border:none;border-top:1px solid #e5e5e5;background:#f7f7f7;color:oklch(0.45 0.16 280);font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer">อ่านเพิ่มเติม ›</button>
+  </div></div>`;
+}
+
+/* Typing indicator */
+function showTyping(){
+  const cb = document.getElementById('chatBody'); if(!cb) return null;
+  const id = 'typing-'+Date.now();
+  cb.insertAdjacentHTML('beforeend', `<div id="${id}" style="display:flex;justify-content:flex-start">
+    <div style="background:#fff;border-radius:14px;border-bottom-left-radius:4px;padding:.55rem .8rem;box-shadow:0 1px 3px rgba(0,0,0,.13);display:flex;gap:4px;align-items:center">
+      <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+    </div>
+  </div>`);
+  cb.scrollTop = cb.scrollHeight;
+  return id;
+}
+function removeTyping(id){ const el = id && document.getElementById(id); if(el) el.remove(); }
+
+function renderChat(){
+  const cb = document.getElementById('chatBody'); if(!cb) return;
+  const chips = document.getElementById('chatChips');
+  if(chips && !chips.childElementCount){
+    ['ข่าว','กิจกรรม','บัตรของฉัน','สมัครสมาชิก','ติดต่อ'].forEach(k=>{
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-outline btn-sm';
+      btn.style.cssText = 'flex-shrink:0;border-radius:999px;font-size:.75rem';
+      btn.textContent = k;
+      btn.onclick = ()=>chatSend(k);
+      chips.appendChild(btn);
+    });
+  }
+  const rm = document.getElementById('richMenu');
+  if(rm && !rm.childElementCount){
+    const MENU = [
+      ['users','ลงทะเบียน / โปรไฟล์','โปรไฟล์','oklch(0.42 0.18 250)'],
+      ['cal','กิจกรรม','กิจกรรม','oklch(0.40 0.18 145)'],
+      ['ticket','บัตรของฉัน','บัตรของฉัน','oklch(0.50 0.18 30)'],
+      ['bell','ข่าวสาร','ข่าว','oklch(0.42 0.18 310)'],
+      ['star','สิทธิพิเศษ','สิทธิพิเศษ','oklch(0.50 0.18 75)'],
+      ['phone','ติดต่อสมาคม','ติดต่อ','oklch(0.42 0.15 195)'],
+    ];
+    MENU.forEach(([ic,label,cmd,bg])=>{
+      const btn = document.createElement('button');
+      btn.style.cssText = `border:none;background:${bg};cursor:pointer;font-family:inherit;padding:.65rem .25rem;display:flex;flex-direction:column;align-items:center;gap:.25rem;color:#fff`;
+      btn.innerHTML = `<span>${icon(ic,20)}</span><span style="font-size:.62rem;line-height:1.2;text-align:center;opacity:.95">${label}</span>`;
+      btn.onclick = ()=>chatSend(cmd);
+      rm.appendChild(btn);
+    });
+  }
+  if(!chatStarted){
+    cb.innerHTML = chatBubble('สวัสดีครับ 👋 ยินดีต้อนรับสู่ <strong>สมาคมศิษย์เก่า</strong><br>เลือกจาก Rich Menu ด้านล่าง หรือพิมพ์คำว่า <strong>ข่าว · กิจกรรม · ติดต่อ</strong> ได้เลยครับ','oa');
+    chatStarted = true;
+  }
+  cb.scrollTop = cb.scrollHeight;
+}
+
+function chatReply(text){
+  const triggers = (typeof KEYWORD_TRIGGERS!=='undefined') ? KEYWORD_TRIGGERS : [];
+  for(const kw of triggers){
+    const pats = kw.patterns||[]; if(!pats.length) continue;
+    const re = new RegExp(pats.map(p=>p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'i');
+    if(!re.test(text)) continue;
+    if(kw.type==='news'){
+      const ns=(typeof NEWS_ITEMS!=='undefined'?NEWS_ITEMS.filter(x=>x.broadcast):[]).slice(0,2);
+      if(!ns.length) return ['📢 ยังไม่มีข่าวใหม่ในขณะนี้ครับ'];
+      return ['📢 <strong>ข่าวล่าสุดจากสมาคม</strong>',...ns.map(n=>chatNewsCard(n))];
+    }
+    if(kw.type==='events'){
+      const evs=EVENTS.filter(x=>x.status==='open').slice(0,3);
+      if(!evs.length) return ['🎟️ ยังไม่มีกิจกรรมที่เปิดรับสมัครในขณะนี้ครับ'];
+      return ['🎟️ <strong>กิจกรรมที่เปิดรับสมัครตอนนี้</strong>',...evs.map(e=>chatCard(e))];
+    }
+    return [(kw.reply||'').replace(/\n/g,'<br>')||'ขออภัยครับ 🙏'];
+  }
+  return ['ขออภัยครับ 🙏 ลองพิมพ์: <strong>ข่าว · กิจกรรม · บัตร · สมัครสมาชิก · ติดต่อ</strong><br>หรือเลือกจาก Rich Menu ด้านล่างครับ'];
+}
+
+function chatSend(text){
+  const t = (text||'').trim(); if(!t) return;
+  const cb = document.getElementById('chatBody'); if(!cb) return;
+  chatStarted = true;
+  cb.insertAdjacentHTML('beforeend', chatBubble(escHtml(t),'me'));
+  cb.scrollTop = cb.scrollHeight;
+  const typId = showTyping();
+  const replies = chatReply(t);
+  const msgs = Array.isArray(replies) ? replies : [replies];
+  setTimeout(()=>{
+    removeTyping(typId);
+    msgs.forEach((msg, i)=>{
+      setTimeout(()=>{
+        const isCard = msg.startsWith('<div style="display:flex;justify-content:flex-start"><div style="border-radius:12px');
+        cb.insertAdjacentHTML('beforeend', isCard ? msg : chatBubble(msg,'oa'));
+        cb.scrollTop = cb.scrollHeight;
+      }, i*300);
+    });
+  }, 750);
+}
+function chatSendInput(){
+  const el = document.getElementById('chatInput'); if(!el) return;
+  const v = el.value; el.value=''; chatSend(v);
+}
 /* ตั้งมุมมองตามสิทธิ์ (สำหรับตรวจสอบทีละ Role) */
 function setRoleView(role){
   if(role==='member'){ ME.status='member'; ME.memberStatus='approved'; ME.memberNo = ME.memberNo || (typeof genMemberNo==='function'?genMemberNo():'M-2569-0043'); }
@@ -364,8 +535,6 @@ const MEMBER_VIEWS = {
       ${ME.memberStatus==='none'?`<button class="btn btn-line btn-md btn-block mt-3" onclick="openPayment()">${icon('card',16)} สมัครสมาชิกสมาคม</button>`:''}
       <button class="btn btn-outline btn-md btn-block mt-2" onclick="show('s-form')">${icon('edit',16)} แก้ไขข้อมูลของฉัน</button>
       <button class="btn btn-ghost btn-md btn-block mt-2" onclick="show('s-welcome')">${icon('logout',16)} ออกจากระบบ</button>
-      <div class="ds-separator"></div>
-      <button class="btn btn-ghost btn-sm btn-block" style="opacity:.8" onclick="toggleDemoMember()">${icon('star',14)} เดโม: ${ME.memberStatus==='approved'?'จำลองเป็นศิษย์เก่าทั่วไป':'จำลองเป็นสมาชิกสมาคม'} (เพื่อดูราคาบัตร 2 ระดับ)</button>
     </div>`,
 };
 function toggleDemoMember(){
@@ -632,6 +801,108 @@ function submitPayment(){
 
 /* หมายเหตุ: หน้าที่ผู้รับลิงก์กรอกข้อมูล ถูกแยกออกไปเป็นหน้าเดี่ยวที่ ../register/?ev=<id>
    (ไม่อยู่ในแอป LIFF สมาชิก) — เรียกผ่าน window.open จากหน้าผลจองกลุ่มและหน้า Welcome */
+
+/* ───────── Manual Registration Mode (Staff) ───────── */
+function openManualMode(){
+  show('s-manual');
+  renderManualForm();
+}
+function renderManualForm(){
+  const facOpts = ['คณะวิศวกรรมศาสตร์','คณะบริหารธุรกิจ','คณะวิทยาศาสตร์','คณะนิเทศศาสตร์','คณะครุศาสตร์','คณะนิติศาสตร์']
+    .map(f=>`<option>${f}</option>`).join('');
+  document.getElementById('manualBody').innerHTML = `
+    <div style="background:oklch(0.76 0.17 75);color:#fff;padding:.7rem 1.1rem;display:flex;align-items:center;gap:.5rem;flex-shrink:0">
+      <button style="background:none;border:none;cursor:pointer;color:#fff;padding:4px;display:flex;align-items:center" onclick="show('s-welcome')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div style="display:flex;flex-direction:column;line-height:1.2">
+        <span style="font-weight:700;font-size:.9rem">โหมดเจ้าหน้าที่ (Manual)</span>
+        <span style="font-size:.72rem;opacity:.9">ลงทะเบียนแทนสมาชิกที่ไม่สะดวกใช้ LINE เอง</span>
+      </div>
+    </div>
+    <div class="liff-pad">
+      <div class="ds-alert ds-alert-warning mb-3"><span class="ds-alert-icon">${icon('bell',16)}</span><div class="type-caption"><strong>ต้องได้รับความยินยอมก่อน</strong> — ก่อนกรอกข้อมูลแทน เจ้าหน้าที่ต้องได้รับความยินยอมจากบุคคลนั้นตาม PDPA แล้ว</div></div>
+      <div class="type-overline muted mb-2">ข้อมูลส่วนตัว</div>
+      <div class="form-group"><label class="ds-label">ชื่อ <span class="req">*</span></label><input class="ds-input" id="mnFirst" placeholder="ชื่อจริง"></div>
+      <div class="form-group"><label class="ds-label">นามสกุล <span class="req">*</span></label><input class="ds-input" id="mnLast" placeholder="นามสกุล"></div>
+      <div class="form-group"><label class="ds-label">เบอร์โทรศัพท์ <span class="req">*</span></label><input class="ds-input" id="mnPhone" placeholder="08X-XXX-XXXX"></div>
+      <div class="form-group"><label class="ds-label">อีเมล</label><input class="ds-input" id="mnEmail" placeholder="you@email.com"></div>
+      <div class="type-overline muted mb-2 mt-2">ข้อมูลการศึกษา</div>
+      <div class="form-group"><label class="ds-label">คณะ</label><select class="ds-select" id="mnFaculty"><option value="">เลือกคณะ</option>${facOpts}</select></div>
+      <div class="form-group"><label class="ds-label">ปีที่สำเร็จการศึกษา (พ.ศ.)</label><input class="ds-input" id="mnYear" placeholder="เช่น 2560"></div>
+      <div class="type-overline muted mb-2 mt-2">ข้อมูลการรับแจ้ง</div>
+      <div class="form-group"><label class="ds-label">ช่องทางที่ได้รับข้อมูล</label>
+        <select class="ds-select" id="mnChannel">
+          <option value="phone">โทรศัพท์เข้ามา</option>
+          <option value="walkin">มาด้วยตนเอง (Walk-in)</option>
+          <option value="lineoa">LINE OA / ข้อความ</option>
+          <option value="other">อื่น ๆ</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="ds-label">หมายเหตุ (ถ้ามี)</label><input class="ds-input" id="mnNote" placeholder="เช่น โทรเข้ามาสอบถาม แล้วขอลงทะเบียน"></div>
+      <label class="ds-checkbox-wrap mb-3 mt-1" onclick="toggleMnConsent()">
+        <span class="ds-checkbox" id="mnConsentBox"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <span class="type-body-sm">ยืนยันว่าบุคคลนี้<strong>ให้ความยินยอม PDPA แล้ว</strong> (วาจาหรือลายลักษณ์อักษร)</span>
+      </label>
+      <button onclick="submitManualReg()" style="width:100%;padding:.8rem;font-size:.95rem;font-weight:600;cursor:pointer;background:oklch(0.76 0.17 75);color:#fff;border:1px solid oklch(0.7 0.17 75);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;gap:.4rem;font-family:inherit">${icon('check',16)} บันทึกข้อมูล &amp; เพิ่มในระบบ</button>
+      <p class="type-caption text-center mt-2">ข้อมูลจะปรากฏใน Admin Portal ทันที · สถานะ: ศิษย์เก่าทั่วไป (ยังไม่เชื่อม LINE)</p>
+    </div>`;
+  document.querySelector('.phone-body').scrollTop = 0;
+}
+let mnConsented = false;
+function toggleMnConsent(){
+  mnConsented = !mnConsented;
+  const box = document.getElementById('mnConsentBox');
+  if(box) box.classList.toggle('checked', mnConsented);
+}
+function submitManualReg(){
+  const g = id => (document.getElementById(id)?.value||'').trim();
+  const first = g('mnFirst'), last = g('mnLast'), phone = g('mnPhone');
+  const faculty = g('mnFaculty'), year = g('mnYear'), email = g('mnEmail');
+  const channel = g('mnChannel'), note = g('mnNote');
+  if(!first || !last){ toast('กรุณากรอกชื่อ-นามสกุล','warning'); return; }
+  if(!phone){ toast('กรุณากรอกเบอร์โทรศัพท์','warning'); return; }
+  if(!mnConsented){ toast('กรุณายืนยันความยินยอม PDPA ก่อน','warning'); return; }
+  const CHAN = {phone:'โทรศัพท์เข้ามา',walkin:'มาด้วยตนเอง (Walk-in)',lineoa:'LINE OA / ข้อความ',other:'อื่น ๆ'};
+  const channelLabel = CHAN[channel]||channel;
+  const n = (typeof ALUMNI!=='undefined') ? ALUMNI.length : 0;
+  const newId = 'A'+String(2000+n);
+  if(typeof ALUMNI!=='undefined'){
+    ALUMNI.push({ id:newId, photo:1+((n*7)%70), first, last, faculty:faculty||'—', major:'-', year:year||'-',
+      company:'—', position:'—', status:'alumni', life:'alive', linked:false, phone, email:email||'—',
+      pending:false, joined:(typeof todayTH==='function'?todayTH():'—'), updated:(typeof nowBE==='function'?nowBE():'') });
+  }
+  document.getElementById('manualBody').innerHTML = `
+    <div style="background:oklch(0.76 0.17 75);color:#fff;padding:.7rem 1.1rem;display:flex;align-items:center;gap:.5rem">
+      <button style="background:none;border:none;cursor:pointer;color:#fff;padding:4px;display:flex;align-items:center" onclick="show('s-welcome')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <span style="font-weight:700;font-size:.9rem">โหมดเจ้าหน้าที่ (Manual)</span>
+    </div>
+    <div class="liff-pad">
+      <div class="text-center" style="padding-top:1.5rem">
+        <div style="width:68px;height:68px;border-radius:50%;background:oklch(0.76 0.17 75 / 0.12);color:oklch(0.55 0.17 75);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem">${icon('check',36)}</div>
+        <h3 class="type-h5">บันทึกสำเร็จ</h3>
+        <p class="type-caption muted mt-1">เพิ่มเข้าฐานข้อมูลศิษย์เก่าแล้ว</p>
+      </div>
+      <div class="ds-card ds-card-sm mt-3"><div class="ds-card-content">
+        <div class="flex justify-between mb-1"><span class="type-caption">รหัสประจำตัว</span><span style="font-weight:600;font-family:monospace">${newId}</span></div>
+        <div class="flex justify-between mb-1"><span class="type-caption">ชื่อ-สกุล</span><span style="font-weight:500">${escHtml(first)} ${escHtml(last)}</span></div>
+        <div class="flex justify-between mb-1"><span class="type-caption">เบอร์โทร</span><span>${escHtml(phone)}</span></div>
+        ${faculty?`<div class="flex justify-between mb-1"><span class="type-caption">คณะ</span><span>${escHtml(faculty)}</span></div>`:''}
+        ${year?`<div class="flex justify-between mb-1"><span class="type-caption">รุ่น (พ.ศ.)</span><span>${escHtml(year)}</span></div>`:''}
+        <div class="ds-separator"></div>
+        <div class="flex justify-between mb-1"><span class="type-caption">ช่องทาง</span><span class="badge badge-ghost">${escHtml(channelLabel)}</span></div>
+        <div class="flex justify-between"><span class="type-caption">PDPA</span><span class="badge badge-success">${icon('check',12)} ยินยอมแล้ว</span></div>
+        ${note?`<div class="mt-2 pt-1" style="border-top:1px solid var(--border)"><span class="type-caption muted">${escHtml(note)}</span></div>`:''}
+      </div></div>
+      <div class="ds-alert ds-alert-info mt-3"><span class="ds-alert-icon">${icon('bell',16)}</span><div class="type-caption">ข้อมูลปรากฏใน <strong>Admin Portal → จัดการศิษย์เก่า</strong> แล้ว · สถานะ: ศิษย์เก่าทั่วไป (ยังไม่เชื่อม LINE)</div></div>
+      <button class="btn btn-outline btn-md btn-block mt-3" onclick="mnConsented=false;renderManualForm()">${icon('plus',16)} ลงทะเบียนอีกคน</button>
+      <button class="btn btn-ghost btn-md btn-block mt-2" onclick="show('s-welcome')">กลับหน้าแรก</button>
+    </div>`;
+  document.querySelector('.phone-body').scrollTop = 0;
+  toast('บันทึกสำเร็จ · '+first+' '+last+' ('+newId+')','success');
+}
 
 buildTabbar();
 /* เปิดด้วย ?role=member|teacher|alumni เพื่อตรวจสอบมุมมองของแต่ละสิทธิ์ทันที */
